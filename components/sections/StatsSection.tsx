@@ -1,13 +1,12 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { STATS } from '@/lib/constants'
+import { PRODUCT_STATS } from '@/lib/constants'
 
-export default function StatsSection() {
   return (
     <section className="relative z-10 px-6 md:px-16 py-12">
       <div className="max-w-7xl mx-auto grid md:grid-cols-3 gap-6">
-        {STATS.map((stat, index) => (
+        {PRODUCT_STATS.map((stat, index) => (
           <motion.div
             key={stat.label}
             initial={{ opacity: 0, y: 40 }}
