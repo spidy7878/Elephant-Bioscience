@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { ChevronDown, FileText, CheckCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
-import ExpandableSectionData from "@/types";
+import { ExpandableSectionData } from "@/types";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   FileText,
