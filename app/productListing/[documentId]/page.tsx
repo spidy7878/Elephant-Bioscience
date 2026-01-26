@@ -1,7 +1,7 @@
 import { api } from "lib/api";
 import HeroProduct from "components/products/HeroProduct";
 import ProductTabs from "components/products/ProductTabs";
-import { Product } from "lib/constants";
+import { Product } from "app/types/product";
 
 interface Props {
   params: { documentId: string };
