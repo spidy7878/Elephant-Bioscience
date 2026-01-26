@@ -331,7 +331,7 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
           </motion.div>
 
           {/* Left Content - "We are precision" */}
-          <motion.div
+          {/* <motion.div
             className="absolute left-8 md:left-20 top-1/4 -translate-y-1/2 max-w-md z-10"
             style={{ opacity: textOpacity, y: textY }}
           >
@@ -365,7 +365,7 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
                 molecular perfection.
               </p>
             </div>
-          </motion.div>
+          </motion.div> */}
 
           {/* Right Content - "We are innovation" */}
           <motion.div

@@ -107,7 +107,7 @@ export default function LoadingSection({
             marginBottom: "16px",
           }}
         >
-          INITIALIZING MICROSCOPE
+          ELEPHANT BIOSCIENCES
         </p>
 
         {/* Progress bar */}
