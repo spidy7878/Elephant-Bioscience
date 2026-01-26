@@ -20,7 +20,7 @@ import {
 } from "../lib/imageUtils";
 import AboutBrandGrid from "../components/sections/AboutBrandGrid";
 import AboutSection from "../components/sections/AboutSection";
-import HomePage from "./home/page";
+import Hero from "components/sections/Hero";
 import Modal from "components/ui/LoginModal";
 import { useRouter } from "next/navigation";
 
@@ -234,12 +234,17 @@ export default function Home() {
           setMicroscopeProgress(progress)
         }
       >
-        <HomePage
-          titleOpacity={internalTitleOpacity}
-          sectionsOpacity={sectionsOpacity}
-          showVideo={false}
-          showSections={true}
-        />
+        {/* Inlined HomePage content (without video) */}
+        <div className="relative w-full bg-transparent">
+          {/* Content Sections */}
+          <div className="relative z-10">
+            <Hero opacity={internalTitleOpacity} />
+          </div>
+          <motion.div style={{ opacity: sectionsOpacity }}>
+            <AboutSection />
+            <AboutBrandGrid />
+          </motion.div>
+        </div>
       </HeroSection>
 
       {/* Persist video across remaining sections */}
