@@ -4,6 +4,12 @@
 
 export const VIDEO_CONFIG = {
   portalMaxSize: 400,
+  scrubSensitivity: 1,
+  morphStartScroll: 0.3,
+  morphEndScroll: 0.7,
+  maxVideoScale: 1.2,
+  maxBlur: 20,
+  smoothingFactor: 0.1,
 };
 // src/lib/constants.ts
 
