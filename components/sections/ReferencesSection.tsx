@@ -1,7 +1,7 @@
-'use client'
+"use client";
 
-import { motion } from 'framer-motion'
-import { REFERENCES } from '@/lib/constants'
+import { motion } from "framer-motion";
+import { PUBLICATIONS } from "@/lib/constants";
 
 export default function ReferencesSection() {
   return (
@@ -12,24 +12,24 @@ export default function ReferencesSection() {
         </h3>
 
         <div className="grid md:grid-cols-2 gap-4 md:gap-6">
-          {REFERENCES.map((ref, index) => (
+          {PUBLICATIONS.map((ref, index) => (
             <motion.div
-              key={ref.id}
+              key={index}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: index * 0.1 }}
               viewport={{ once: true }}
               className="font-mono text-xs md:text-sm text-text-secondary leading-relaxed p-4 md:p-5 bg-white/[0.02] rounded-xl border border-border hover:border-accent-orange/20 hover:bg-accent-orange/[0.02] transition-all interactive"
             >
-              [{ref.id}] {ref.authors} ({ref.year}) &quot;{ref.title}&quot;{' '}
+              [{index + 1}] {ref.authors} ({ref.year}) &quot;{ref.title}&quot;{" "}
               <a href="#" className="text-accent-orange hover:underline">
                 {ref.journal}
-              </a>{' '}
+              </a>{" "}
               {ref.volume}
             </motion.div>
           ))}
         </div>
       </div>
     </section>
-  )
+  );
 }
