@@ -23,9 +23,6 @@ function StatsSection() {
             </p>
             <p className="font-mono text-3xl md:text-4xl font-bold bg-gradient-to-br from-white to-accent-orange bg-clip-text text-transparent">
               {stat.value}
-              <span className="text-lg md:text-xl text-text-secondary">
-                {stat.unit}
-              </span>
             </p>
           </motion.div>
         ))}
