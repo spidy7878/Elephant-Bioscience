@@ -6,17 +6,12 @@ import AboutSection from "components/sections/AboutSection";
 import AboutBrandGrid from "components/sections/AboutBrandGrid";
 import { motion } from "framer-motion";
 
-export default function HomePage({
-  titleOpacity = 1,
-  sectionsOpacity = 1,
-  showVideo = true,
-  showSections = true,
-}: {
-  titleOpacity?: any;
-  sectionsOpacity?: any;
-  showVideo?: boolean;
-  showSections?: boolean;
-}) {
+export default function HomePage() {
+  // Set default values here
+  const titleOpacity = 1;
+  const sectionsOpacity = 1;
+  const showVideo = true;
+  const showSections = true;
   return (
     <div className="relative w-full bg-transparent">
       {/* Background Video - positioned to cover all content */}
