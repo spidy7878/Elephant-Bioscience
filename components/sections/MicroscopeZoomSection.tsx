@@ -33,7 +33,12 @@ export default function MicroscopeZoomSection() {
 
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [displayFrame, setDisplayFrame] = useState(0);
+
+  // Refs for direct DOM updates to avoid re-renders
+  const magnificationRef = useRef<HTMLSpanElement>(null);
+  const frameNumberRef = useRef<HTMLSpanElement>(null);
+  const focusRef = useRef<HTMLSpanElement>(null);
+  const zoomPercentRef = useRef<HTMLSpanElement>(null);
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -161,12 +166,28 @@ export default function MicroscopeZoomSection() {
       TOTAL_FRAMES - 1
     );
     frameRef.current = newFrame;
-    setDisplayFrame(newFrame);
-  });
 
-  const frameNumber = (displayFrame + 1).toString().padStart(4, "0");
-  const magnification = Math.round(1 + (displayFrame / TOTAL_FRAMES) * 499);
-  const focusDepth = ((displayFrame / TOTAL_FRAMES) * 5).toFixed(2);
+    // Direct DOM updates
+    if (magnificationRef.current) {
+      const mag = Math.round(1 + acceleratedProgress * 499);
+      magnificationRef.current.textContent = `${mag}x`;
+    }
+
+    if (frameNumberRef.current) {
+      const fNum = (newFrame + 1).toString().padStart(4, "0");
+      frameNumberRef.current.textContent = fNum;
+    }
+
+    if (focusRef.current) {
+      const focus = (acceleratedProgress * 5).toFixed(2);
+      focusRef.current.textContent = `${focus}μm`;
+    }
+
+    if (zoomPercentRef.current) {
+      const percent = Math.round(acceleratedProgress * 100);
+      zoomPercentRef.current.textContent = `${percent}%`;
+    }
+  });
 
   const maskSizeValue = useTransform(
     smoothProgress,
@@ -380,21 +401,21 @@ export default function MicroscopeZoomSection() {
           className="absolute top-6 left-6 z-30 space-y-2"
         >
           <MicroscopeDataPanel label="MAGNIFICATION">
-            <span className="text-lg font-mono text-orange-400 tabular-nums">
-              {magnification}x
+            <span ref={magnificationRef} className="text-lg font-mono text-orange-400 tabular-nums">
+              1x
             </span>
           </MicroscopeDataPanel>
 
           <MicroscopeDataPanel label="FRAME">
-            <span className="text-sm font-mono text-neutral-300 tabular-nums">
-              {frameNumber}
+            <span ref={frameNumberRef} className="text-sm font-mono text-neutral-300 tabular-nums">
+              0001
             </span>
             <span className="text-[9px] text-neutral-600 ml-1">/ 0120</span>
           </MicroscopeDataPanel>
 
           <MicroscopeDataPanel label="FOCUS">
-            <span className="text-sm font-mono text-neutral-300 tabular-nums">
-              {focusDepth}μm
+            <span ref={focusRef} className="text-sm font-mono text-neutral-300 tabular-nums">
+              0.00μm
             </span>
           </MicroscopeDataPanel>
 
@@ -442,8 +463,8 @@ export default function MicroscopeZoomSection() {
                 style={{ scaleX: smoothProgress, transformOrigin: "left" }}
               />
             </div>
-            <span className="text-[11px] font-mono text-orange-400 tabular-nums w-8">
-              {Math.round((displayFrame / TOTAL_FRAMES) * 100)}%
+            <span ref={zoomPercentRef} className="text-[11px] font-mono text-orange-400 tabular-nums w-8">
+              0%
             </span>
           </div>
 
@@ -543,9 +564,8 @@ function MicroscopeDataPanel({
 }) {
   return (
     <div
-      className={`glass rounded-lg px-3 py-1.5 min-w-[100px] ${
-        align === "right" ? "text-right" : ""
-      }`}
+      className={`glass rounded-lg px-3 py-1.5 min-w-[100px] ${align === "right" ? "text-right" : ""
+        }`}
     >
       <span className="text-[8px] text-neutral-600 tracking-wider block">
         {label}

@@ -88,7 +88,13 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
     // Timing synced with the mask expansion
     const microscopeOpacity = useTransform(
       smoothProgress,
-      [0.85, 0.98],
+      [0.8, 0.9],
+      [1, 0]
+    );
+
+    const backgroundBodyOpacity = useTransform(
+      smoothProgress,
+      [0.75, 0.85],
       [1, 0]
     );
 
@@ -97,7 +103,7 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
     const backgroundBlur = useTransform(
       smoothProgress,
       [0, 0.5, 0.9],
-      [0, 4, 15]
+      [0, 0, 0]
     );
     const backgroundBlurFilter = useMotionTemplate`blur(${backgroundBlur}px)`;
 
@@ -132,15 +138,15 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
       ["rgba(0,0,0,0.65)", "rgba(0,0,0,0.95)"]
     );
 
-    const vignetteOpacity = useTransform(smoothProgress, [0.93, 0.98], [1, 0]);
+    const vignetteOpacity = useTransform(smoothProgress, [0.8, 0.9], [1, 0]);
     const vignetteGradient = useMotionTemplate`radial-gradient(circle at 50% 67.5%, 
                   transparent ${vignetteInner}%, 
                   ${vignetteColor1} ${vignetteOuter}%, 
                   ${vignetteColor2} ${useTransform(
-                    smoothProgress,
-                    [0, 0.95],
-                    [45, 200]
-                  )}%, 
+      smoothProgress,
+      [0, 0.95],
+      [45, 200]
+    )}%, 
                   ${vignetteColor3} 100%
                 )`;
 
@@ -155,7 +161,7 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
     return (
       <section
         ref={sectionRef}
-        className="relative"
+        className="relative z-10"
         style={{
           height: "600vh", // Extended to ensure title reaches "atmost" before release
           backgroundColor: "transparent", // Enable background video reveal
@@ -168,7 +174,7 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
             style={{
               scale: backgroundScale,
               filter: useMotionTemplate`blur(${backgroundBlur}px)`,
-              opacity: microscopeOpacity, // Dissolves as iris opens
+              opacity: backgroundBodyOpacity, // Dissolves early to clear clutter
               transformOrigin: "50% 50%",
             }}
           >
@@ -266,15 +272,12 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
           </motion.div>
 
           {/* Global Darkener - dims the microscope body as we zoom into the lens */}
+          {/* Global Darkener - Removed to clarify video reveal */}
           <motion.div
             className="absolute inset-0 pointer-events-none z-[2]"
             style={{
               backgroundColor: "#0a0a0b",
-              opacity: useTransform(
-                smoothProgress,
-                [0, 0.85, 0.94],
-                [0, 0.5, 0]
-              ),
+              opacity: 0,
             }}
           />
 
@@ -297,7 +300,7 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
             style={{
               opacity: useTransform(
                 smoothProgress,
-                [0, 0.1, 0.9, 0.97],
+                [0, 0.1, 0.65, 0.75],
                 [0, 1, 1, 0]
               ),
             }}

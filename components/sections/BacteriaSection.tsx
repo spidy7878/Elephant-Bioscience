@@ -47,7 +47,7 @@ export default function BacteriaSection({
     [0, 0.5, 1],
     [1, 1.5, 3]
   );
-  const bacteriaBlur = useTransform(smoothBacteriaProgress, [0.8, 1], [0, 8]);
+  const bacteriaBlur = useTransform(smoothBacteriaProgress, [0.8, 1], [0, 0]);
   const contentRevealOpacity = useTransform(
     smoothBacteriaProgress,
     [0.7, 0.9],
