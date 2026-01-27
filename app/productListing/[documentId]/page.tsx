@@ -2,6 +2,9 @@ import { api } from "lib/api";
 import HeroProduct from "components/products/HeroProduct";
 import ProductTabs from "components/products/ProductTabs";
 import { Product } from "app/types/product";
+import { a, div, video } from "framer-motion/client";
+import src from "gsap/src";
+import style from "styled-jsx/style";
 
 interface Props {
   params: { documentId: string };
@@ -31,9 +34,38 @@ export default async function Page({ params }: Props) {
       </div>
     );
   }
-
   return (
     <>
+      {/* Back Button */}
+      <div className="fixed top-6 left-6 z-30">
+        <a
+          href="/products"
+          className="relative flex items-center justify-center rounded-full font-semibold text-white text-xl shadow-lg backdrop-blur-lg border border-white/10 transition-all duration-300 hover:shadow-2xl group"
+          style={{
+            width: "3.6rem",
+            height: "2.1rem",
+            borderRadius: "999px",
+            background: "rgba(255,255,255,0.08)",
+            WebkitBackdropFilter: "blur(10px)",
+            backdropFilter: "blur(10px)",
+          }}
+        >
+          {/* Glass shimmer effect on hover */}
+          <div
+            className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-full"
+            style={{
+              background:
+                "linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%, rgba(255, 255, 255, 0.05) 100%)",
+              borderRadius: "999px",
+            }}
+          />
+          <span className="relative z-10 flex items-center justify-center w-full h-full text-black text-base">
+            &#8592;
+          </span>
+        </a>
+      </div>
+      {/* Extra space after back button for small screens */}
+      <div className="block sm:hidden h-8" />
       {/* Background Video */}
       <video
         className="fixed top-0 left-0 w-full h-full object-cover z-0"
