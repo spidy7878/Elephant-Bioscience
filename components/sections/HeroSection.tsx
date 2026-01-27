@@ -334,9 +334,9 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
             </div>
           </motion.div>
 
-          {/* Left Content - "We are precision" */}
+          {/* Left Content - "We are precision" (hidden on small screens) */}
           <motion.div
-            className="absolute bottom-20 -translate-y-1/2 z-[30]"
+            className="absolute bottom-20 -translate-y-1/2 z-[30] hidden md:block"
             style={{
               opacity: textOpacity,
               y: textY,
@@ -353,9 +353,9 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
             </h1>
           </motion.div>
 
-          {/* Right Content - "We are innovation" */}
+          {/* Right Content - "We are innovation" (hidden on small screens) */}
           <motion.div
-            className="absolute right-8 md:right-20 top-1/2 -translate-y-1/2 max-w-md z-10 text-right"
+            className="absolute right-8 md:right-20 top-1/2 -translate-y-1/2 max-w-md z-10 text-right hidden md:block"
             style={{ opacity: textOpacity, y: textY }}
           >
             <h1 className="font-bold">
@@ -366,50 +366,6 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
                 innovation
               </div>
             </h1>
-          </motion.div>
-
-
-          {/* Bottom CTA */}
-          {/* <motion.div
-            className="absolute bottom-20 left-1/2 -translate-x-1/2 flex items-center gap-4 z-10"
-            style={{ opacity: textOpacity }}
-          >
-            <button
-              onClick={() => router.push("/products")}
-              style={{
-                padding: "12px 24px",
-                background: "#8C2224",
-                border: "none",
-                borderRadius: "100px",
-                color: "#fff",
-                fontSize: "15px",
-                fontWeight: 700,
-                cursor: "pointer",
-                boxShadow: "0 4px 20px rgba(140, 34, 36, 0.15)",
-                transition: "transform 0.3s, box-shadow 0.3s",
-                letterSpacing: 0.5,
-              }}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.transform = "scale(1.05)")
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.transform = "scale(1)")
-              }
-            >
-              Explore Products
-            </button>
-          </motion.div> */}
-
-          {/* Scroll Indicator */}
-          <motion.div
-            className="absolute bottom-20 right-8 flex items-center gap-32 text-[#8C2224] text-sm drop-shadow-lg"
-            style={{ opacity: textOpacity }}
-          >
-            <div className="flex items-center gap-2">
-              <span className="tracking-widest">SCROLL DOWN</span>
-              <div className="w-px h-12 bg-[#8C2224]/50"></div>
-            </div>
-            <span className="tracking-wider">TO BEGIN EXPLORATION</span>
           </motion.div>
         </div>
       </section>
