@@ -36,15 +36,17 @@ export default async function Page({ params }: Props) {
         playsInline
         style={{ pointerEvents: "none" }}
       />
-      <div className="relative z-10">
-        <section className="relative w-full min-h-screen">
+      {/* Responsive overlay for readability */}
+      <div className="fixed top-0 left-0 w-full h-full bg-black/60 z-10 pointer-events-none" />
+      <div className="relative z-20">
+        <section className="relative w-full min-h-screen flex flex-col">
           {/* Hero Section */}
-          <div className="snap-start h-screen w-full">
+          <div className="snap-start w-full min-h-[60vh] md:min-h-[80vh] flex items-center justify-center px-2 sm:px-4 md:px-8">
             <HeroProduct product={product} />
           </div>
 
           {/* Tabs Section */}
-          <div className="snap-start min-h-screen w-full">
+          <div className="snap-start w-full flex-1 px-2 sm:px-4 md:px-8">
             <ProductTabs product={product} />
           </div>
 

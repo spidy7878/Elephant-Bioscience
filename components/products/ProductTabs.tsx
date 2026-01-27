@@ -24,12 +24,12 @@ export default function ProductTabs({ product }: { product: Product }) {
     <section className="relative py-14">
       <div className="max-w-[1400px] mx-auto px-6">
         {/* TAB HEADER */}
-        <div className="rounded-xl  py-4 flex gap-3 flex-wrap">
+        <div className="rounded-xl py-2 sm:py-4 flex gap-2 sm:gap-3 flex-wrap">
           {tabs.map((tab) => (
             <button
               key={tab}
               onClick={() => setActive(tab)}
-              className={`px-4 py-2.5 rounded transition-all duration-300 ${
+              className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-md sm:rounded transition-all duration-300 text-xs sm:text-sm ${
                 active === tab
                   ? "bg-[#8c2224] text-white"
                   : "bg-transparent text-white hover:bg-[#8c2224] hover:text-white"
@@ -41,17 +41,17 @@ export default function ProductTabs({ product }: { product: Product }) {
         </div>
 
         {/* CONTENT GRID */}
-        <div className="grid grid-cols-12 gap-8 mt-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-8 mt-6 lg:mt-8 items-start">
           {/* LEFT CONTENT */}
           <div
-            className="col-span-12 lg:col-span-7 rounded-xl shadow p-8"
+            className="col-span-1 lg:col-span-7 rounded-lg lg:rounded-2xl shadow p-4 sm:p-6 md:p-8"
             style={{
               background: "rgba(255,255,255,0.08)",
               backdropFilter: "blur(10px)",
               WebkitBackdropFilter: "blur(10px)",
               border: "1px solid rgba(255,255,255,0.1)",
               boxShadow: "0 4px 24px 0 rgba(0,0,0,0.08)",
-              minHeight: "400px", // Ensures a minimum height when no value, but grows with content
+              minHeight: "260px",
             }}
           >
             <AnimatePresence mode="wait">
@@ -100,7 +100,7 @@ export default function ProductTabs({ product }: { product: Product }) {
                 {/* STORAGE */}
                 {active === "Storage" && (
                   <div>
-                    <h2 className="text-3xl font-semibold mb-4">Storage</h2>
+                    {/* <h2 className="text-3xl font-semibold mb-4">Storage</h2> */}
                     <p className="leading-relaxed text-gray-700">
                       {product.storage}
                     </p>

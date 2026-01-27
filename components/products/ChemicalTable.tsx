@@ -28,8 +28,8 @@ const ChemicalTable = ({ product }: { product: any }) => {
   ];
 
   return (
-    <div className="bg-white rounded-xl border p-5">
-      <table className="w-full text-sm">
+    <div className="bg-white/80 rounded-lg md:rounded-xl border p-3 sm:p-5 overflow-x-auto">
+      <table className="w-full text-xs sm:text-sm">
         <tbody>
           {rows.map(([label, value], idx) => (
             <tr
@@ -41,15 +41,15 @@ const ChemicalTable = ({ product }: { product: any }) => {
             >
               <td
                 className={
-                  `py-3 font-medium text-gray-700` +
+                  `py-2 sm:py-3 font-medium text-gray-700` +
                   (label === "Properties"
-                    ? " text-2xl lg:text-3xl font-bold"
+                    ? " text-lg sm:text-2xl lg:text-3xl font-bold"
                     : "")
                 }
               >
                 {label}
               </td>
-              <td className="py-3 text-right text-gray-900 break-all max-w-[260px] leading-relaxed">
+              <td className="py-2 sm:py-3 text-right text-gray-900 break-all max-w-[120px] sm:max-w-[180px] md:max-w-[260px] leading-relaxed">
                 {typeof value === "string" ? formatChemicalFormula(value) : "-"}
               </td>
             </tr>
