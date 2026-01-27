@@ -179,26 +179,6 @@ export default function NavigationBar({
             />
           </div>
         ))}
-        {/* <button
-          style={{
-            padding: "12px 24px",
-            background: getStartedBg,
-            border: "none",
-            borderRadius: "100px",
-            color: getStartedColor,
-            fontSize: "15px",
-            fontWeight: 700,
-            cursor: "pointer",
-            boxShadow:
-              scrollY > 100
-                ? "0 4px 20px rgba(140, 34, 36, 0.15)"
-                : "0 4px 20px rgba(140, 34, 36, 0.15)",
-            transition: "transform 0.3s, box-shadow 0.3s",
-            letterSpacing: 0.5,
-          }}
-        >
-          Login
-        </button> */}
       </div>
     </nav>
   );

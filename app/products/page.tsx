@@ -144,11 +144,10 @@ export default function ProductPage() {
             {categories.map((category, index) => (
               <button
                 key={index}
-                className={`px-6 py-2.5 rounded border-2 transition-all duration-300 ${
-                  index === 0
-                    ? "bg-white text-black border-white"
-                    : "bg-transparent text-white border-white hover:bg-white hover:text-black"
-                }`}
+                className={`px-6 py-2.5 rounded border-2 transition-all duration-300 ${index === 0
+                  ? "bg-white text-black border-white"
+                  : "bg-transparent text-white border-white hover:bg-white hover:text-black"
+                  }`}
               >
                 {category}
               </button>

@@ -18,10 +18,18 @@ async function getProduct(documentId: string): Promise<Product | null> {
 }
 
 export default async function Page({ params }: Props) {
-  const product = await getProduct(params.documentId);
+  const { documentId } = await params;
+  const product = await getProduct(documentId);
 
   if (!product) {
-    return <div>Product not found</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#dedada]">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-800">Product not found</h1>
+          <p className="text-gray-600 mt-2">The product you are looking for does not exist or has been removed.</p>
+        </div>
+      </div>
+    );
   }
 
   return (
