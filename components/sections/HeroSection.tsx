@@ -368,6 +368,7 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
             </h1>
           </motion.div>
 
+
           {/* Bottom CTA */}
           {/* <motion.div
             className="absolute bottom-20 left-1/2 -translate-x-1/2 flex items-center gap-4 z-10"
