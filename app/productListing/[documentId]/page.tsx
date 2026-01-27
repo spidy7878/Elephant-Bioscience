@@ -49,7 +49,7 @@ export default async function Page({ params }: Props) {
           </div>
 
           {/* Overlay strip with background */}
-          <div className="absolute bottom-0 right-0 w-full h-[56px] overflow-hidden">
+          {/* <div className="absolute bottom-0 right-0 w-full h-[56px] overflow-hidden">
             <div className="absolute right-6 bottom-[-18px]">
               <span
                 className="inline-block text-2xl sm:text-3xl lg:text-4xl 
@@ -60,7 +60,7 @@ export default async function Page({ params }: Props) {
                 {product.name}
               </span>
             </div>
-          </div>
+          </div> */}
         </section>
       </div>
     </>

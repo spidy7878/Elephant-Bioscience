@@ -21,18 +21,18 @@ export default function ProductTabs({ product }: { product: Product }) {
     : "";
 
   return (
-    <section className="relative bg-[#dedada] py-14">
+    <section className="relative py-14">
       <div className="max-w-[1400px] mx-auto px-6">
         {/* TAB HEADER */}
-        <div className="bg-[#dedada] rounded-xl px-6 py-4 flex gap-3 flex-wrap">
+        <div className="rounded-xl  py-4 flex gap-3 flex-wrap">
           {tabs.map((tab) => (
             <button
               key={tab}
               onClick={() => setActive(tab)}
-              className={`px-5 py-2 rounded-lg text-sm font-medium transition ${
+              className={`px-4 py-2.5 rounded transition-all duration-300 ${
                 active === tab
-                  ? "bg-red-500 text-white shadow"
-                  : "bg-[#dfe3e8] text-black hover:bg-[#d5d9de]"
+                  ? "bg-[#8c2224] text-white"
+                  : "bg-transparent text-white hover:bg-[#8c2224] hover:text-white"
               }`}
             >
               {tab}
@@ -43,7 +43,17 @@ export default function ProductTabs({ product }: { product: Product }) {
         {/* CONTENT GRID */}
         <div className="grid grid-cols-12 gap-8 mt-8 items-start">
           {/* LEFT CONTENT */}
-          <div className="col-span-12 lg:col-span-7 bg-white rounded-xl shadow p-8">
+          <div
+            className="col-span-12 lg:col-span-7 rounded-xl shadow p-8"
+            style={{
+              background: "rgba(255,255,255,0.08)",
+              backdropFilter: "blur(10px)",
+              WebkitBackdropFilter: "blur(10px)",
+              border: "1px solid rgba(255,255,255,0.1)",
+              boxShadow: "0 4px 24px 0 rgba(0,0,0,0.08)",
+              minHeight: "400px", // Ensures a minimum height when no value, but grows with content
+            }}
+          >
             <AnimatePresence mode="wait">
               <motion.div
                 key={active}
@@ -57,7 +67,10 @@ export default function ProductTabs({ product }: { product: Product }) {
                   <div className="space-y-4 text-black">
                     <h2 className="text-3xl font-semibold">Overview</h2>
                     {product.description?.map((d, i) => (
-                      <p key={i} className="leading-relaxed text-gray-700">
+                      <p
+                        key={i}
+                        className="leading-relaxed text-black font-semibold text-base md:text-lg lg:text-xl"
+                      >
                         {d.children?.[0]?.text}
                       </p>
                     ))}
@@ -67,9 +80,6 @@ export default function ProductTabs({ product }: { product: Product }) {
                 {/* CHEMICAL PROPERTIES */}
                 {active === "Chemical Properties" && (
                   <div>
-                    <h2 className="text-3xl font-semibold mb-6">
-                      Biochemical Characteristics
-                    </h2>
                     <ChemicalTable product={product} />
                   </div>
                 )}
@@ -100,10 +110,9 @@ export default function ProductTabs({ product }: { product: Product }) {
                 {/* Third party testing  */}
                 {active === "3rd Party Testing" && (
                   <div>
-                    <h2 className="text-3xl font-semibold mb-4">Storage</h2>
+                    <h2 className="text-3xl font-semibold mb-4"></h2>
                     <img
                       src={thirdPartyTestingImage}
-                      alt="Third party testing"
                       className="leading-relaxed text-gray-700"
                     ></img>
                   </div>
