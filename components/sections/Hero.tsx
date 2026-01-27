@@ -17,7 +17,7 @@ export default function Hero({ opacity = 1 }: { opacity?: any }) {
         />
       )}
       {/* Main Title Section */}
-      <section className="relative h-screen w-full flex flex-col items-center justify-center px-6">
+      <section className="relative h-screen w-full flex flex-col items-center justify-center">
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -26,7 +26,7 @@ export default function Hero({ opacity = 1 }: { opacity?: any }) {
         >
           <motion.h1
             style={{ opacity }}
-            className="text-white text-2xl md:text-5xl lg:text-7xl font-bold tracking-wide mb-4 whitespace-nowrap text-center"
+            className="text-white text-2xl md:text-5xl lg:text-7xl font-bold tracking-wide whitespace-nowrap text-center"
           >
             Elephant Biosciences
           </motion.h1>

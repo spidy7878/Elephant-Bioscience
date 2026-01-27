@@ -36,9 +36,9 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
     });
 
     const smoothProgress = useSpring(scrollYProgress, {
-      stiffness: 20, // Reduced for a more cinematic, slower momentum
+      stiffness: 400, // Increased for tighter sync with scroll
       damping: 30,
-      mass: 0.8, // Lighter mass for subtle reactivity
+      mass: 0.5, // Reduced mass for snappier response
       restDelta: 0.001,
     });
 
@@ -56,8 +56,8 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
     // without a black flicker before the page content takes over.
     const contentOpacity = useTransform(
       smoothProgress,
-      [0, 0.98, 1],
-      [1, 1, 1]
+      [0, 0.85, 0.9],
+      [0, 0, 1]
     );
 
     // Scaling the sequence canvas to create a "magnification" effect before the content swap
@@ -82,7 +82,7 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
       [0, 0.85, 0.98, 1],
       [14, 14, 150, 150]
     );
-    const maskPercentage = useMotionTemplate`circle(${maskSizeValue}vmin at 50% 67.5%)`;
+    const maskPercentage = useMotionTemplate`circle(${maskSizeValue}vmin at 50% 50%)`;
 
     // Fade out the microscope elements as we punch through
     // Timing synced with the mask expansion
@@ -139,7 +139,7 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
     );
 
     const vignetteOpacity = useTransform(smoothProgress, [0.8, 0.9], [1, 0]);
-    const vignetteGradient = useMotionTemplate`radial-gradient(circle at 50% 67.5%, 
+    const vignetteGradient = useMotionTemplate`radial-gradient(circle at 50% 50%, 
                   transparent ${vignetteInner}%, 
                   ${vignetteColor1} ${vignetteOuter}%, 
                   ${vignetteColor2} ${useTransform(
@@ -158,9 +158,29 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
     const focusDepth = ((currentFrame / TOTAL_FRAMES) * 5).toFixed(2);
     const frameNumber = (currentFrame + 1).toString().padStart(4, "0");
 
+    const mobileVideoRef = useRef<HTMLVideoElement>(null);
+
+    useEffect(() => {
+      const unsubscribe = smoothProgress.on("change", (latest) => {
+        if (mobileVideoRef.current && mobileVideoRef.current.duration) {
+          const duration = mobileVideoRef.current.duration;
+          // Ensure we stay within bounds and avoid NaN
+          if (!isNaN(duration)) {
+            // Pause the video when scrubbing controlled by scroll
+            if (!mobileVideoRef.current.paused) {
+              mobileVideoRef.current.pause();
+            }
+            mobileVideoRef.current.currentTime = Math.min(Math.max(latest, 0), 1) * duration;
+          }
+        }
+      });
+      return () => unsubscribe();
+    }, [smoothProgress]);
+
     return (
       <section
         ref={sectionRef}
+        // Force layout update: Reverted to original 67.5% positioning
         className="relative z-10"
         style={{
           height: "600vh", // Extended to ensure title reaches "atmost" before release
@@ -187,7 +207,7 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
                     scale: backgroundScale,
                     filter: backgroundBlurFilter,
                     opacity: microscopeOpacity, // Dissolves as iris opens
-                    transformOrigin: "50% 67.5%",
+                    transformOrigin: "50% 50%",
                   }}
                 >
                   <video
@@ -207,19 +227,22 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
                     <source src="/videos/home_back.mp4" type="video/mp4" />
                   </video>
                 </motion.div>
-                {/* Show image on small screens */}
+                {/* Show video on small screens */}
                 <motion.div
                   className="absolute inset-0 z-0 block md:hidden"
                   style={{
                     scale: backgroundScale,
                     filter: backgroundBlurFilter,
                     opacity: microscopeOpacity,
-                    transformOrigin: "50% 67.5%",
+                    transformOrigin: "50% 50%",
                   }}
                 >
-                  <img
-                    src="/home-back2.JPG"
-                    alt="Microscope background"
+                  <video
+                    ref={mobileVideoRef}
+                    autoPlay
+                    muted
+                    playsInline
+                    preload="auto"
                     className="w-full h-full object-cover"
                     style={{
                       width: "100%",
@@ -229,7 +252,9 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
                       inset: 0,
                       zIndex: -1,
                     }}
-                  />
+                  >
+                    <source src="/videos/mob2.mp4" type="video/mp4" />
+                  </video>
                 </motion.div>
               </>
             )}
@@ -249,26 +274,24 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
           </motion.div>
 
           <motion.div
-            className="absolute inset-0 z-[1] flex items-center justify-center"
+            className="absolute inset-0 z-[1]"
             style={{
               scale: canvasScale,
               opacity: microscopeOpacity, // Dissolves as iris opens
               transformOrigin: "50% 50%",
             }}
           >
-            <canvas
-              ref={canvasRef}
-              style={{
-                width: "40%",
-                height: "80%",
-                objectFit: "cover",
-                // width: "50vw",
-                // height: "50vh",
-                // maxWidth: "800px",
-                // maxHeight: "600px",
-                // objectFit: "contain",
-              }}
-            />
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center w-full">
+
+              <canvas
+                ref={canvasRef}
+                className="w-[80vw] md:w-[40%]"
+                style={{
+                  height: "80vh", // Adjusted for better aspect ratio coverage
+                  objectFit: "cover",
+                }}
+              />
+            </div>
           </motion.div>
 
           {/* Global Darkener - dims the microscope body as we zoom into the lens */}

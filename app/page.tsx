@@ -212,13 +212,7 @@ export default function Home() {
                         <Hero opacity={internalTitleOpacity} />
                     </div>
 
-                    {/* Only render next sections when we have the specific progress value */}
-                    {microscopeProgress && (
-                        <SectionsContainer progress={microscopeProgress}>
-                            <AboutSection />
-                            <AboutBrandGrid />
-                        </SectionsContainer>
-                    )}
+
                 </div>
             </HeroSection>
 
