@@ -70,7 +70,7 @@ const HeroProduct = ({ product }: Props) => {
               {product.description?.[0]?.children?.[0]?.text}
             </motion.p>
 
-            <div className="flex flex-row items-center gap-8 mt-2 pb-6">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-8 mt-2 pb-6 w-full">
               <motion.div
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -83,7 +83,7 @@ const HeroProduct = ({ product }: Props) => {
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.35, duration: 0.6 }}
-                className="inline-flex items-center gap-2 px-6 sm:px-8 py-3 rounded-2xl border border-white/10 shadow-lg font-medium text-black backdrop-blur-lg transition-all duration-300 hover:shadow-2xl text-base sm:text-lg"
+                className="inline-flex items-center gap-2 px-6 sm:px-8 py-3 rounded-2xl border border-white/10 shadow-lg font-medium text-black backdrop-blur-lg transition-all duration-300 hover:shadow-2xl text-base sm:text-lg mt-2 sm:mt-0"
                 style={{
                   background: "rgba(255,255,255,0.08)",
                   backdropFilter: "blur(10px)",
