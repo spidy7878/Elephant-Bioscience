@@ -252,18 +252,21 @@ export default function Home() {
                     >
                         Shipping Globally
                     </div>
+                    <div >
                     <Image
                         src="/Truck3.svg"
                         alt="Elephant Biosciences Product"
                         width={800}
                         height={800}
-                        className="w-full max-w-4xl h-auto"
+                        className="w-full mt-2 max-w-4xl h-auto"
                         style={{
                             margin: 0,
                             padding: 0,
                             display: "block",
                         }}
                     />
+                    </div>
+
                     <div
                         style={{
                             color: "#8c2224",
@@ -280,7 +283,7 @@ export default function Home() {
                     </div>
                 </div>
             </motion.div>
-
+         
             {isImagesLoaded && (
                 <div
                     style={{

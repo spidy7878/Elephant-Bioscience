@@ -47,7 +47,7 @@ export default function NavigationBar({
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
-        padding: "20px 40px 20px 15px",
+        padding: "10px 40px 20px 5px",
         background: transparent ? "transparent" : navBg,
         boxShadow: navShadow,
         backdropFilter: "none",
@@ -56,7 +56,9 @@ export default function NavigationBar({
       }}
     >
       <div
-        style={{ display: "flex", alignItems: "center", cursor: "pointer" }}
+        style={{ display: "flex",alignItems: "flex start", cursor: "pointer" , marginTop:"-7px",
+          marginLeft: "4px", justifyContent: "space-between", flexWrap: "nowrap" 
+        }}
         onClick={() => router.push("/")}
       >
         <svg
@@ -130,7 +132,9 @@ export default function NavigationBar({
         </svg>
       </div>
 
-      <div style={{ display: "flex", alignItems: "center", gap: "32px" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "32px",
+      marginTop: "-5px",
+      marginLeft: "4px",}}>
         {navItems.map((item, idx) => (
           <div
             key={item.label}
@@ -139,6 +143,7 @@ export default function NavigationBar({
               flexDirection: "column",
               alignItems: "center",
               cursor: "pointer",
+
             }}
             onMouseEnter={() => setHoveredIndex(idx)}
             onMouseLeave={() => setHoveredIndex(null)}
