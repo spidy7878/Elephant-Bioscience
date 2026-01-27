@@ -11,7 +11,7 @@ function ProductVideo({ product }: { product: Product }) {
     offset: ["start start", "end start"],
   });
 
-  const x = useTransform(scrollYProgress, [0, 1], ["-50%", "35%"]);
+  const x = useTransform(scrollYProgress, [0, 1], ["-50%", "70%"]);
   const y = useTransform(scrollYProgress, [0, 8], ["-50%", "55%"]);
   const scale = useTransform(scrollYProgress, [0, 1], [1, 0.75]);
 
