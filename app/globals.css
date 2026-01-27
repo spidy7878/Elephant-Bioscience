@@ -1,3 +1,8 @@
+/* Importing poppins */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+
 /* Hide scrollbar for Chrome, Safari and Opera */
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
@@ -101,5 +106,35 @@
   }
   50% {
     background-position: 100% 50%;
+  }
+}
+
+.poppins-regular {
+  font-family: "Poppins", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+@media (max-width: 732px) {
+  nav {
+    flex-direction: row; /* Keep horizontal layout */
+    flex-wrap: nowrap;   /* Prevent wrapping */
+    padding: 10px 20px;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+ nav > div:first-child {
+  flex: 0 0 auto;
+  margin-top: -12px;     /* Moves logo slightly upward */
+  margin-left: -15px;    /* Moves logo slightly left */
+  margin-right: 2px;    /* Keeps spacing from contact info */
+}
+
+  nav > div:last-child {
+    flex: 0 0 auto;
+    margin-left: auto;  /* Push contact to right */
+    display: flex;
+    gap: 12px;
   }
 }

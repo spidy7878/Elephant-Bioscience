@@ -34,6 +34,7 @@ export default function HomePage() {
         <Hero opacity={titleOpacity} />
       </div>
 
+     
       {showSections && (
         <motion.div style={{ opacity: sectionsOpacity }}>
           <AboutSection />

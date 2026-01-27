@@ -52,6 +52,7 @@ const containerStyle: React.CSSProperties = {
   willChange: "transform, opacity",
   transform: "translate3d(0, 0, 0)",
   backfaceVisibility: "hidden" as const,
+
 };
 
 function ModalInner({
@@ -291,7 +292,7 @@ function ModalInner({
               stiffness: 300,
               mass: 0.8,
               duration: reduceMotion ? 0 : undefined,
-            }}
+            }} 
             exit={{
               y: 20,
               opacity: 0,
@@ -301,11 +302,12 @@ function ModalInner({
                 ease: "easeIn",
               },
             }}
+           
             role="dialog"
             aria-modal="true"
-            className="relative rounded-3xl max-h-[90vh] h-auto w-full sm:w-[min(95vw,400px)] py-12 px-6 shadow-2xl border border-white/10 overflow-hidden flex items-center justify-center"
-            style={containerStyle}
-          >
+            className="relative flex rounded-xl max-h-[80vh] h-auto w-full py-12 px-3 sm:w-[min(95vw,300px)] shadow-none border border-white/10 overflow-hidden items-center justify-center"
+            style={containerStyle}>
+
             {/* Back icon for login/request mode */}
             {(mode === "login" || mode === "request") && (
               <button
@@ -358,7 +360,7 @@ function ModalInner({
                       setIdError(null);
                       setPasswordError(null);
                     }}
-                    className="w-56 py-3 rounded-xl bg-[#8C2224] text-white font-semibold text-lg shadow-md"
+                    className="w-44 py-2.5 rounded-xl bg-[#661113] text-white font-normal text-lg shadow-md opacity-66"
                   >
                     Login
                   </button>
@@ -369,7 +371,7 @@ function ModalInner({
                       setEmailError(null);
                       setPhoneError(null);
                     }}
-                    className="w-56 py-3 rounded-xl bg-[#8C2224] text-white font-semibold text-lg shadow-md"
+                    className="w-44 py-2.5 rounded-xl bg-[#661113] text-white font-normal text-lg shadow-md opacity-66"
                   >
                     Request Entry
                   </button>
@@ -387,7 +389,7 @@ function ModalInner({
                         if (idError) setIdError(null);
                       }}
                       placeholder={idError ?? "ID"}
-                      className={`w-72 py-3 px-4 rounded-lg font-medium outline-none ${idError ? "placeholder-red-500" : "placeholder-[#8C2224]/60"} ${idError ? "border-2 border-red-400" : ""}`}
+                      className={`w-44 py-3 px-4 rounded-lg font-medium outline-none ${idError ? "placeholder-red-500" : "placeholder-[#8C2224]/60"} ${idError ? "border-2 border-red-400" : ""}`}
                       style={{
                         background: "rgba(255,255,255,0.95)",
                         color: "#8C2224",
@@ -409,7 +411,7 @@ function ModalInner({
                       }}
                       placeholder={passwordError ?? "Password"}
                       type="password"
-                      className={`w-72 py-3 px-4 rounded-lg font-medium outline-none ${passwordError ? "placeholder-red-500" : "placeholder-[#8C2224]/60"} ${passwordError ? "border-2 border-red-400" : "border-2 border-black/40"}`}
+                      className={`w-44 py-3 px-4 rounded-lg font-medium outline-none ${passwordError ? "placeholder-red-500" : "placeholder-[#8C2224]/60"} ${passwordError ? "border-2 border-red-400" : "border-2 border-black/40"}`}
                       style={{
                         background: "rgba(255,255,255,0.9)",
                         color: "#8C2224",
@@ -425,7 +427,7 @@ function ModalInner({
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-56 py-3 rounded-xl bg-[#8C2224] text-white font-semibold text-lg mt-4 shadow-md"
+                    className="w-44 py-2.5 rounded-xl bg-[#8C2224] text-white font-semibold text-lg mt-4 shadow-md"
                     style={{ boxShadow: "0 8px 30px rgba(140,34,36,0.18)" }}
                   >
                     {loading ? "Checking..." : "Login"}
@@ -444,7 +446,7 @@ function ModalInner({
                         if (emailError) setEmailError(null);
                       }}
                       placeholder={emailError ?? "Email"}
-                      className={`w-72 py-3 px-4 rounded-lg font-medium outline-none ${emailError ? "placeholder-red-500" : "placeholder-[#8C2224]/60"} ${emailError ? "border-2 border-red-400" : ""}`}
+                      className={`w-44 py-2.5 px-4 rounded-lg font-medium outline-none ${emailError ? "placeholder-red-500" : "placeholder-[#8C2224]/60"} ${emailError ? "border-2 border-red-400" : ""}`}
                       style={{
                         background: "rgba(255,255,255,0.95)",
                         color: "#8C2224",
@@ -465,7 +467,7 @@ function ModalInner({
                         if (phoneError) setPhoneError(null);
                       }}
                       placeholder={phoneError ?? "Phone No."}
-                      className={`w-72 py-3 px-4 rounded-lg font-medium outline-none ${phoneError ? "placeholder-red-500" : "placeholder-[#8C2224]/60"} ${phoneError ? "border-2 border-red-400" : "border-2 border-black/40"}`}
+                      className={`w-44 py-2.5 px-4 rounded-lg font-medium outline-none ${phoneError ? "placeholder-red-500" : "placeholder-[#8C2224]/60"} ${phoneError ? "border-2 border-red-400" : "border-2 border-black/40"}`}
                       style={{
                         background: "rgba(255,255,255,0.9)",
                         color: "#8C2224",
@@ -479,7 +481,7 @@ function ModalInner({
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-56 py-3 rounded-xl bg-[#8C2224] text-white font-semibold text-lg mt-4 shadow-md"
+                    className="w-44 py-2.5 rounded-xl bg-[#661113] text-white font-semibold text-lg mt-4 shadow-md"
                     style={{ boxShadow: "0 8px 30px rgba(140,34,36,0.18)" }}
                   >
                     {loading ? "Submitting..." : "Request Entry"}

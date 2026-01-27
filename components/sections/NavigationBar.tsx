@@ -18,9 +18,16 @@ export default function NavigationBar({
   const router = useRouter();
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
-  // Only declare navItems once
+  // Responsive navItems: filter on desktop, all on mobile
   const navItems = [
     ...NAV_LINKS.filter((link) => link.label !== "Compounds").map((link) => ({
+      label: link.label,
+      href: link.href,
+      color: link.color,
+    })),
+  ];
+  const navItemsAll = [
+    ...NAV_LINKS.map((link) => ({
       label: link.label,
       href: link.href,
       color: link.color,
@@ -47,7 +54,7 @@ export default function NavigationBar({
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
-        padding: "20px 40px 20px 15px",
+        padding: "10px 27px 20px 5px",
         background: transparent ? "transparent" : navBg,
         boxShadow: navShadow,
         backdropFilter: "none",
@@ -55,8 +62,20 @@ export default function NavigationBar({
         opacity: isImagesLoaded ? 1 : 0,
       }}
     >
+      {/* Desktop: left logo, right nav links; Mobile: centered logo only */}
       <div
-        style={{ display: "flex", alignItems: "center", cursor: "pointer" }}
+        className="navbar-logo-container"
+        style={{
+          display: "flex",
+          alignItems: "flex start",
+          cursor: "pointer",
+          marginTop: "-7px",
+          marginLeft: "4px",
+          justifyContent: "flex-start",
+          flexWrap: "nowrap",
+          position: "relative",
+          width: "auto",
+        }}
         onClick={() => router.push("/")}
       >
         <svg
@@ -69,6 +88,7 @@ export default function NavigationBar({
             (e.currentTarget.style.transform = "scale(1.05)")
           }
           onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+          className="navbar-logo-svg"
         >
           <defs>
             <linearGradient
@@ -130,7 +150,17 @@ export default function NavigationBar({
         </svg>
       </div>
 
-      <div style={{ display: "flex", alignItems: "center", gap: "32px" }}>
+      {/* Desktop nav links */}
+      <div
+        className="navbar-links-desktop"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "32px",
+          marginTop: "-5px",
+          marginLeft: "4px",
+        }}
+      >
         {navItems.map((item, idx) => (
           <div
             key={item.label}
@@ -180,6 +210,27 @@ export default function NavigationBar({
           </div>
         ))}
       </div>
+
+      <style>{`
+        @media (max-width: 900px) {
+          .navbar-links-desktop {
+            display: none !important;
+          }
+          .navbar-logo-container {
+            position: absolute !important;
+            left: 50% !important;
+            top: 16px !important;
+            transform: translateX(-50%) !important;
+            margin-left: 0 !important;
+            width: auto !important;
+            justify-content: center !important;
+          }
+          .navbar-logo-svg {
+            display: block;
+            margin: 0 auto;
+          }
+        }
+      `}</style>
     </nav>
   );
 }
