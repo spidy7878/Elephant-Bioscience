@@ -86,11 +86,7 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
 
     // Fade out the microscope elements as we punch through
     // Timing synced with the mask expansion
-    const microscopeOpacity = useTransform(
-      smoothProgress,
-      [0.8, 0.9],
-      [1, 0]
-    );
+    const microscopeOpacity = useTransform(smoothProgress, [0.8, 0.9], [1, 0]);
 
     const backgroundBodyOpacity = useTransform(
       smoothProgress,
@@ -143,10 +139,10 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
                   transparent ${vignetteInner}%, 
                   ${vignetteColor1} ${vignetteOuter}%, 
                   ${vignetteColor2} ${useTransform(
-      smoothProgress,
-      [0, 0.95],
-      [45, 200]
-    )}%, 
+                    smoothProgress,
+                    [0, 0.95],
+                    [45, 200]
+                  )}%, 
                   ${vignetteColor3} 100%
                 )`;
 
@@ -159,8 +155,6 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
     const frameNumber = (currentFrame + 1).toString().padStart(4, "0");
 
     const mobileVideoRef = useRef<HTMLVideoElement>(null);
-
-
 
     return (
       <section
@@ -267,7 +261,6 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
             }}
           >
             <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center w-full">
-
               <canvas
                 ref={canvasRef}
                 className="w-[80vw] md:w-[40%]"
@@ -342,41 +335,23 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
           </motion.div>
 
           {/* Left Content - "We are precision" */}
-          {/* <motion.div
-            className="absolute left-8 md:left-20 top-1/4 -translate-y-1/2 max-w-md z-10"
-            style={{ opacity: textOpacity, y: textY }}
+          <motion.div
+            className="absolute bottom-20 -translate-y-1/2 z-[30]"
+            style={{
+              opacity: textOpacity,
+              y: textY,
+              x: -60, // 👈 THIS is the fix
+            }}
           >
             <h1 className="font-bold mb-8">
-              <div className="text-5xl md:text-7xl leading-tight text-[#8C2224] drop-shadow-lg">
+              <div className="text-4xl md:text-5xl leading-tight text-[#8C2224] drop-shadow-lg">
                 We are
               </div>
-              <div className="text-5xl md:text-7xl leading-tight text-[#8C2224] drop-shadow-lg">
-                precision
+              <div className="text-4xl md:text-5xl leading-tight text-[#8C2224] drop-shadow-lg">
+                Movement
               </div>
             </h1>
-
-            <div className="space-y-6">
-              <h2 className="text-xl md:text-2xl font-light text-[#8C2224] drop-shadow-lg">
-                Your
-                <br />
-                gateway to
-                <br />
-                discovery
-              </h2>
-
-              <div className="w-12 h-0.5 bg-[#8C2224]"></div>
-
-              <p className="text-[#8C2224] text-sm md:text-base leading-relaxed opacity-95 drop-shadow-lg">
-                Every compound is engineered with unparalleled
-                <br />
-                accuracy and research integrity — so you can focus on
-                <br />
-                breakthrough discoveries, while we ensure
-                <br />
-                molecular perfection.
-              </p>
-            </div>
-          </motion.div> */}
+          </motion.div>
 
           {/* Right Content - "We are innovation" */}
           <motion.div
