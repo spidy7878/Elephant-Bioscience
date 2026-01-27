@@ -37,7 +37,7 @@ export default async function Page({ params }: Props) {
         style={{ pointerEvents: "none" }}
       />
       {/* Responsive overlay for readability */}
-      <div className="fixed top-0 left-0 w-full h-full bg-black/60 z-10 pointer-events-none" />
+      <div className="fixed top-0 left-0 w-full h-full z-10 pointer-events-none" />
       <div className="relative z-20">
         <section className="relative w-full min-h-screen flex flex-col">
           {/* Hero Section */}
