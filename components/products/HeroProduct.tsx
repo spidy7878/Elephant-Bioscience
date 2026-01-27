@@ -11,7 +11,7 @@ interface Props {
 
 const HeroProduct = ({ product }: Props) => {
   // Track global page scroll (not a local container)
-  const { scrollYProgress } = useScroll();
+  const { scrollYProgress } = useScroll({ layoutEffect: false });
 
   // Transition: center → bottom-right
   const x = useTransform(
@@ -31,31 +31,32 @@ const HeroProduct = ({ product }: Props) => {
       ? `${process.env.NEXT_PUBLIC_API_URL}${product.productVideo[0].url}`
       : null;
 
-  const structureImg = product?.chemicalFormulaImg?.[0]?.url
-    ? `${process.env.NEXT_PUBLIC_API_URL}${product.chemicalFormulaImg[0].url}`
-    : "";
+  // const structureImg = product?.chemicalFormulaImg?.[0]?.url
+  //   ? `${process.env.NEXT_PUBLIC_API_URL}${product.chemicalFormulaImg[0].url}`
+  //   : "";
+  const structureImg = "/163360068.webp";
   //console.log(structureImg)
 
   return (
-    <section className="relative w-full h-screen overflow-hidden bg-[#dedada]">
+    <section className="relative w-full min-h-screen overflow-hidden">
       {/* FLOATING VIDEO */}
       <ProductVideo product={product} />
 
       {/* MAIN CONTENT */}
-      <div className="w-full px-[6vw] py-16 relative">
-        <div className="grid grid-cols-12 gap-6 items-start relative">
+      <div className="w-full px-4 sm:px-8 md:px-[2vw] py-10 md:py-16 relative">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start relative">
           {/* LEFT CONTENT */}
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: "easeOut" }}
-            className="col-span-12 lg:col-span-4 space-y-5 z-10"
+            className="col-span-1 lg:col-span-4 space-y-5 z-10"
           >
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1, duration: 0.6 }}
-              className="text-[42px] leading-tight font-extrabold tracking-tight text-black"
+              className="text-3xl sm:text-4xl md:text-[42px] leading-tight font-extrabold tracking-tight text-black"
             >
               {product.name}
             </motion.h1>
@@ -64,71 +65,146 @@ const HeroProduct = ({ product }: Props) => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.6 }}
-              className="text-gray-700 leading-relaxed max-w-md"
+              className="text-black font-bold leading-relaxed max-w-md text-base sm:text-lg"
             >
               {product.description?.[0]?.children?.[0]?.text}
             </motion.p>
 
-            <motion.div
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3, duration: 0.6 }}
-              className="text-5xl font-extrabold text-black mt-2"
-            >
-              ${product.price}
-            </motion.div>
-
-            <motion.button
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.35, duration: 0.6 }}
-              className="inline-flex items-center gap-2 px-6 py-3 mt-2 bg-gradient-to-b from-white to-[#d1d1d1] rounded-lg shadow-[0_6px_18px_rgba(0,0,0,0.15)] hover:shadow-[0_10px_28px_rgba(0,0,0,0.25)] transition-all duration-300 font-medium text-black"
-            >
-              Place Order →
-            </motion.button>
+            <div className="flex flex-row items-center gap-8 mt-2 pb-6">
+              <motion.div
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3, duration: 0.6 }}
+                className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-black"
+              >
+                ${product.price}
+              </motion.div>
+              <motion.button
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.35, duration: 0.6 }}
+                className="inline-flex items-center gap-2 px-6 sm:px-8 py-3 rounded-2xl border border-white/10 shadow-lg font-medium text-black backdrop-blur-lg transition-all duration-300 hover:shadow-2xl text-base sm:text-lg"
+                style={{
+                  background: "rgba(255,255,255,0.08)",
+                  backdropFilter: "blur(10px)",
+                  WebkitBackdropFilter: "blur(10px)",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "rgba(255,255,255,0.18)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "rgba(255,255,255,0.08)";
+                }}
+              >
+                Place Order →
+              </motion.button>
+            </div>
 
             {/* STATS ROW BELOW BUTTON */}
             <motion.div
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5, duration: 0.7 }}
-              className="grid grid-cols-3 gap-6 mt-6 w-full"
+              className="flex flex-row gap-6 sm:gap-10 mt-6 w-full"
             >
-              <Stat big label="Purity (HPLC)" value={product.purity} />
+              <Stat
+                big
+                label="Purity (HPLC)"
+                value={product.purity == null ? "-" : product.purity}
+              />
               <Stat big label="Quantity" value={product.quantity} />
-              <Stat big label="APLC" value={product.aplc} />
+              <Stat
+                big
+                label="APLC"
+                value={product.aplc == null ? "-" : product.aplc}
+              />
             </motion.div>
           </motion.div>
 
           {/* RIGHT REFERENCE PANEL */}
 
+          {/* Desktop/Tablet Panel */}
           <motion.div
             initial={{ opacity: 0, x: 40 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.4, duration: 0.7 }}
-            className="col-span-12 lg:col-span-4 lg:col-start-9 bg-white/80 backdrop-blur-md rounded-[20px] px-6 sm:px-8 lg:px-10 py-6 sm:py-8 shadow-[0_8px_24px_rgba(0,0,0,0.12)] space-y-5 w-full h-auto lg:h-[640px]"
+            className="hidden lg:block absolute top-0 right-8 rounded-2xl border border-white/10 shadow-lg space-y-5 w-80 h-auto py-6 backdrop-blur-lg transition-all duration-300 hover:shadow-2xl"
+            style={{
+              background: "rgba(255,255,255,0.08)",
+              backdropFilter: "blur(10px)",
+              WebkitBackdropFilter: "blur(10px)",
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLDivElement).style.background =
+                "rgba(255,255,255,0.18)";
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLDivElement).style.background =
+                "rgba(255,255,255,0.08)";
+            }}
           >
             <img
               src={structureImg}
               alt="Structure"
-              className="w-full h-[180px] sm:h-[220px] lg:h-[260px] object-contain rounded-xl"
+              className="w-full h-[180px] sm:h-[220px] lg:h-[260px] object-contain rounded-2xl"
             />
 
-            <div className="space-y-2">
-              <h4 className="font-semibold text-[16px] sm:text-[18px] text-black">
+            <div className="space-y-2 ml-10">
+              <h4 className="font-bold text-xl sm:text-2xl text-black">
                 References:
               </h4>
               {product.references?.map((r, i) => (
                 <p
                   key={i}
-                  className="text-[13px] sm:text-[14px] text-gray-700 leading-[1.6]"
+                  className="text-[13px] sm:text-[14px] text-black font-semibold leading-[1.6]"
                 >
                   {r.children?.[0]?.text}
                 </p>
               ))}
             </div>
 
-            <p className="text-[13px] sm:text-[14px] font-semibold text-gray-800 pt-2 mb-4">
+            <p className="text-xl sm:text-2xl font-semibold text-gray-800 pt-2 mb-4 ml-10">
+              For Research Use Only
+            </p>
+          </motion.div>
+
+          {/* Mobile Panel (below content) */}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.7 }}
+            className="block lg:hidden col-span-1 w-full mt-8"
+            style={{
+              background: "rgba(255,255,255,0.08)",
+              backdropFilter: "blur(10px)",
+              WebkitBackdropFilter: "blur(10px)",
+              borderRadius: "1rem",
+              border: "1px solid rgba(255,255,255,0.1)",
+              boxShadow: "0 4px 24px 0 rgba(0,0,0,0.08)",
+              padding: "1.5rem 0",
+            }}
+          >
+            <img
+              src={structureImg}
+              alt="Structure"
+              className="w-full h-[160px] sm:h-[180px] object-contain rounded-2xl"
+            />
+
+            <div className="space-y-2 px-6 mt-4">
+              <h4 className="font-bold text-lg sm:text-xl text-black">
+                References:
+              </h4>
+              {product.references?.map((r, i) => (
+                <p
+                  key={i}
+                  className="text-[13px] sm:text-[14px] text-black font-semibold leading-[1.6]"
+                >
+                  {r.children?.[0]?.text}
+                </p>
+              ))}
+            </div>
+
+            <p className="text-lg sm:text-xl font-semibold text-gray-800 pt-2 mb-4 px-6">
               For Research Use Only
             </p>
           </motion.div>

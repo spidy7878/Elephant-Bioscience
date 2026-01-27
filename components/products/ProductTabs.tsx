@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Product } from "app/types/product";
 import { motion, AnimatePresence } from "framer-motion";
-import ChemicalTable from "./ChemicalTable"
+import ChemicalTable from "./ChemicalTable";
 
 const tabs = [
   "Chemical Properties",
@@ -16,15 +16,13 @@ const tabs = [
 export default function ProductTabs({ product }: { product: Product }) {
   const [active, setActive] = useState("Description");
 
-  const thirdPartyTestingImage = product?.thirdpartytesting?.[0]
-    ?.url
+  const thirdPartyTestingImage = product?.thirdpartytesting?.[0]?.url
     ? `${process.env.NEXT_PUBLIC_API_URL}${product.thirdpartytesting[0].url}`
     : "";
 
   return (
     <section className="relative bg-[#dedada] py-14">
       <div className="max-w-[1400px] mx-auto px-6">
-
         {/* TAB HEADER */}
         <div className="bg-[#dedada] rounded-xl px-6 py-4 flex gap-3 flex-wrap">
           {tabs.map((tab) => (
@@ -44,10 +42,8 @@ export default function ProductTabs({ product }: { product: Product }) {
 
         {/* CONTENT GRID */}
         <div className="grid grid-cols-12 gap-8 mt-8 items-start">
-
           {/* LEFT CONTENT */}
           <div className="col-span-12 lg:col-span-7 bg-white rounded-xl shadow p-8">
-
             <AnimatePresence mode="wait">
               <motion.div
                 key={active}
@@ -56,7 +52,6 @@ export default function ProductTabs({ product }: { product: Product }) {
                 exit={{ opacity: 0, y: -12 }}
                 transition={{ duration: 0.45, ease: "easeOut" }}
               >
-
                 {/* DESCRIPTION */}
                 {active === "Description" && (
                   <div className="space-y-4 text-black">
@@ -106,18 +101,19 @@ export default function ProductTabs({ product }: { product: Product }) {
                 {active === "3rd Party Testing" && (
                   <div>
                     <h2 className="text-3xl font-semibold mb-4">Storage</h2>
-                    <img src={thirdPartyTestingImage} alt="Third party testing"className="leading-relaxed text-gray-700">
-                    </img>
+                    <img
+                      src={thirdPartyTestingImage}
+                      alt="Third party testing"
+                      className="leading-relaxed text-gray-700"
+                    ></img>
                   </div>
                 )}
-
               </motion.div>
             </AnimatePresence>
           </div>
 
           {/* RIGHT EMPTY SPACE (FOR FLOATING VIDEO PATH) */}
           <div className="hidden lg:block col-span-5"></div>
-
         </div>
       </div>
     </section>
