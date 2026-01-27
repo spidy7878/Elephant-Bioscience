@@ -2,31 +2,27 @@
 import { Product } from "app/types/product";
 import Link from "next/link";
 
-
 interface ProductCardProps {
-  product: Product;   
+  product: Product;
 }
-const ProductCard = ({product}: ProductCardProps) => {
-
-
-
-const videoUrl = product?.productVideo?.length &&
-  product.productVideo[0]?.url
-    ? `${process.env.NEXT_PUBLIC_API_URL}${product.productVideo[0].url}`
-    : null;
-
+const ProductCard = ({ product }: ProductCardProps) => {
+  const videoUrl =
+    product?.productVideo?.length && product.productVideo[0]?.url
+      ? `${process.env.NEXT_PUBLIC_API_URL}${product.productVideo[0].url}`
+      : null;
 
   return (
     <div className="bg-white rounded-xl shadow p-6 flex flex-col">
       {videoUrl && (
-            <video src={videoUrl}
-              controls
-              autoPlay={false}
-              loop
-              muted
-              className="w-full rounded-lg"
-            />
-          )}
+        <video
+          src={videoUrl}
+          controls
+          autoPlay={false}
+          loop
+          muted
+          className="w-full rounded-lg"
+        />
+      )}
 
       <h2 className="text-xl font-bold">{product.name}</h2>
 
@@ -46,7 +42,7 @@ const videoUrl = product?.productVideo?.length &&
         </Link>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ProductCard
+export default ProductCard;

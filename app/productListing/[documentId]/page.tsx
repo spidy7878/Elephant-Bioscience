@@ -7,39 +7,64 @@ interface Props {
   params: { documentId: string };
 }
 
-async function getProduct(documentId: string): Promise<Product> {
-  const res = await api.get(`/api/products/${documentId}?populate=*`);
-  return res.data.data;
+async function getProduct(documentId: string): Promise<Product | null> {
+  try {
+    const res = await api.get(`/api/products/${documentId}?populate=*`);
+    return res.data.data;
+  } catch (error) {
+    console.error("Failed to fetch product:", error);
+    return null;
+  }
 }
 
 export default async function Page({ params }: Props) {
   const product = await getProduct(params.documentId);
 
+  if (!product) {
+    return <div>Product not found</div>;
+  }
+
   return (
-    <section className="relative w-full min-h-screen bg-[#dedada]">
-      {/* Hero Section */}
-      <div className="snap-start h-screen w-full">
-        <HeroProduct product={product} />
-      </div>
+    <>
+      {/* Background Video */}
+      <video
+        className="fixed top-0 left-0 w-full h-full object-cover z-0"
+        src="/videos/movement.mp4"
+        autoPlay
+        loop
+        muted
+        playsInline
+        style={{ pointerEvents: "none" }}
+      />
+      {/* Responsive overlay for readability */}
+      <div className="fixed top-0 left-0 w-full h-full bg-black/60 z-10 pointer-events-none" />
+      <div className="relative z-20">
+        <section className="relative w-full min-h-screen flex flex-col">
+          {/* Hero Section */}
+          <div className="snap-start w-full min-h-[60vh] md:min-h-[80vh] flex items-center justify-center px-2 sm:px-4 md:px-8">
+            <HeroProduct product={product} />
+          </div>
 
-      {/* Tabs Section */}
-      <div className="snap-start min-h-screen w-full">
-        <ProductTabs product={product} />
-      </div>
+          {/* Tabs Section */}
+          <div className="snap-start w-full flex-1 px-2 sm:px-4 md:px-8">
+            <ProductTabs product={product} />
+          </div>
 
-      {/* Overlay strip with background */}
-      <div className="absolute bottom-0 right-0 w-full bg-[#dedada] h-[56px] overflow-hidden">
-        <div className="absolute right-6 bottom-[-18px]">
-          <span
-            className="inline-block text-2xl sm:text-3xl lg:text-4xl 
-                 font-extrabold tracking-[0.15em] 
-                 text-gray-900 opacity-70 
-                 scale-x-[-1]"
-          >
-            {product.name}
-          </span>
-        </div>
+          {/* Overlay strip with background */}
+          {/* <div className="absolute bottom-0 right-0 w-full h-[56px] overflow-hidden">
+            <div className="absolute right-6 bottom-[-18px]">
+              <span
+                className="inline-block text-2xl sm:text-3xl lg:text-4xl 
+                     font-extrabold tracking-[0.15em] 
+                     text-gray-900 opacity-70 
+                     scale-x-[-1]"
+              >
+                {product.name}
+              </span>
+            </div>
+          </div> */}
+        </section>
       </div>
-    </section>
+    </>
   );
 }
