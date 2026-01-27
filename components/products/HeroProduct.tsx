@@ -3,7 +3,7 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Product } from "app/types/product";
 import Stat from "./Stat";
-import ProductVideo from "./ProductVideo"
+import ProductVideo from "./ProductVideo";
 
 interface Props {
   product: Product;
@@ -14,8 +14,16 @@ const HeroProduct = ({ product }: Props) => {
   const { scrollYProgress } = useScroll();
 
   // Transition: center → bottom-right
-  const x = useTransform(scrollYProgress, [0, 1], ["-50%", "calc(100vw - 360px)"]);
-  const y = useTransform(scrollYProgress, [0, 1], ["-50%", "calc(100vh - 200px)"]);
+  const x = useTransform(
+    scrollYProgress,
+    [0, 1],
+    ["-50%", "calc(100vw - 360px)"]
+  );
+  const y = useTransform(
+    scrollYProgress,
+    [0, 1],
+    ["-50%", "calc(100vh - 200px)"]
+  );
   const scale = useTransform(scrollYProgress, [0, 1], [1, 0.78]);
 
   const videoUrl =
@@ -26,11 +34,12 @@ const HeroProduct = ({ product }: Props) => {
   const structureImg = product?.chemicalFormulaImg?.[0]?.url
     ? `${process.env.NEXT_PUBLIC_API_URL}${product.chemicalFormulaImg[0].url}`
     : "";
+  //console.log(structureImg)
 
   return (
     <section className="relative w-full h-screen overflow-hidden bg-[#dedada]">
       {/* FLOATING VIDEO */}
-    <ProductVideo product ={product}/>
+      <ProductVideo product={product} />
 
       {/* MAIN CONTENT */}
       <div className="w-full px-[6vw] py-16 relative">
@@ -92,36 +101,38 @@ const HeroProduct = ({ product }: Props) => {
           </motion.div>
 
           {/* RIGHT REFERENCE PANEL */}
-          
-     <motion.div
-  initial={{ opacity: 0, x: 40 }}
-  animate={{ opacity: 1, x: 0 }}
-  transition={{ delay: 0.4, duration: 0.7 }}
-  className="col-span-12 lg:col-span-4 lg:col-start-9 bg-white/80 backdrop-blur-md rounded-[20px] px-6 sm:px-8 lg:px-10 py-6 sm:py-8 shadow-[0_8px_24px_rgba(0,0,0,0.12)] space-y-5 w-full h-auto lg:h-[640px]"
->
-  <img
-    src={structureImg}
-    alt="Structure"
-    className="w-full h-[180px] sm:h-[220px] lg:h-[260px] object-contain rounded-xl"
-  />
 
-  <div className="space-y-2">
-    <h4 className="font-semibold text-[16px] sm:text-[18px] text-black">References:</h4>
-    {product.references?.map((r, i) => (
-      <p
-        key={i}
-        className="text-[13px] sm:text-[14px] text-gray-700 leading-[1.6]"
-      >
-        {r.children?.[0]?.text}
-      </p>
-    ))}
-  </div>
+          <motion.div
+            initial={{ opacity: 0, x: 40 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.4, duration: 0.7 }}
+            className="col-span-12 lg:col-span-4 lg:col-start-9 bg-white/80 backdrop-blur-md rounded-[20px] px-6 sm:px-8 lg:px-10 py-6 sm:py-8 shadow-[0_8px_24px_rgba(0,0,0,0.12)] space-y-5 w-full h-auto lg:h-[640px]"
+          >
+            <img
+              src={structureImg}
+              alt="Structure"
+              className="w-full h-[180px] sm:h-[220px] lg:h-[260px] object-contain rounded-xl"
+            />
 
-  <p className="text-[13px] sm:text-[14px] font-semibold text-gray-800 pt-2 mb-4">
-    For Research Use Only
-  </p>
-</motion.div>
-      </div>
+            <div className="space-y-2">
+              <h4 className="font-semibold text-[16px] sm:text-[18px] text-black">
+                References:
+              </h4>
+              {product.references?.map((r, i) => (
+                <p
+                  key={i}
+                  className="text-[13px] sm:text-[14px] text-gray-700 leading-[1.6]"
+                >
+                  {r.children?.[0]?.text}
+                </p>
+              ))}
+            </div>
+
+            <p className="text-[13px] sm:text-[14px] font-semibold text-gray-800 pt-2 mb-4">
+              For Research Use Only
+            </p>
+          </motion.div>
+        </div>
       </div>
     </section>
   );
