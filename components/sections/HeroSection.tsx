@@ -160,22 +160,7 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
 
     const mobileVideoRef = useRef<HTMLVideoElement>(null);
 
-    useEffect(() => {
-      const unsubscribe = smoothProgress.on("change", (latest) => {
-        if (mobileVideoRef.current && mobileVideoRef.current.duration) {
-          const duration = mobileVideoRef.current.duration;
-          // Ensure we stay within bounds and avoid NaN
-          if (!isNaN(duration)) {
-            // Pause the video when scrubbing controlled by scroll
-            if (!mobileVideoRef.current.paused) {
-              mobileVideoRef.current.pause();
-            }
-            mobileVideoRef.current.currentTime = Math.min(Math.max(latest, 0), 1) * duration;
-          }
-        }
-      });
-      return () => unsubscribe();
-    }, [smoothProgress]);
+
 
     return (
       <section
