@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Product } from "app/types/product";
 import { motion, AnimatePresence } from "framer-motion";
-import ChemicalTable from "./ChemicalTable"
+import ChemicalTable from "./ChemicalTable";
 
 const tabs = [
   "Chemical Properties",
@@ -16,25 +16,23 @@ const tabs = [
 export default function ProductTabs({ product }: { product: Product }) {
   const [active, setActive] = useState("Description");
 
-  const thirdPartyTestingImage = product?.thirdpartytesting?.[0]
-    ?.url
+  const thirdPartyTestingImage = product?.thirdpartytesting?.[0]?.url
     ? `${process.env.NEXT_PUBLIC_API_URL}${product.thirdpartytesting[0].url}`
     : "";
 
   return (
-    <section className="relative bg-[#dedada] py-14">
+    <section className="relative py-14">
       <div className="max-w-[1400px] mx-auto px-6">
-
         {/* TAB HEADER */}
-        <div className="bg-[#dedada] rounded-xl px-6 py-4 flex gap-3 flex-wrap">
+        <div className="rounded-xl py-2 sm:py-4 flex gap-2 sm:gap-3 flex-wrap">
           {tabs.map((tab) => (
             <button
               key={tab}
               onClick={() => setActive(tab)}
-              className={`px-5 py-2 rounded-lg text-sm font-medium transition ${
+              className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-md sm:rounded transition-all duration-300 text-xs sm:text-sm ${
                 active === tab
-                  ? "bg-red-500 text-white shadow"
-                  : "bg-[#dfe3e8] text-black hover:bg-[#d5d9de]"
+                  ? "bg-[#8c2224] text-white"
+                  : "bg-transparent text-white hover:bg-[#8c2224] hover:text-white"
               }`}
             >
               {tab}
@@ -43,11 +41,19 @@ export default function ProductTabs({ product }: { product: Product }) {
         </div>
 
         {/* CONTENT GRID */}
-        <div className="grid grid-cols-12 gap-8 mt-8 items-start">
-
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-8 mt-6 lg:mt-8 items-start">
           {/* LEFT CONTENT */}
-          <div className="col-span-12 lg:col-span-7 bg-white rounded-xl shadow p-8">
-
+          <div
+            className="col-span-1 lg:col-span-7 rounded-lg lg:rounded-2xl shadow p-4 sm:p-6 md:p-8"
+            style={{
+              background: "rgba(255,255,255,0.08)",
+              backdropFilter: "blur(10px)",
+              WebkitBackdropFilter: "blur(10px)",
+              border: "1px solid rgba(255,255,255,0.1)",
+              boxShadow: "0 4px 24px 0 rgba(0,0,0,0.08)",
+              minHeight: "260px",
+            }}
+          >
             <AnimatePresence mode="wait">
               <motion.div
                 key={active}
@@ -56,13 +62,15 @@ export default function ProductTabs({ product }: { product: Product }) {
                 exit={{ opacity: 0, y: -12 }}
                 transition={{ duration: 0.45, ease: "easeOut" }}
               >
-
                 {/* DESCRIPTION */}
                 {active === "Description" && (
                   <div className="space-y-4 text-black">
                     <h2 className="text-3xl font-semibold">Overview</h2>
                     {product.description?.map((d, i) => (
-                      <p key={i} className="leading-relaxed text-gray-700">
+                      <p
+                        key={i}
+                        className="leading-relaxed text-black font-semibold text-base md:text-lg lg:text-xl"
+                      >
                         {d.children?.[0]?.text}
                       </p>
                     ))}
@@ -72,9 +80,6 @@ export default function ProductTabs({ product }: { product: Product }) {
                 {/* CHEMICAL PROPERTIES */}
                 {active === "Chemical Properties" && (
                   <div>
-                    <h2 className="text-3xl font-semibold mb-6">
-                      Biochemical Characteristics
-                    </h2>
                     <ChemicalTable product={product} />
                   </div>
                 )}
@@ -95,7 +100,7 @@ export default function ProductTabs({ product }: { product: Product }) {
                 {/* STORAGE */}
                 {active === "Storage" && (
                   <div>
-                    <h2 className="text-3xl font-semibold mb-4">Storage</h2>
+                    {/* <h2 className="text-3xl font-semibold mb-4">Storage</h2> */}
                     <p className="leading-relaxed text-gray-700">
                       {product.storage}
                     </p>
@@ -105,19 +110,19 @@ export default function ProductTabs({ product }: { product: Product }) {
                 {/* Third party testing  */}
                 {active === "3rd Party Testing" && (
                   <div>
-                    <h2 className="text-3xl font-semibold mb-4">Storage</h2>
-                    <img src={thirdPartyTestingImage} alt="Third party testing"className="leading-relaxed text-gray-700">
-                    </img>
+                    <h2 className="text-3xl font-semibold mb-4"></h2>
+                    <img
+                      src={thirdPartyTestingImage}
+                      className="leading-relaxed text-gray-700"
+                    ></img>
                   </div>
                 )}
-
               </motion.div>
             </AnimatePresence>
           </div>
 
           {/* RIGHT EMPTY SPACE (FOR FLOATING VIDEO PATH) */}
           <div className="hidden lg:block col-span-5"></div>
-
         </div>
       </div>
     </section>
