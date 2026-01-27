@@ -305,7 +305,7 @@ function ModalInner({
            
             role="dialog"
             aria-modal="true"
-            className="relative flex rounded-xl max-h-[80vh] h-auto w-full py-12 px-3 sm:w-[min(95vw,300px)] shadow-none border border-white/10 overflow-hidden items-center justify-center"
+            className="relative flex rounded-xl w-[85vw] h-[70vw] max-w-[280px] max-h-[280px] sm:w-[300px] sm:h-[300px] md:w-[320px] md:h-[320px] px-3 py-4 shadow-none border border-white/10 overflow-hidden items-center justify-center"
             style={containerStyle}>
 
             {/* Back icon for login/request mode */}
@@ -344,7 +344,7 @@ function ModalInner({
             <button
               aria-label="Close modal"
               onClick={handleClose}
-              className="absolute top-3 right-3 text-white/90 hover:text-white transition flex items-center justify-center w-11 h-11 rounded-full bg-white/6 hover:bg-white/10 text-3xl"
+              className="absolute -top-2 -right-2 text-white/90 hover:text-white transition flex items-center justify-center w-11 h-11 rounded-full bg-white/6 hover:bg-white/10 text-3xl"
             >
               ×
             </button>
@@ -353,7 +353,7 @@ function ModalInner({
               {children ? (
                 children
               ) : mode === "choices" ? (
-                <div className="flex flex-col items-center gap-6 py-4">
+                <div className="flex flex-col items-center gap-8 py-4">
                   <button
                     onClick={() => {
                       setMode("login");
