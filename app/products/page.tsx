@@ -21,7 +21,7 @@ export default function ProductPage() {
     useEffect(() => {
       if (videoRef.current) {
         if (isHovered) {
-          videoRef.current.play().catch(() => { });
+          videoRef.current.play().catch(() => {});
         } else {
           videoRef.current.pause();
           videoRef.current.currentTime = 0;
@@ -127,15 +127,17 @@ export default function ProductPage() {
     let rawCategory = (product as any).catorgory || (product as any).category;
 
     if (!rawCategory) {
-      const catKey = Object.keys(product).find(k => k.toLowerCase().includes("categor"));
+      const catKey = Object.keys(product).find((k) =>
+        k.toLowerCase().includes("categor")
+      );
       if (catKey) rawCategory = (product as any)[catKey];
     }
 
     let productCategory = "";
 
-    if (typeof rawCategory === 'string') {
+    if (typeof rawCategory === "string") {
       productCategory = rawCategory;
-    } else if (rawCategory && typeof rawCategory === 'object') {
+    } else if (rawCategory && typeof rawCategory === "object") {
       productCategory =
         rawCategory.name ||
         rawCategory.title ||
@@ -196,7 +198,6 @@ export default function ProductPage() {
           >
             {categories.map((category) => (
               <button
-<<<<<<< HEAD
                 key={category}
                 onClick={() => {
                   setActiveCategory(category);
@@ -212,14 +213,6 @@ export default function ProductPage() {
                     ? "bg-[#8c2224] text-white"
                     : "bg-transparent text-white hover:bg-[#8c2224] hover:text-white"
                 }`}
-=======
-                key={index}
-                onClick={() => setSelectedCategory(category)}
-                className={`px-6 py-2.5 rounded border-2 transition-all duration-300 ${selectedCategory === category
-                  ? "bg-white text-black border-white"
-                  : "bg-transparent text-white border-white hover:bg-white hover:text-black"
-                  }`}
->>>>>>> 56cd449be7c74290b4e803bb55fa20f4bd8ce801
               >
                 {category}
               </button>
@@ -227,7 +220,6 @@ export default function ProductPage() {
           </div>
 
           {/* Section Title */}
-<<<<<<< HEAD
           <h2 className="text-3xl font-semibold mb-8">{activeCategory}</h2>
 
           {/* Products Grid */}
@@ -249,28 +241,6 @@ export default function ProductPage() {
                   key={index}
                   href={`/productListing/${product.documentId}`}
                   className="group relative rounded-3xl overflow-hidden transition-all duration-500 hover:scale-105 block aspect-square"
-=======
-          <h2 className="text-3xl font-semibold mb-8">{selectedCategory}</h2>
-
-          {/* Products Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredProducts.map((product, index) => (
-              <Link
-                key={index}
-                href={`/productListing/${product.documentId}`}
-                className="group relative rounded-3xl overflow-hidden transition-all duration-500 hover:scale-105 block"
-                style={{
-                  background: "rgba(255, 255, 255, 0.03)",
-                  backdropFilter: "blur(10px)",
-                  boxShadow: "0 8px 32px 0 rgba(0, 0, 0, 0.37)",
-                  textDecoration: "none",
-                  color: "inherit",
-                }}
-              >
-                {/* Glass shimmer effect on hover */}
-                <div
-                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
->>>>>>> 56cd449be7c74290b4e803bb55fa20f4bd8ce801
                   style={{
                     background: "rgba(255, 255, 255, 0.03)",
                     backdropFilter: "blur(10px)",
@@ -278,39 +248,6 @@ export default function ProductPage() {
                     textDecoration: "none",
                     color: "inherit",
                   }}
-<<<<<<< HEAD
-=======
-                />
-
-                {/* Product Media */}
-                <div className="p-4 sm:p-6 md:p-8 flex items-center justify-center h-60 sm:h-72 md:h-80 relative">
-                  <div className="relative w-32 h-44 sm:w-40 sm:h-56 md:w-48 md:h-64 flex items-center justify-center">
-                    {product.productVideo?.length ? (
-                      <ProductGridVideo
-                        src={
-                          product.productVideo[0]?.url ||
-                          `${process.env.NEXT_PUBLIC_API_URL}${product.productVideo[0].url}`
-                        }
-                      />
-                    ) : (
-                      <Image
-                        src={
-                          product?.chemicalFormulaImg?.[0]?.url ||
-                          `${process.env.NEXT_PUBLIC_API_URL}${product.chemicalFormulaImg[0].url}`
-                        }
-                        alt={product.name}
-                        fill
-                        className="object-contain"
-                      />
-                    )}
-                  </div>
-                </div>
-
-                {/* Product Info */}
-                <div
-                  className="p-4 sm:p-6 text-center relative z-10"
-                  style={{}}
->>>>>>> 56cd449be7c74290b4e803bb55fa20f4bd8ce801
                 >
                   {/* Glass shimmer effect on hover */}
                   <div
@@ -367,7 +304,7 @@ export default function ProductPage() {
                   {/* Product Info */}
                   <div className="absolute bottom-0 left-0 w-full pt-4 sm:pt-6 text-center z-10 ">
                     <h3
-                      className="text-lg sm:text-xl font-medium mb-1 text-white mb-4 truncate mx-auto"
+                      className="text-lg sm:text-xl font-medium text-white mb-4 truncate mx-auto"
                       style={{
                         overflow: "hidden",
                         textOverflow: "ellipsis",
