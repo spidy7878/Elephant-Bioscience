@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Product } from "app/types/product";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 import ChemicalTable from "./ChemicalTable";
 
 const tabs = [
@@ -29,11 +30,10 @@ export default function ProductTabs({ product }: { product: Product }) {
             <button
               key={tab}
               onClick={() => setActive(tab)}
-              className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-md sm:rounded transition-all duration-300 text-xs sm:text-sm ${
-                active === tab
-                  ? "bg-[#8c2224] text-white"
-                  : "bg-transparent text-white hover:bg-[#8c2224] hover:text-white"
-              }`}
+              className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-md sm:rounded transition-all duration-300 text-xs sm:text-sm ${active === tab
+                ? "bg-[#8c2224] text-white"
+                : "bg-transparent text-white hover:bg-[#8c2224] hover:text-white"
+                }`}
             >
               {tab}
             </button>
@@ -109,12 +109,15 @@ export default function ProductTabs({ product }: { product: Product }) {
 
                 {/* Third party testing  */}
                 {active === "3rd Party Testing" && (
-                  <div>
-                    <h2 className="text-3xl font-semibold mb-4"></h2>
-                    <img
-                      src={thirdPartyTestingImage}
-                      className="leading-relaxed text-gray-700"
-                    ></img>
+                  <div className="relative w-full h-[400px]">
+                    {thirdPartyTestingImage && (
+                      <Image
+                        src={thirdPartyTestingImage}
+                        alt="3rd Party Testing"
+                        fill
+                        className="object-contain"
+                      />
+                    )}
                   </div>
                 )}
               </motion.div>

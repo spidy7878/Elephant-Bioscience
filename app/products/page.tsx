@@ -8,9 +8,44 @@ import NavigationBar from "components/sections/NavigationBar";
 import Link from "next/link";
 
 export default function ProductPage() {
-  //For api call
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // For product grid video hover performance
+  const ProductGridVideo = ({ src }: { src: string }) => {
+    const videoRef = useRef<HTMLVideoElement>(null);
+    const [isHovered, setIsHovered] = useState(false);
+
+    useEffect(() => {
+      if (videoRef.current) {
+        if (isHovered) {
+          videoRef.current.play().catch(() => { });
+        } else {
+          videoRef.current.pause();
+          videoRef.current.currentTime = 0;
+        }
+      }
+    }, [isHovered]);
+
+    return (
+      <div
+        className="w-full h-full relative"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        <video
+          ref={videoRef}
+          src={src}
+          loop
+          muted
+          playsInline
+          controls={false}
+          className="w-full h-full object-contain block transition-opacity duration-300"
+          style={{ opacity: isHovered ? 1 : 0.7 }}
+        />
+      </div>
+    );
+  };
 
   useEffect(() => {
     async function fetchProducts() {
@@ -77,17 +112,8 @@ export default function ProductPage() {
     "Bioregulators",
   ];
 
-  // Track scroll position
-  const [scrollY, setScrollY] = useState(0);
+  // No longer using scrollY state to avoid re-renders
   const isImagesLoaded = true;
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   if (loading) return <p className="text-center py-10">Loading...</p>;
 
@@ -114,20 +140,8 @@ export default function ProductPage() {
           <NavigationBar scrollY={scrollY} isImagesLoaded={isImagesLoaded} />
         </div> */}
 
-        {/* Fade NavigationBar out as user scrolls down */}
-        <div
-          style={{
-            transition: "opacity 0.7s cubic-bezier(.4,0,.2,1)",
-            opacity:
-              scrollY < 40 ? 1 : scrollY < 120 ? 1 - (scrollY - 40) / 80 : 0,
-            pointerEvents: scrollY < 120 ? "auto" : "none",
-          }}
-        >
-          <NavigationBar scrollY={scrollY} isImagesLoaded={isImagesLoaded} />
-        </div>
+        <NavigationBar isImagesLoaded={isImagesLoaded} />
 
-        {/* Spacing after Navigation Bar */}
-        {/* <div className="hidden md:block" style={{ height: "80px" }} /> */}
         <div style={{ height: "80px" }} />
 
         <div className="max-w-7xl mx-auto">
@@ -185,22 +199,11 @@ export default function ProductPage() {
                 <div className="p-4 sm:p-6 md:p-8 flex items-center justify-center h-60 sm:h-72 md:h-80 relative">
                   <div className="relative w-32 h-44 sm:w-40 sm:h-56 md:w-48 md:h-64 flex items-center justify-center">
                     {product.productVideo?.length ? (
-                      <video
+                      <ProductGridVideo
                         src={
                           product.productVideo[0]?.url ||
                           `${process.env.NEXT_PUBLIC_API_URL}${product.productVideo[0].url}`
                         }
-                        autoPlay
-                        loop
-                        muted
-                        playsInline
-                        controls={false}
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          objectFit: "contain",
-                          display: "block",
-                        }}
                       />
                     ) : (
                       <Image

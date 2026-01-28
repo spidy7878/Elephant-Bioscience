@@ -2,9 +2,6 @@ import { api } from "lib/api";
 import HeroProduct from "components/products/HeroProduct";
 import ProductTabs from "components/products/ProductTabs";
 import { Product } from "app/types/product";
-import { a, div, video } from "framer-motion/client";
-import src from "gsap/src";
-import style from "styled-jsx/style";
 
 interface Props {
   params: { documentId: string };
