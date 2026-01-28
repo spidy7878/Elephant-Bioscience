@@ -40,6 +40,40 @@ export default function HeroVisual() {
         overflow: "visible",
       }}
     >
+      <style jsx>{`
+        .container-img {
+          position: absolute;
+          top: 8%;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 520px;
+          height: 280px;
+          background: url("/container.png") no-repeat center / contain;
+          transform-origin: top center;
+          z-index: 3;
+          will-change: transform;
+        }
+        .liquid-img {
+          position: absolute;
+          top: 32%;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 900px;
+          height: 420px;
+          background: url("/liquid.png") no-repeat center / contain;
+          z-index: 2;
+        }
+        .text-img {
+          position: absolute;
+          bottom: 12%;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 700px;
+          height: 160px;
+          background: url("/text.png") no-repeat center / contain;
+          z-index: 1;
+        }
+      `}</style>
       {/* Hanging container - behind everything */}
       <div
         ref={containerRef}
