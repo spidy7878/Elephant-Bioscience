@@ -22,7 +22,9 @@ import AboutBrandGrid from "../components/sections/AboutBrandGrid";
 import AboutSection from "../components/sections/AboutSection";
 import Hero from "components/sections/Hero";
 import Modal from "components/ui/LoginModal";
+import HangingContainer from "../components/sections/HangingContainer";
 import { useRouter } from "next/navigation";
+import HeroVisual from "@/components/sections/HeroVisual";
 
 export default function Home() {
   // Refs
@@ -223,60 +225,12 @@ export default function Home() {
       >
         <AboutSection />
         <AboutBrandGrid />
-        <div className="relative w-full max-w-7xl mx-auto px-6 pb-24 flex justify-center">
-          <Image
-            src="/Bottle12.svg"
-            alt="Elephant Biosciences Product"
-            width={800}
-            height={800}
-            className="w-full max-w-4xl h-auto"
-          />
-        </div>
-        <div className="relative w-full max-w-7xl mx-auto px-6 pb-24 flex flex-col items-center justify-center">
-          <div
-            style={{
-              color: "#8c2224",
-              fontSize: "clamp(3rem, 6vw, 7rem)",
-              fontWeight: 700,
-              textAlign: "center",
-              margin: "2rem 0 2rem 0",
-              letterSpacing: 1,
-              padding: 0, // Remove horizontal padding for tightness
-              lineHeight: 1.1,
-              wordBreak: "break-word",
-            }}
-          >
-            Shipping Globally
-          </div>
-          <div>
-            <Image
-              src="/Truck3.svg"
-              alt="Elephant Biosciences Product"
-              width={400}
-              height={400}
-              className="w-full mt-2 max-w-xl h-auto"
-              style={{
-                margin: 0,
-                padding: 0,
-                display: "block",
-              }}
-            />
-          </div>
-
-          <div
-            style={{
-              color: "#8c2224",
-              fontSize: "clamp(1.5rem, 3vw, 3.5rem)",
-              textAlign: "center",
-              margin: "2rem 0 2rem 0",
-              letterSpacing: 1,
-              padding: 0, // Remove horizontal padding for tightness
-              lineHeight: 1.1,
-              wordBreak: "break-word",
-            }}
-          >
-            Ready for immediate Dispatch
-          </div>
+        {/* GSAP Hanging Animation - after AboutBrandGrid */}
+        <div
+          style={{ position: "relative", zIndex: 20, overflow: "visible" }}
+          className="flex justify-center w-full"
+        >
+          <HeroVisual />
         </div>
       </motion.div>
 
