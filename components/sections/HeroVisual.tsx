@@ -33,17 +33,17 @@ export default function HeroVisual() {
     <section className="hero-visual-section">
       {/* Hanging container - behind everything */}
       <div ref={containerRef} className="container-img-wrapper">
-        <img src="/container.png" alt="Container" />
+        <img src="/container.PNG" alt="Container" />
       </div>
 
       {/* Red liquid */}
       <div className="liquid-img-wrapper">
-        <img src="/liquid.png" alt="Liquid" />
+        <img src="/liquid.PNG" alt="Liquid" />
       </div>
 
       {/* Text as image */}
       <div className="text-img-container">
-        <img src="/text.png" alt="Text" className="text-img" />
+        <img src="/text.PNG" alt="Text" className="text-img" />
       </div>
     </section>
   );
