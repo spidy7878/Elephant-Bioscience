@@ -70,7 +70,7 @@ export default function HeroVisual() {
       {/* Text as image */}
       <div className="relative w-full max-w-5xl mx-auto px-6 pb-24 flex flex-col items-center justify-center">
         <img
-          src="/text.PNG"
+          src="/text.png"
           alt="Text"
           style={{
             maxWidth: "100%",
