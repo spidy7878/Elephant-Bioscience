@@ -6,6 +6,7 @@ import Image from "next/image";
 import NavigationBar from "components/sections/NavigationBar";
 
 import Link from "next/link";
+// import { useRouter, usePathname } from "next/navigation";
 
 export default function ProductPage() {
   //For api call
@@ -76,6 +77,9 @@ export default function ProductPage() {
     "Cosmetic Peptides",
     "Bioregulators",
   ];
+  const [activeCategory, setActiveCategory] = useState(categories[0]);
+  // const router = useRouter();
+  // const pathname = usePathname();
 
   // Track scroll position
   const [scrollY, setScrollY] = useState(0);
@@ -141,13 +145,23 @@ export default function ProductPage() {
             onMouseMove={handleMouseMove}
             style={{ userSelect: "none" }}
           >
-            {categories.map((category, index) => (
+            {categories.map((category) => (
               <button
-                key={index}
-                className={`px-6 py-2.5 rounded border-2 transition-all duration-300 ${index === 0
-                  ? "bg-white text-black border-white"
-                  : "bg-transparent text-white border-white hover:bg-white hover:text-black"
-                  }`}
+                key={category}
+                onClick={() => {
+                  setActiveCategory(category);
+                  // Update the URL with /{category} using history API (no navigation)
+                  const categorySlug = category
+                    .replace(/\s+/g, "-")
+                    .toLowerCase();
+                  const newUrl = `/products${categorySlug === "all-peptides" ? "" : "/" + categorySlug}`;
+                  window.history.replaceState(null, "", newUrl);
+                }}
+                className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-md sm:rounded transition-all duration-300 text-xs sm:text-sm ${
+                  activeCategory === category
+                    ? "bg-[#8c2224] text-white"
+                    : "bg-transparent text-white hover:bg-[#8c2224] hover:text-white"
+                }`}
               >
                 {category}
               </button>
@@ -155,90 +169,102 @@ export default function ProductPage() {
           </div>
 
           {/* Section Title */}
-          <h2 className="text-3xl font-semibold mb-8">All Peptides</h2>
+          <h2 className="text-3xl font-semibold mb-8">{activeCategory}</h2>
 
           {/* Products Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {products.map((product, index) => (
-              <Link
-                key={index}
-                href={`/productListing/${product.documentId}`}
-                className="group relative rounded-3xl overflow-hidden transition-all duration-500 hover:scale-105 block"
-                style={{
-                  background: "rgba(255, 255, 255, 0.03)",
-                  backdropFilter: "blur(10px)",
-                  boxShadow: "0 8px 32px 0 rgba(0, 0, 0, 0.37)",
-                  textDecoration: "none",
-                  color: "inherit",
-                }}
-              >
-                {/* Glass shimmer effect on hover */}
-                <div
-                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+            {products
+              .filter((product) => {
+                if (activeCategory === "All Peptides") return true;
+                // Match product.category to activeCategory (case-insensitive, ignore spaces/dashes)
+                const prodCat = (product.category || "")
+                  .replace(/[-\s]+/g, "")
+                  .toLowerCase();
+                const activeCat = activeCategory
+                  .replace(/[-\s]+/g, "")
+                  .toLowerCase();
+                return prodCat === activeCat;
+              })
+              .map((product, index) => (
+                <Link
+                  key={index}
+                  href={`/productListing/${product.documentId}`}
+                  className="group relative rounded-3xl overflow-hidden transition-all duration-500 hover:scale-105 block"
                   style={{
-                    background:
-                      "linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%, rgba(255, 255, 255, 0.05) 100%)",
+                    background: "rgba(255, 255, 255, 0.03)",
+                    backdropFilter: "blur(10px)",
+                    boxShadow: "0 8px 32px 0 rgba(0, 0, 0, 0.37)",
+                    textDecoration: "none",
+                    color: "inherit",
                   }}
-                />
-
-                {/* Product Media */}
-                <div className="p-4 sm:p-6 md:p-8 flex items-center justify-center h-60 sm:h-72 md:h-80 relative">
-                  <div className="relative w-32 h-44 sm:w-40 sm:h-56 md:w-48 md:h-64 flex items-center justify-center">
-                    {product.productVideo?.length ? (
-                      <video
-                        src={
-                          product.productVideo[0]?.url ||
-                          `${process.env.NEXT_PUBLIC_API_URL}${product.productVideo[0].url}`
-                        }
-                        autoPlay
-                        loop
-                        muted
-                        playsInline
-                        controls={false}
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          objectFit: "contain",
-                          display: "block",
-                        }}
-                      />
-                    ) : (
-                      <Image
-                        src={
-                          product?.chemicalFormulaImg?.[0]?.url ||
-                          `${process.env.NEXT_PUBLIC_API_URL}${product.chemicalFormulaImg[0].url}`
-                        }
-                        alt={product.name}
-                        fill
-                        className="object-contain"
-                      />
-                    )}
-                  </div>
-                </div>
-
-                {/* Product Info */}
-                <div
-                  className="p-4 sm:p-6 text-center relative z-10"
-                  style={{}}
                 >
-                  <h3
-                    className="text-lg sm:text-xl font-medium mb-1 text-white mb-6 truncate mx-auto"
+                  {/* Glass shimmer effect on hover */}
+                  <div
+                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
                     style={{
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap",
-                      width: "70%",
-                      display: "block",
-                      marginLeft: "auto",
-                      marginRight: "auto",
+                      background:
+                        "linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%, rgba(255, 255, 255, 0.05) 100%)",
                     }}
+                  />
+
+                  {/* Product Media */}
+                  <div className="p-4 sm:p-6 md:p-8 flex items-center justify-center h-60 sm:h-72 md:h-80 relative">
+                    <div className="relative w-32 h-44 sm:w-40 sm:h-56 md:w-48 md:h-64 flex items-center justify-center">
+                      {product.productVideo?.length ? (
+                        <video
+                          src={
+                            product.productVideo[0]?.url ||
+                            `${process.env.NEXT_PUBLIC_API_URL}${product.productVideo[0].url}`
+                          }
+                          autoPlay
+                          loop
+                          muted
+                          playsInline
+                          controls={false}
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "contain",
+                            display: "block",
+                          }}
+                        />
+                      ) : (
+                        <Image
+                          src={
+                            product?.chemicalFormulaImg?.[0]?.url ||
+                            `${process.env.NEXT_PUBLIC_API_URL}${product.chemicalFormulaImg[0].url}`
+                          }
+                          alt={product.name}
+                          fill
+                          className="object-contain"
+                        />
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Product Info */}
+                  <div
+                    className="p-4 sm:p-6 text-center relative z-10"
+                    style={{}}
                   >
-                    {product.name}
-                  </h3>
-                  {/* Product description removed as requested */}
-                </div>
-              </Link>
-            ))}
+                    <h3
+                      className="text-lg sm:text-xl font-medium mb-1 text-white mb-6 truncate mx-auto"
+                      style={{
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                        width: "70%",
+                        display: "block",
+                        marginLeft: "auto",
+                        marginRight: "auto",
+                      }}
+                    >
+                      {product.name}
+                    </h3>
+                    {/* Product description removed as requested */}
+                  </div>
+                </Link>
+              ))}
           </div>
         </div>
       </div>
