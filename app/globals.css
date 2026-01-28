@@ -97,7 +97,7 @@
     flex-direction: column;
     align-items: center;
     margin-top: 4rem;
-    margin-bottom: 4rem;
+    margin-bottom: 15rem;
   }
 
   .container-img-wrapper {
@@ -248,7 +248,7 @@
   .container-img-wrapper {
     width: 300px;
     height: 300px;
-    top: 30%;
+    top: 35%;
   }
 
   .liquid-img-wrapper {
