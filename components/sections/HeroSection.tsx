@@ -11,7 +11,6 @@ import {
 import { forwardRef, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { TOTAL_FRAMES } from "../../lib/imageUtils";
-import DataPanel from "../ui/DataPanel";
 
 interface HeroSectionProps {
   canvasRef: React.RefObject<HTMLCanvasElement>;
@@ -139,10 +138,10 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
                   transparent ${vignetteInner}%, 
                   ${vignetteColor1} ${vignetteOuter}%, 
                   ${vignetteColor2} ${useTransform(
-                    smoothProgress,
-                    [0, 0.95],
-                    [45, 200]
-                  )}%, 
+      smoothProgress,
+      [0, 0.95],
+      [45, 200]
+    )}%, 
                   ${vignetteColor3} 100%
                 )`;
 
@@ -315,23 +314,7 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
               }}
             />
 
-            {/* Data Panels */}
-            <div className="absolute top-6 left-6 flex gap-3">
-              <DataPanel
-                label="MAGNIFICATION"
-                value={`${magnification}×`}
-                accent
-              />
-              <DataPanel label="FOCUS DEPTH" value={focusDepth} suffix="μm" />
-            </div>
-            <div className="absolute bottom-6 right-6 flex gap-3">
-              <DataPanel label="FRAME" value={frameNumber} align="right" />
-              <DataPanel
-                label="PROGRESS"
-                value={`${Math.round(((currentFrame ?? 0) / TOTAL_FRAMES) * 100)}%`}
-                align="right"
-              />
-            </div>
+            {/* Data Panels Hidden */}
           </motion.div>
 
           {/* Left Content - "We are precision" (hidden on small screens) */}
