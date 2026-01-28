@@ -228,6 +228,8 @@ export default function NavigationBar({
           .navbar-logo-svg {
             display: block;
             margin: 0 auto;
+            width: 48px !important;
+            height: 48px !important;
           }
         }
       `}</style>

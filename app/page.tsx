@@ -164,7 +164,7 @@ export default function Home() {
   }, [router, setProductsOpen]);
 
   return (
-    <div style={{ minHeight: "1000vh" }} className="bg-transparent">
+    <div className="bg-transparent">
       {/* Loading Screen */}
       <AnimatePresence>
         {!isImagesLoaded && (
