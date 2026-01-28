@@ -208,7 +208,15 @@ export default function ProductPage() {
                   />
 
                   {/* Product Media */}
-                  <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="absolute inset-0 flex items-center justify-center product-media-container">
+                    <style jsx>{`
+                      @media (max-width: 900px) {
+                        .product-media-container {
+                          inset: unset !important;
+                          margin-top: 1.25rem !important; /* mt-5 */
+                        }
+                      }
+                    `}</style>
                     <div className="relative w-1/2 h-1/2 flex items-center justify-center">
                       {product.productVideo?.length ? (
                         <video
