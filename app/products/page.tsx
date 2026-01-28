@@ -24,6 +24,8 @@ export default function ProductPage() {
   const [activeCategory, setActiveCategory] = useState(categories[0]);
   const isImagesLoaded = true;
 
+  const [dataReady, setDataReady] = useState(false);
+
   useEffect(() => {
     async function fetchProducts() {
       try {
@@ -35,27 +37,42 @@ export default function ProductPage() {
       } catch (err) {
         console.error("Fetch error:", err);
       } finally {
-        setLoading(false);
+        setDataReady(true);
       }
     }
 
     fetchProducts();
   }, []);
 
-  // Simulate progress for the loading screen
+  // Sync progress bar with data loading
   useEffect(() => {
+    let progressInterval: NodeJS.Timeout;
+
     if (loading) {
-      const interval = setInterval(() => {
+      progressInterval = setInterval(() => {
         setLoadingProgress((prev) => {
-          if (prev >= 0.9) return prev;
+          // If data isn't ready, cap at 90%
+          if (!dataReady) {
+            return prev >= 0.9 ? 0.9 : prev + 0.05;
+          }
+
+          // Data is ready, move to 100%
+          if (prev >= 1) {
+            clearInterval(progressInterval);
+            // Small delay for the 100% to be seen
+            setTimeout(() => setLoading(false), 300);
+            return 1;
+          }
+
           return prev + 0.1;
         });
-      }, 150);
-      return () => clearInterval(interval);
-    } else {
-      setLoadingProgress(1);
+      }, 100);
     }
-  }, [loading]);
+
+    return () => {
+      if (progressInterval) clearInterval(progressInterval);
+    };
+  }, [loading, dataReady]);
 
   // Drag-to-scroll for category row
   const categoryRowRef = useRef<HTMLDivElement>(null);
@@ -178,8 +195,8 @@ export default function ProductPage() {
                     window.history.replaceState(null, "", newUrl);
                   }}
                   className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-md sm:rounded transition-all duration-300 text-xs sm:text-sm ${activeCategory === category
-                      ? "bg-[#8c2224] text-white"
-                      : "bg-transparent text-white hover:bg-[#8c2224] hover:text-white"
+                    ? "bg-[#8c2224] text-white"
+                    : "bg-transparent text-white hover:bg-[#8c2224] hover:text-white"
                     }`}
                 >
                   {category}
