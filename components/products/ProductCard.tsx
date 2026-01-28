@@ -16,7 +16,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
       {videoUrl && (
         <video
           src={videoUrl}
-          controls
+          controls={false}
           autoPlay={false}
           loop
           muted

@@ -41,8 +41,16 @@ export interface Product {
   references: RichTextBlock[];
   productVideo: Media[];
   thirdpartytesting: Media[];
+<<<<<<< HEAD
   category?: string;
   chemicalProperties: chemicalProperties;
   coa: Media[];
   chemicalFormulaImg: Media[];
+=======
+  chemicalProperties: chemicalProperties;
+  coa: Media[];
+  chemicalFormulaImg: Media[];
+  category?: string;
+  catorgory?: string;
+>>>>>>> 56cd449be7c74290b4e803bb55fa20f4bd8ce801
 }

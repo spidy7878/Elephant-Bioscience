@@ -1,22 +1,34 @@
 "use client";
 
 import { NAV_LINKS } from "lib/constants";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 interface NavigationBarProps {
-  scrollY: number;
+  scrollY?: number;
   isImagesLoaded: boolean;
   transparent?: boolean;
 }
 
 export default function NavigationBar({
-  scrollY,
+  scrollY: propScrollY,
   isImagesLoaded,
   transparent = false,
 }: NavigationBarProps) {
   const router = useRouter();
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [internalScrollY, setInternalScrollY] = useState(0);
+
+  useEffect(() => {
+    if (propScrollY !== undefined) return;
+    const handleScroll = () => {
+      setInternalScrollY(window.scrollY);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [propScrollY]);
+
+  const scrollY = propScrollY !== undefined ? propScrollY : internalScrollY;
 
   // Responsive navItems: filter on desktop, all on mobile
   const navItems = [
