@@ -172,7 +172,7 @@ export default function ProductPage() {
           <h2 className="text-3xl font-semibold mb-8">{activeCategory}</h2>
 
           {/* Products Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
             {products
               .filter((product) => {
                 if (activeCategory === "All Peptides") return true;
@@ -189,7 +189,7 @@ export default function ProductPage() {
                 <Link
                   key={index}
                   href={`/productListing/${product.documentId}`}
-                  className="group relative rounded-3xl overflow-hidden transition-all duration-500 hover:scale-105 block"
+                  className="group relative rounded-3xl overflow-hidden transition-all duration-500 hover:scale-105 block aspect-square"
                   style={{
                     background: "rgba(255, 255, 255, 0.03)",
                     backdropFilter: "blur(10px)",
@@ -208,8 +208,8 @@ export default function ProductPage() {
                   />
 
                   {/* Product Media */}
-                  <div className="p-4 sm:p-6 md:p-8 flex items-center justify-center h-60 sm:h-72 md:h-80 relative">
-                    <div className="relative w-32 h-44 sm:w-40 sm:h-56 md:w-48 md:h-64 flex items-center justify-center">
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="relative w-1/2 h-1/2 flex items-center justify-center">
                       {product.productVideo?.length ? (
                         <video
                           src={
@@ -243,12 +243,9 @@ export default function ProductPage() {
                   </div>
 
                   {/* Product Info */}
-                  <div
-                    className="p-4 sm:p-6 text-center relative z-10"
-                    style={{}}
-                  >
+                  <div className="absolute bottom-0 left-0 w-full pt-4 sm:pt-6 text-center z-10 ">
                     <h3
-                      className="text-lg sm:text-xl font-medium mb-1 text-white mb-6 truncate mx-auto"
+                      className="text-lg sm:text-xl font-medium mb-1 text-white mb-4 truncate mx-auto"
                       style={{
                         overflow: "hidden",
                         textOverflow: "ellipsis",
@@ -261,7 +258,6 @@ export default function ProductPage() {
                     >
                       {product.name}
                     </h3>
-                    {/* Product description removed as requested */}
                   </div>
                 </Link>
               ))}
