@@ -1,7 +1,6 @@
 /* Importing poppins */
 
-@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
-
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 
 /* Hide scrollbar for Chrome, Safari and Opera */
 .scrollbar-hide::-webkit-scrollbar {
@@ -36,9 +35,18 @@
   html {
     @apply scroll-smooth;
   }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: "Poppins", sans-serif;
+  }
 
   body {
     @apply bg-black text-white antialiased overflow-x-hidden;
+    font-family: "Poppins", sans-serif;
   }
 }
 
@@ -74,6 +82,59 @@
       rgba(0, 0, 0, 0.015) 2px,
       rgba(0, 0, 0, 0.015) 4px
     );
+  }
+
+  .hero-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: black;
+    overflow: hidden;
+  }
+
+  /* 1️⃣ Container (animated) */
+  .container-img {
+    position: absolute;
+    top: 8%;
+    left: 50%;
+    transform: translateX(-50%);
+
+    width: 520px;
+    height: 280px;
+
+    background: url("/container.png") no-repeat center / contain;
+    transform-origin: top center;
+
+    z-index: 3;
+    will-change: transform;
+  }
+
+  /* 2️⃣ Liquid (static) */
+  .liquid-img {
+    position: absolute;
+    top: 32%;
+    left: 50%;
+    transform: translateX(-50%);
+
+    width: 900px;
+    height: 420px;
+
+    background: url("/liquid.png") no-repeat center / contain;
+    z-index: 2;
+  }
+
+  /* 3️⃣ Text (static) */
+  .text-img {
+    position: absolute;
+    bottom: 12%;
+    left: 50%;
+    transform: translateX(-50%);
+
+    width: 700px;
+    height: 160px;
+
+    background: url("/text.png") no-repeat center / contain;
+    z-index: 1;
   }
 }
 
@@ -118,22 +179,22 @@
 @media (max-width: 732px) {
   nav {
     flex-direction: row; /* Keep horizontal layout */
-    flex-wrap: nowrap;   /* Prevent wrapping */
+    flex-wrap: nowrap; /* Prevent wrapping */
     padding: 10px 20px;
     justify-content: space-between;
     align-items: center;
   }
 
- nav > div:first-child {
-  flex: 0 0 auto;
-  margin-top: -12px;     /* Moves logo slightly upward */
-  margin-left: -15px;    /* Moves logo slightly left */
-  margin-right: 2px;    /* Keeps spacing from contact info */
-}
+  nav > div:first-child {
+    flex: 0 0 auto;
+    margin-top: -12px; /* Moves logo slightly upward */
+    margin-left: -15px; /* Moves logo slightly left */
+    margin-right: 2px; /* Keeps spacing from contact info */
+  }
 
   nav > div:last-child {
     flex: 0 0 auto;
-    margin-left: auto;  /* Push contact to right */
+    margin-left: auto; /* Push contact to right */
     display: flex;
     gap: 12px;
   }

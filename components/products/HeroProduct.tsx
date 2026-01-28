@@ -128,7 +128,7 @@ const HeroProduct = ({ product }: Props) => {
             initial={{ opacity: 0, x: 40 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.4, duration: 0.7 }}
-            className="hidden lg:block absolute top-0 right-8 rounded-2xl border border-white/10 shadow-lg space-y-5 w-80 h-auto py-6 backdrop-blur-lg transition-all duration-300 hover:shadow-2xl"
+            className="hidden lg:block absolute top-0 right-8 rounded-2xl border border-white/10 shadow-lg space-y-5 w-80 h-auto p-3 backdrop-blur-lg transition-all duration-300 hover:shadow-2xl"
             style={{
               background: "rgba(255,255,255,0.08)",
               backdropFilter: "blur(10px)",
@@ -143,27 +143,29 @@ const HeroProduct = ({ product }: Props) => {
                 "rgba(255,255,255,0.08)";
             }}
           >
-            <img
-              src={structureImg}
-              alt="Structure"
-              className="w-full h-[180px] sm:h-[220px] lg:h-[260px] object-contain rounded-2xl"
-            />
+            <div className="rounded-2xl overflow-hidden bg-white flex items-center justify-center">
+              <img
+                src={structureImg}
+                alt="Structure"
+                className="w-full h-[220px] sm:h-[260px] lg:h-[300px] object-contain"
+              />
+            </div>
 
-            <div className="space-y-2 ml-10">
-              <h4 className="font-bold text-xl sm:text-2xl text-black">
+            <div>
+              <h4 className="font-bold text-xl sm:text-2xl text-black m-0 ml-2">
                 References:
               </h4>
               {product.references?.map((r, i) => (
                 <p
                   key={i}
-                  className="text-[13px] sm:text-[14px] text-black font-semibold leading-[1.6]"
+                  className="text-[13px] sm:text-[14px] text-black font-semibold leading-[1.6] ml-2"
                 >
                   {r.children?.[0]?.text}
                 </p>
               ))}
             </div>
 
-            <p className="text-xl sm:text-2xl font-semibold text-gray-800 pt-2 mb-4 ml-10">
+            <p className="text-xl sm:text-2xl font-semibold text-gray-800 m-0 ml-2">
               For Research Use Only
             </p>
           </motion.div>
@@ -190,8 +192,8 @@ const HeroProduct = ({ product }: Props) => {
               className="w-full h-[160px] sm:h-[180px] object-contain rounded-2xl"
             />
 
-            <div className="space-y-2 px-6 mt-4">
-              <h4 className="font-bold text-lg sm:text-xl text-black">
+            <div>
+              <h4 className="font-bold text-lg sm:text-xl text-black m-0 ml-2">
                 References:
               </h4>
               {product.references?.map((r, i) => (
@@ -204,7 +206,7 @@ const HeroProduct = ({ product }: Props) => {
               ))}
             </div>
 
-            <p className="text-lg sm:text-xl font-semibold text-gray-800 pt-2 mb-4 px-6">
+            <p className="text-lg sm:text-xl font-semibold text-gray-800 m-0 ml-2">
               For Research Use Only
             </p>
           </motion.div>

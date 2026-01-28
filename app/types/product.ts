@@ -12,20 +12,20 @@ export interface Media {
 
 export interface chemicalProperties {
   id: number;
-  molecularFormula: string,
-  molecularWeight: number,
-  moinostropicMass: number,
+  molecularFormula: string;
+  molecularWeight: number;
+  moinostropicMass: number;
   polarArea: number;
   complexity: number;
-  xLogP: number,
-  atomCount: number,
-  hydrogenBondCount: number,
-  hydrogenAcceptCount: number,
-  CID: number,
-  title1: string,
-  title2: string,
-  title3: string,
-  IUPACname: string,
+  xLogP: number;
+  atomCount: number;
+  hydrogenBondCount: number;
+  hydrogenAcceptCount: number;
+  CID: number;
+  title1: string;
+  title2: string;
+  title3: string;
+  IUPACname: string;
 }
 
 export interface Product {
@@ -41,9 +41,8 @@ export interface Product {
   references: RichTextBlock[];
   productVideo: Media[];
   thirdpartytesting: Media[];
+  category?: string;
   chemicalProperties: chemicalProperties;
   coa: Media[];
   chemicalFormulaImg: Media[];
-  category?: string;
-  catorgory?: string;
 }
