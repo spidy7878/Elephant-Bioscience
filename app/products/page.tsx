@@ -10,6 +10,7 @@ import Link from "next/link";
 export default function ProductPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState("All Peptides");
 
   // For product grid video hover performance
   const ProductGridVideo = ({ src }: { src: string }) => {
@@ -115,6 +116,40 @@ export default function ProductPage() {
   // No longer using scrollY state to avoid re-renders
   const isImagesLoaded = true;
 
+  const filteredProducts = products.filter((product) => {
+    if (selectedCategory === "All Peptides") return true;
+
+    // Enhanced category resolution (handles 'catorgory' misspelling in JSON)
+    let rawCategory = (product as any).catorgory || (product as any).category;
+
+    if (!rawCategory) {
+      const catKey = Object.keys(product).find(k => k.toLowerCase().includes("categor"));
+      if (catKey) rawCategory = (product as any)[catKey];
+    }
+
+    let productCategory = "";
+
+    if (typeof rawCategory === 'string') {
+      productCategory = rawCategory;
+    } else if (rawCategory && typeof rawCategory === 'object') {
+      productCategory =
+        rawCategory.name ||
+        rawCategory.title ||
+        rawCategory.attributes?.name ||
+        rawCategory.attributes?.title ||
+        rawCategory.data?.attributes?.name ||
+        rawCategory.data?.attributes?.title ||
+        "";
+    }
+
+    if (!productCategory) return false;
+
+    const normalizedProductCat = productCategory.toLowerCase().trim();
+    const normalizedSelectedCat = selectedCategory.toLowerCase().trim();
+
+    return normalizedProductCat === normalizedSelectedCat;
+  });
+
   if (loading) return <p className="text-center py-10">Loading...</p>;
 
   return (
@@ -158,7 +193,8 @@ export default function ProductPage() {
             {categories.map((category, index) => (
               <button
                 key={index}
-                className={`px-6 py-2.5 rounded border-2 transition-all duration-300 ${index === 0
+                onClick={() => setSelectedCategory(category)}
+                className={`px-6 py-2.5 rounded border-2 transition-all duration-300 ${selectedCategory === category
                   ? "bg-white text-black border-white"
                   : "bg-transparent text-white border-white hover:bg-white hover:text-black"
                   }`}
@@ -169,11 +205,11 @@ export default function ProductPage() {
           </div>
 
           {/* Section Title */}
-          <h2 className="text-3xl font-semibold mb-8">All Peptides</h2>
+          <h2 className="text-3xl font-semibold mb-8">{selectedCategory}</h2>
 
           {/* Products Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {products.map((product, index) => (
+            {filteredProducts.map((product, index) => (
               <Link
                 key={index}
                 href={`/productListing/${product.documentId}`}

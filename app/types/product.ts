@@ -40,8 +40,10 @@ export interface Product {
   storage: string;
   references: RichTextBlock[];
   productVideo: Media[];
-  thirdpartytesting: Media[]
-chemicalProperties : chemicalProperties,
-coa: Media[],
-chemicalFormulaImg:Media[]
+  thirdpartytesting: Media[];
+  chemicalProperties: chemicalProperties;
+  coa: Media[];
+  chemicalFormulaImg: Media[];
+  category?: string;
+  catorgory?: string;
 }
