@@ -38,7 +38,7 @@ const HeroProduct = ({ product }: Props) => {
   //console.log(structureImg)
 
   return (
-    <section className="relative w-full min-h-screen overflow-hidden">
+    <section className="relative w-full min-h-[100dvh] overflow-hidden">
       {/* FLOATING VIDEO */}
       <ProductVideo product={product} />
 

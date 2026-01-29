@@ -82,7 +82,7 @@ export default function MicroscopeSequenceSection({
         style={{
           position: "sticky",
           top: 0,
-          height: "100vh",
+          height: "100dvh",
           width: "100%",
           overflow: "hidden",
           backgroundColor: "transparent",
@@ -319,6 +319,7 @@ export default function MicroscopeSequenceSection({
               style={{
                 background: "rgba(0,0,0,0.6)",
                 backdropFilter: "blur(12px)",
+                WebkitBackdropFilter: "blur(12px)",
                 border: "1px solid rgba(255,255,255,0.1)",
                 borderRadius: "6px",
                 padding: "12px",

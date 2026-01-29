@@ -138,10 +138,10 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
                   transparent ${vignetteInner}%, 
                   ${vignetteColor1} ${vignetteOuter}%, 
                   ${vignetteColor2} ${useTransform(
-                    smoothProgress,
-                    [0, 0.95],
-                    [45, 200]
-                  )}%, 
+      smoothProgress,
+      [0, 0.95],
+      [45, 200]
+    )}%, 
                   ${vignetteColor3} 100%
                 )`;
 
@@ -165,7 +165,7 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
           backgroundColor: "transparent", // Enable background video reveal
         }}
       >
-        <div className="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden">
+        <div className="sticky top-0 h-[100dvh] w-full flex items-center justify-center overflow-hidden">
           {/* Background Microscope Body - now a video, scales up as we zoom in */}
           <motion.div
             className="absolute inset-0 z-0"
@@ -174,6 +174,7 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
               filter: useMotionTemplate`blur(${backgroundBlur}px)`,
               opacity: backgroundBodyOpacity, // Dissolves early to clear clutter
               transformOrigin: "50% 50%",
+              willChange: "transform, opacity",
             }}
           >
             {isImagesLoaded && (
@@ -257,6 +258,7 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
               scale: canvasScale,
               opacity: microscopeOpacity, // Dissolves as iris opens
               transformOrigin: "50% 50%",
+              willChange: "transform, opacity",
             }}
           >
             <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center w-full">
