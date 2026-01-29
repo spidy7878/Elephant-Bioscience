@@ -40,7 +40,7 @@ export default function HangingContainer() {
 
   return (
     <div className="hanging-wrapper">
-      <div ref={containerRef} className="hanging-container" />
+      <div ref={containerRef} className="hanging-container" style={{ willChange: "transform" }} />
     </div>
   );
 }

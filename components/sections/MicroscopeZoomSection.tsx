@@ -132,7 +132,7 @@ export default function MicroscopeZoomSection() {
       canvas.height = img.naturalHeight;
     }
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // No need to clear if we're drawing a full-frame image
     ctx.drawImage(img, 0, 0);
   }, []);
 
@@ -508,7 +508,11 @@ export default function MicroscopeZoomSection() {
               loop
               muted
               playsInline
+              preload="auto"
               className="w-full h-full object-cover"
+              style={{
+                willChange: "transform, opacity"
+              }}
             >
               <source src="/videos/hero-video.mp4" type="video/mp4" />
             </video>

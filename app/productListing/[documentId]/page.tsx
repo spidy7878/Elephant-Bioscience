@@ -55,7 +55,11 @@ export default async function Page({ params }: Props) {
         loop
         muted
         playsInline
-        style={{ pointerEvents: "none" }}
+        preload="auto"
+        style={{
+          pointerEvents: "none",
+          willChange: "transform, opacity"
+        }}
       />
       {/* Responsive overlay for readability */}
       <div className="fixed top-0 left-0 w-full h-full z-10 pointer-events-none" />

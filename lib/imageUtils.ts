@@ -89,13 +89,13 @@ export const renderFrameToCanvas = (
   if (!ctx || !image) return;
 
   if (
-    canvas.width !== image.naturalWidth ||
-    canvas.height !== image.naturalHeight
+    image.naturalWidth &&
+    (canvas.width !== image.naturalWidth || canvas.height !== image.naturalHeight)
   ) {
-    canvas.width = image.naturalWidth || 1920;
-    canvas.height = image.naturalHeight || 1080;
+    canvas.width = image.naturalWidth;
+    canvas.height = image.naturalHeight;
   }
 
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  // No need to clear if we're drawing a full-frame image
   ctx.drawImage(image, 0, 0);
 };

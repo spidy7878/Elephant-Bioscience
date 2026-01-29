@@ -21,6 +21,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
           loop
           muted
           className="w-full rounded-lg"
+          style={{ willChange: "transform" }}
         />
       )}
 

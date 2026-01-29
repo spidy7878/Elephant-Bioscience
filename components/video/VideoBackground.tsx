@@ -62,11 +62,12 @@ const VideoBackground = forwardRef<HTMLVideoElement, VideoBackgroundProps>(
             style={{
               transform: `scale(${videoState.scale})`,
               filter: `blur(${videoState.blur}px)`,
+              willChange: "transform, filter"
             }}
           >
             {/* ✅ UPDATED: Your video file name */}
             <source src="/videos/mov1.mp4" type="video/mp4" />
-            
+
             {/* Optional: Add WebM version for better browser support */}
             {/* <source src="/videos/mov1.webm" type="video/webm" /> */}
           </video>
@@ -85,16 +86,14 @@ const VideoBackground = forwardRef<HTMLVideoElement, VideoBackgroundProps>(
 
         {/* Letterbox Top */}
         <div
-          className={`fixed left-0 right-0 top-0 bg-primary z-[6] transition-all duration-1000 ${
-            heroProgress > 0.3 ? 'h-[10%]' : 'h-0'
-          }`}
+          className={`fixed left-0 right-0 top-0 bg-primary z-[6] transition-all duration-1000 ${heroProgress > 0.3 ? 'h-[10%]' : 'h-0'
+            }`}
         />
-        
+
         {/* Letterbox Bottom */}
         <div
-          className={`fixed left-0 right-0 bottom-0 bg-primary z-[6] transition-all duration-1000 ${
-            heroProgress > 0.3 ? 'h-[10%]' : 'h-0'
-          }`}
+          className={`fixed left-0 right-0 bottom-0 bg-primary z-[6] transition-all duration-1000 ${heroProgress > 0.3 ? 'h-[10%]' : 'h-0'
+            }`}
         />
 
         {/* Video Progress UI */}

@@ -32,7 +32,7 @@ export default function HeroVisual() {
   return (
     <section className="hero-visual-section">
       {/* Hanging container - behind everything */}
-      <div ref={containerRef} className="container-img-wrapper">
+      <div ref={containerRef} className="container-img-wrapper" style={{ willChange: "transform" }}>
         <img src="/container.PNG" alt="Container" />
       </div>
 

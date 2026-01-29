@@ -167,7 +167,11 @@ export default function ProductPage() {
           loop
           muted
           playsInline
-          style={{ pointerEvents: "none" }}
+          preload="auto"
+          style={{
+            pointerEvents: "none",
+            willChange: "transform, opacity"
+          }}
         />
         {/* Overlay for readability */}
         <div className="fixed top-0 left-0 w-full h-full bg-black/60 z-10 pointer-events-none" />

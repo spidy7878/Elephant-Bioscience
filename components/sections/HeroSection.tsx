@@ -193,6 +193,7 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
                     autoPlay
                     muted
                     playsInline
+                    preload="auto"
                     className="w-full h-full object-cover"
                     style={{
                       width: "100%",
@@ -201,6 +202,7 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
                       position: "absolute",
                       inset: 0,
                       zIndex: -1,
+                      willChange: "transform, opacity"
                     }}
                   >
                     <source src="/videos/home_back.mp4" type="video/mp4" />
@@ -230,6 +232,7 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
                       position: "absolute",
                       inset: 0,
                       zIndex: -1,
+                      willChange: "transform, opacity"
                     }}
                   >
                     <source src="/videos/mob2.mp4" type="video/mp4" />
