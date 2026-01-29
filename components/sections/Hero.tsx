@@ -26,7 +26,7 @@ export default function Hero({ opacity = 1 }: { opacity?: any }) {
         >
           <motion.h1
             style={{ opacity }}
-            className="text-white text-2xl md:text-5xl lg:text-7xl font-bold tracking-wide whitespace-nowrap text-center"
+            className="text-white text-2xl md:text-5xl lg:text-7xl font-light tracking-wide whitespace-nowrap text-center"
           >
             Elephant Biosciences
           </motion.h1>

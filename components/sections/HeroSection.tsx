@@ -138,10 +138,10 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
                   transparent ${vignetteInner}%, 
                   ${vignetteColor1} ${vignetteOuter}%, 
                   ${vignetteColor2} ${useTransform(
-      smoothProgress,
-      [0, 0.95],
-      [45, 200]
-    )}%, 
+                    smoothProgress,
+                    [0, 0.95],
+                    [45, 200]
+                  )}%, 
                   ${vignetteColor3} 100%
                 )`;
 
@@ -327,10 +327,10 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
             }}
           >
             <h1 className="font-bold mb-8">
-              <div className="text-4xl md:text-5xl leading-tight text-[#8C2224] drop-shadow-lg">
+              <div className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-6xl leading-tight text-[#8C2224] drop-shadow-lg">
                 We are
               </div>
-              <div className="text-4xl md:text-5xl leading-tight text-[#8C2224] drop-shadow-lg">
+              <div className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-6xl leading-tight text-[#8C2224] drop-shadow-lg">
                 Movement
               </div>
             </h1>
