@@ -4,23 +4,29 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 
 function ProductVideo({ product }: { product: Product }) {
-  const { scrollYProgress } = useScroll();
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  // Responsive transforms - fixed range from 0 to 1
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end start"],
+  });
+
+  // Responsive transforms
+  const isMobile = typeof window !== "undefined" && window.innerWidth < 640;
   const x = useTransform(
     scrollYProgress,
-    [0, 0.4],
-    ["-50%", "70%"]
+    [0, 1],
+    isMobile ? ["-5%", "80%"] : ["-45%", "70%"]
   );
   const y = useTransform(
     scrollYProgress,
-    [0, 0.4],
-    ["-50%", "55%"]
+    [0, isMobile ? 1 : 8],
+    isMobile ? ["10%", "55%"] : ["-50%", "55%"]
   );
   const scale = useTransform(
     scrollYProgress,
-    [0, 0.4],
-    [1, 0.75]
+    [0, 1],
+    isMobile ? [1, 0.2] : [1, 0.75]
   );
 
   const rawVideo =
@@ -28,17 +34,18 @@ function ProductVideo({ product }: { product: Product }) {
       ? product.productVideo
       : product?.productVideo?.[0]?.url;
 
-  const videoUrl = rawVideo
-    ? (rawVideo.startsWith('http') ? rawVideo : `${process.env.NEXT_PUBLIC_API_URL}${rawVideo}`)
-    : null;
+  const videoUrl = rawVideo || null;
 
   if (!videoUrl) return null;
+
+  console.log("PRODUCT VIDEO RAW:", product?.productVideo);
+  console.log("VIDEO URL:", videoUrl);
 
   return (
     <>
       <motion.div
         style={{ x, y, scale }}
-        className="fixed top-1/2 left-1/2 z-[40] pointer-events-none hidden sm:block"
+        className="fixed top-1/2 left-1/2 z-[40] pointer-events-none"
       >
         <div className="relative flex flex-col items-center">
           <video
