@@ -142,8 +142,12 @@ export default function ProductPage() {
 
     if (!productCategoryName) return false;
 
-    const normalizedProductCat = productCategoryName.replace(/[-\s]+/g, "").toLowerCase();
-    const normalizedActiveCat = activeCategory.replace(/[-\s]+/g, "").toLowerCase();
+    const normalizedProductCat = productCategoryName
+      .replace(/[-\s]+/g, "")
+      .toLowerCase();
+    const normalizedActiveCat = activeCategory
+      .replace(/[-\s]+/g, "")
+      .toLowerCase();
 
     return normalizedProductCat === normalizedActiveCat;
   });
@@ -172,7 +176,7 @@ export default function ProductPage() {
         <div className="relative z-20">
           <NavigationBar isImagesLoaded={isImagesLoaded} />
 
-          <div style={{ height: "80px" }} />
+          <div className="mt-2 sm:mt-8" style={{ height: "20px" }} />
 
           <div className="max-w-7xl mx-auto">
             {/* Category Filter Buttons */}
@@ -190,14 +194,17 @@ export default function ProductPage() {
                   key={category}
                   onClick={() => {
                     setActiveCategory(category);
-                    const categorySlug = category.replace(/\s+/g, "-").toLowerCase();
+                    const categorySlug = category
+                      .replace(/\s+/g, "-")
+                      .toLowerCase();
                     const newUrl = `/products${categorySlug === "all-peptides" ? "" : "/" + categorySlug}`;
                     window.history.replaceState(null, "", newUrl);
                   }}
-                  className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-md sm:rounded transition-all duration-300 text-xs sm:text-sm ${activeCategory === category
-                    ? "bg-[#8c2224] text-white"
-                    : "bg-transparent text-white hover:bg-[#8c2224] hover:text-white"
-                    }`}
+                  className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-md sm:rounded transition-all duration-300 text-xs sm:text-sm ${
+                    activeCategory === category
+                      ? "bg-[#8c2224] text-white"
+                      : "bg-transparent text-white hover:bg-[#8c2224] hover:text-white"
+                  }`}
                 >
                   {category}
                 </button>
@@ -205,7 +212,7 @@ export default function ProductPage() {
             </div>
 
             {/* Section Title */}
-            <h2 className="text-3xl font-semibold mb-8">{activeCategory}</h2>
+            {/* <h2 className="text-3xl font-semibold mb-8">{activeCategory}</h2> */}
 
             {/* Products Grid */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
@@ -232,7 +239,15 @@ export default function ProductPage() {
                   />
 
                   {/* Product Media */}
-                  <div className="absolute inset-0 flex items-center justify-center pt-8">
+                  <div className="absolute mt-10 flex items-center justify-center product-media-container">
+                    <style jsx>{`
+                      @media (max-width: 900px) {
+                        .product-media-container {
+                          inset: unset !important;
+                          margin-top: 1.25rem !important; /* mt-5 */
+                        }
+                      }
+                    `}</style>
                     <div className="relative w-1/2 h-1/2 flex items-center justify-center">
                       {product.productVideo?.length ? (
                         <video
@@ -256,7 +271,9 @@ export default function ProductPage() {
                       ) : (
                         <Image
                           src={
-                            product.chemicalFormulaImg?.[0]?.url.startsWith("http")
+                            product.chemicalFormulaImg?.[0]?.url.startsWith(
+                              "http"
+                            )
                               ? product.chemicalFormulaImg[0].url
                               : `${process.env.NEXT_PUBLIC_API_URL}${product.chemicalFormulaImg?.[0]?.url || ""}`
                           }
