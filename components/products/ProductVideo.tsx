@@ -16,7 +16,7 @@ function ProductVideo({ product }: { product: Product }) {
   const x = useTransform(
     scrollYProgress,
     [0, 1],
-    isMobile ? ["-5%", "80%"] : ["-45%", "70%"]
+    isMobile ? ["-5%", "100%"] : ["-45%", "90%"]
   );
   const y = useTransform(
     scrollYProgress,
@@ -26,7 +26,7 @@ function ProductVideo({ product }: { product: Product }) {
   const scale = useTransform(
     scrollYProgress,
     [0, 1],
-    isMobile ? [1, 0.2] : [1, 0.75]
+    isMobile ? [1.3, 0.35] : [1, 0.75]
   );
 
   const rawVideo =

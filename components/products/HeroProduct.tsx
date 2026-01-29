@@ -43,7 +43,7 @@ const HeroProduct = ({ product }: Props) => {
       <ProductVideo product={product} />
 
       {/* MAIN CONTENT */}
-      <div className="w-full px-4 sm:px-8 md:px-[2vw] py-10 md:py-16 relative">
+      <div className="w-full px-4 sm:px-8 md:px-[2vw] md:py-12 relative">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start relative">
           {/* LEFT CONTENT */}
           <motion.div
