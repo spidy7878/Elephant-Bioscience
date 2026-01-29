@@ -292,7 +292,7 @@ function ModalInner({
               stiffness: 300,
               mass: 0.8,
               duration: reduceMotion ? 0 : undefined,
-            }} 
+            }}
             exit={{
               y: 20,
               opacity: 0,
@@ -302,52 +302,56 @@ function ModalInner({
                 ease: "easeIn",
               },
             }}
-           
+
             role="dialog"
             aria-modal="true"
             className="relative flex rounded-xl w-[85vw] h-[70vw] max-w-[280px] max-h-[280px] sm:w-[300px] sm:h-[300px] md:w-[320px] md:h-[320px] px-3 py-4 shadow-none border border-white/10 overflow-hidden items-center justify-center"
             style={containerStyle}>
 
-            {/* Back icon for login/request mode */}
-            {(mode === "login" || mode === "request") && (
-              <button
-                aria-label="Back"
-                onClick={() => {
-                  setMode("choices");
-                  setIdError && setIdError(null);
-                  setPasswordError && setPasswordError(null);
-                  setEmailError && setEmailError(null);
-                  setPhoneError && setPhoneError(null);
-                }}
-                className="absolute top-3 left-3 text-white/90 hover:text-white transition flex items-center justify-center w-11 h-11 rounded-full bg-white/6 hover:bg-white/10 text-2xl"
-                type="button"
-                style={{ zIndex: 2 }}
-              >
-                {/* Simple left arrow SVG */}
-                <svg
-                  width="24"
-                  height="24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
+            {/* Top Navigation Bar: Back and Close buttons */}
+            <div className="absolute top-2 left-0 right-0 flex items-center justify-between px-3 z-[100] w-full pointer-events-none">
+              <div className="flex-1 pointer-events-auto">
+                {(mode === "login" || mode === "request") && (
+                  <button
+                    aria-label="Back"
+                    onClick={() => {
+                      setMode("choices");
+                      setIdError && setIdError(null);
+                      setPasswordError && setPasswordError(null);
+                      setEmailError && setEmailError(null);
+                      setPhoneError && setPhoneError(null);
+                    }}
+                    className="text-white/90 hover:text-white transition flex items-center justify-center w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white/6 hover:bg-white/10 text-xl sm:text-2xl"
+                    type="button"
+                  >
+                    <svg
+                      width="20"
+                      height="20"
+                      className="sm:w-6 sm:h-6"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M15 19l-7-7 7-7"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </button>
+                )}
+              </div>
+              <div className="flex-none pointer-events-auto">
+                <button
+                  aria-label="Close modal"
+                  onClick={handleClose}
+                  className="text-white/90 hover:text-white transition flex items-center justify-center w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white/6 hover:bg-white/10 text-2xl sm:text-3xl"
                 >
-                  <path
-                    d="M15 19l-7-7 7-7"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </button>
-            )}
-
-            <button
-              aria-label="Close modal"
-              onClick={handleClose}
-              className="absolute -top-2 -right-2 text-white/90 hover:text-white transition flex items-center justify-center w-11 h-11 rounded-full bg-white/6 hover:bg-white/10 text-3xl"
-            >
-              ×
-            </button>
+                  ×
+                </button>
+              </div>
+            </div>
 
             <div className="relative z-10 w-full">
               {children ? (

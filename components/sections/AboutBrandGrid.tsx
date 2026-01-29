@@ -54,10 +54,10 @@ export default function AboutBrandGrid() {
   }, []);
 
   return (
-    <div className="relative min-h-screen w-full bg-transparent px-4 sm:px-8 md:px-12 lg:px-8">
+    <div className="relative min-h-fit sm:min-h-screen w-full bg-transparent px-4 sm:px-8 md:px-12 lg:px-8">
       <div
         ref={gridRef}
-        className="brand-grid-main relative z-10 w-full max-w-7xl mx-auto px-2 sm:px-4 md:px-8 py-12 sm:py-20 md:py-24"
+        className="brand-grid-main relative z-10 w-full max-w-7xl mx-auto px-2 sm:px-4 md:px-8 pt-12 pb-4 sm:py-20 md:py-24"
       >
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 lg:gap-16 text-white">
           {/* LEFT BRAND COLUMN */}

@@ -1,53 +1,30 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
 import { Product } from "../types/product";
-import type { MutableRefObject } from "react";
 import Image from "next/image";
 import NavigationBar from "components/sections/NavigationBar";
-
 import Link from "next/link";
-// import { useRouter, usePathname } from "next/navigation";
+import { AnimatePresence } from "framer-motion";
+import LoadingSection from "components/sections/LoadingSection";
 
 export default function ProductPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedCategory, setSelectedCategory] = useState("All Peptides");
+  const [loadingProgress, setLoadingProgress] = useState(0);
 
-  // For product grid video hover performance
-  const ProductGridVideo = ({ src }: { src: string }) => {
-    const videoRef = useRef<HTMLVideoElement>(null);
-    const [isHovered, setIsHovered] = useState(false);
+  const categories = [
+    "All Peptides",
+    "Peptide Capsules",
+    "Peptide Blends",
+    "IGF-1 Proteins",
+    "Melanotan Peptides",
+    "Cosmetic Peptides",
+    "Bioregulators",
+  ];
+  const [activeCategory, setActiveCategory] = useState(categories[0]);
+  const isImagesLoaded = true;
 
-    useEffect(() => {
-      if (videoRef.current) {
-        if (isHovered) {
-          videoRef.current.play().catch(() => {});
-        } else {
-          videoRef.current.pause();
-          videoRef.current.currentTime = 0;
-        }
-      }
-    }, [isHovered]);
-
-    return (
-      <div
-        className="w-full h-full relative"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      >
-        <video
-          ref={videoRef}
-          src={src}
-          loop
-          muted
-          playsInline
-          controls={false}
-          className="w-full h-full object-contain block transition-opacity duration-300"
-          style={{ opacity: isHovered ? 1 : 0.7 }}
-        />
-      </div>
-    );
-  };
+  const [dataReady, setDataReady] = useState(false);
 
   useEffect(() => {
     async function fetchProducts() {
@@ -60,12 +37,42 @@ export default function ProductPage() {
       } catch (err) {
         console.error("Fetch error:", err);
       } finally {
-        setLoading(false);
+        setDataReady(true);
       }
     }
 
     fetchProducts();
   }, []);
+
+  // Sync progress bar with data loading
+  useEffect(() => {
+    let progressInterval: NodeJS.Timeout;
+
+    if (loading) {
+      progressInterval = setInterval(() => {
+        setLoadingProgress((prev) => {
+          // If data isn't ready, cap at 90%
+          if (!dataReady) {
+            return prev >= 0.9 ? 0.9 : prev + 0.05;
+          }
+
+          // Data is ready, move to 100%
+          if (prev >= 1) {
+            clearInterval(progressInterval);
+            // Small delay for the 100% to be seen
+            setTimeout(() => setLoading(false), 300);
+            return 1;
+          }
+
+          return prev + 0.1;
+        });
+      }, 100);
+    }
+
+    return () => {
+      if (progressInterval) clearInterval(progressInterval);
+    };
+  }, [loading, dataReady]);
 
   // Drag-to-scroll for category row
   const categoryRowRef = useRef<HTMLDivElement>(null);
@@ -104,26 +111,11 @@ export default function ProductPage() {
     categoryRowRef.current.scrollLeft = scrollLeftRef.current - walk;
   };
 
-  const categories = [
-    "All Peptides",
-    "Peptide Capsules",
-    "Peptide Blends",
-    "IGF-1 Proteins",
-    "Melanotan Peptides",
-    "Cosmetic Peptides",
-    "Bioregulators",
-  ];
-  const [activeCategory, setActiveCategory] = useState(categories[0]);
-  // const router = useRouter();
-  // const pathname = usePathname();
-
-  // No longer using scrollY state to avoid re-renders
-  const isImagesLoaded = true;
-
+  // Robust product matching
   const filteredProducts = products.filter((product) => {
-    if (selectedCategory === "All Peptides") return true;
+    if (activeCategory === "All Peptides") return true;
 
-    // Enhanced category resolution (handles 'catorgory' misspelling in JSON)
+    // Enhanced category resolution
     let rawCategory = (product as any).catorgory || (product as any).category;
 
     if (!rawCategory) {
@@ -133,12 +125,12 @@ export default function ProductPage() {
       if (catKey) rawCategory = (product as any)[catKey];
     }
 
-    let productCategory = "";
+    let productCategoryName = "";
 
     if (typeof rawCategory === "string") {
-      productCategory = rawCategory;
+      productCategoryName = rawCategory;
     } else if (rawCategory && typeof rawCategory === "object") {
-      productCategory =
+      productCategoryName =
         rawCategory.name ||
         rawCategory.title ||
         rawCategory.attributes?.name ||
@@ -148,95 +140,76 @@ export default function ProductPage() {
         "";
     }
 
-    if (!productCategory) return false;
+    if (!productCategoryName) return false;
 
-    const normalizedProductCat = productCategory.toLowerCase().trim();
-    const normalizedSelectedCat = selectedCategory.toLowerCase().trim();
+    const normalizedProductCat = productCategoryName.replace(/[-\s]+/g, "").toLowerCase();
+    const normalizedActiveCat = activeCategory.replace(/[-\s]+/g, "").toLowerCase();
 
-    return normalizedProductCat === normalizedSelectedCat;
+    return normalizedProductCat === normalizedActiveCat;
   });
 
-  if (loading) return <p className="text-center py-10">Loading...</p>;
-
   return (
-    <div className="min-h-screen bg-black text-white py-12 px-4 relative overflow-hidden">
-      {/* Background Video */}
-      <video
-        className="fixed top-0 left-0 w-full h-full object-cover z-0"
-        src="/videos/mov1.mp4"
-        autoPlay
-        loop
-        muted
-        playsInline
-        style={{
-          pointerEvents: "none",
-        }}
-      />
-      {/* Overlay for readability */}
-      <div className="fixed top-0 left-0 w-full h-full bg-black/60 z-10 pointer-events-none" />
+    <>
+      <AnimatePresence>
+        {loading && <LoadingSection loadingProgress={loadingProgress} />}
+      </AnimatePresence>
 
-      {/* All content above the video */}
-      <div className="relative z-20">
-        {/* <div className="hidden md:block">
-          <NavigationBar scrollY={scrollY} isImagesLoaded={isImagesLoaded} />
-        </div> */}
+      <div className="min-h-screen bg-black text-white py-12 px-4 relative overflow-hidden">
+        {/* Background Video */}
+        <video
+          className="fixed top-0 left-0 w-full h-full object-cover z-0"
+          src="/videos/mov1.mp4"
+          autoPlay
+          loop
+          muted
+          playsInline
+          style={{ pointerEvents: "none" }}
+        />
+        {/* Overlay for readability */}
+        <div className="fixed top-0 left-0 w-full h-full bg-black/60 z-10 pointer-events-none" />
 
-        <NavigationBar isImagesLoaded={isImagesLoaded} />
+        {/* All content above the video */}
+        <div className="relative z-20">
+          <NavigationBar isImagesLoaded={isImagesLoaded} />
 
-        <div style={{ height: "80px" }} />
+          <div style={{ height: "80px" }} />
 
-        <div className="max-w-7xl mx-auto">
-          {/* Category Filter Buttons */}
-          <div
-            ref={categoryRowRef}
-            className="flex flex-nowrap gap-4 mb-12 overflow-x-auto scrollbar-hide whitespace-nowrap cursor-grab"
-            onMouseDown={handleMouseDown}
-            onMouseLeave={handleMouseLeave}
-            onMouseUp={handleMouseUp}
-            onMouseMove={handleMouseMove}
-            style={{ userSelect: "none" }}
-          >
-            {categories.map((category) => (
-              <button
-                key={category}
-                onClick={() => {
-                  setActiveCategory(category);
-                  // Update the URL with /{category} using history API (no navigation)
-                  const categorySlug = category
-                    .replace(/\s+/g, "-")
-                    .toLowerCase();
-                  const newUrl = `/products${categorySlug === "all-peptides" ? "" : "/" + categorySlug}`;
-                  window.history.replaceState(null, "", newUrl);
-                }}
-                className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-md sm:rounded transition-all duration-300 text-xs sm:text-sm ${
-                  activeCategory === category
+          <div className="max-w-7xl mx-auto">
+            {/* Category Filter Buttons */}
+            <div
+              ref={categoryRowRef}
+              className="flex flex-nowrap gap-4 mb-12 overflow-x-auto scrollbar-hide whitespace-nowrap cursor-grab"
+              onMouseDown={handleMouseDown}
+              onMouseLeave={handleMouseLeave}
+              onMouseUp={handleMouseUp}
+              onMouseMove={handleMouseMove}
+              style={{ userSelect: "none" }}
+            >
+              {categories.map((category) => (
+                <button
+                  key={category}
+                  onClick={() => {
+                    setActiveCategory(category);
+                    const categorySlug = category.replace(/\s+/g, "-").toLowerCase();
+                    const newUrl = `/products${categorySlug === "all-peptides" ? "" : "/" + categorySlug}`;
+                    window.history.replaceState(null, "", newUrl);
+                  }}
+                  className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-md sm:rounded transition-all duration-300 text-xs sm:text-sm ${activeCategory === category
                     ? "bg-[#8c2224] text-white"
                     : "bg-transparent text-white hover:bg-[#8c2224] hover:text-white"
-                }`}
-              >
-                {category}
-              </button>
-            ))}
-          </div>
+                    }`}
+                >
+                  {category}
+                </button>
+              ))}
+            </div>
 
-          {/* Section Title */}
-          <h2 className="text-3xl font-semibold mb-8">{activeCategory}</h2>
+            {/* Section Title */}
+            <h2 className="text-3xl font-semibold mb-8">{activeCategory}</h2>
 
-          {/* Products Grid */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-            {products
-              .filter((product) => {
-                if (activeCategory === "All Peptides") return true;
-                // Match product.category to activeCategory (case-insensitive, ignore spaces/dashes)
-                const prodCat = (product.category || "")
-                  .replace(/[-\s]+/g, "")
-                  .toLowerCase();
-                const activeCat = activeCategory
-                  .replace(/[-\s]+/g, "")
-                  .toLowerCase();
-                return prodCat === activeCat;
-              })
-              .map((product, index) => (
+            {/* Products Grid */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+              {filteredProducts.map((product, index) => (
                 <Link
                   key={index}
                   href={`/productListing/${product.documentId}`}
@@ -259,21 +232,14 @@ export default function ProductPage() {
                   />
 
                   {/* Product Media */}
-                  <div className="absolute inset-0 flex items-center justify-center product-media-container">
-                    <style jsx>{`
-                      @media (max-width: 900px) {
-                        .product-media-container {
-                          inset: unset !important;
-                          margin-top: 1.25rem !important; /* mt-5 */
-                        }
-                      }
-                    `}</style>
+                  <div className="absolute inset-0 flex items-center justify-center pt-8">
                     <div className="relative w-1/2 h-1/2 flex items-center justify-center">
                       {product.productVideo?.length ? (
                         <video
                           src={
-                            product.productVideo[0]?.url ||
-                            `${process.env.NEXT_PUBLIC_API_URL}${product.productVideo[0].url}`
+                            product.productVideo[0]?.url.startsWith("http")
+                              ? product.productVideo[0].url
+                              : `${process.env.NEXT_PUBLIC_API_URL}${product.productVideo[0].url}`
                           }
                           autoPlay
                           loop
@@ -290,8 +256,9 @@ export default function ProductPage() {
                       ) : (
                         <Image
                           src={
-                            product?.chemicalFormulaImg?.[0]?.url ||
-                            `${process.env.NEXT_PUBLIC_API_URL}${product.chemicalFormulaImg[0].url}`
+                            product.chemicalFormulaImg?.[0]?.url.startsWith("http")
+                              ? product.chemicalFormulaImg[0].url
+                              : `${process.env.NEXT_PUBLIC_API_URL}${product.chemicalFormulaImg?.[0]?.url || ""}`
                           }
                           alt={product.name}
                           fill
@@ -304,15 +271,12 @@ export default function ProductPage() {
                   {/* Product Info */}
                   <div className="absolute bottom-0 left-0 w-full pt-4 sm:pt-6 text-center z-10 ">
                     <h3
-                      className="text-lg sm:text-xl font-medium text-white mb-4 truncate mx-auto"
+                      className="text-lg sm:text-xl font-medium text-white mb-4 truncate mx-auto px-4"
                       style={{
                         overflow: "hidden",
                         textOverflow: "ellipsis",
                         whiteSpace: "nowrap",
-                        width: "70%",
                         display: "block",
-                        marginLeft: "auto",
-                        marginRight: "auto",
                       }}
                     >
                       {product.name}
@@ -320,9 +284,10 @@ export default function ProductPage() {
                   </div>
                 </Link>
               ))}
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
