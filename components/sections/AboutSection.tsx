@@ -54,7 +54,7 @@ export default function AboutSection() {
   }, []);
 
   return (
-    <section className="relative min-h-screen w-full flex items-center bg-transparent px-4 sm:px-8 md:px-12 lg:px-8">
+    <section className="relative min-h-fit w-full flex items-center bg-transparent px-4 sm:px-8 md:px-12 lg:px-8 py-12 sm:py-24">
       <div
         ref={sectionRef}
         className="relative z-10 w-full max-w-7xl mx-auto px-2 sm:px-4 md:px-8"
