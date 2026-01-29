@@ -65,7 +65,7 @@ const HeroProduct = ({ product }: Props) => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.6 }}
-              className="text-black font-bold leading-relaxed max-w-md text-base sm:text-lg"
+              className="text-black font-light leading-relaxed max-w-md text-base sm:text-lg"
             >
               {product.description?.[0]?.children?.[0]?.text}
             </motion.p>
@@ -158,7 +158,7 @@ const HeroProduct = ({ product }: Props) => {
               {product.references?.map((r, i) => (
                 <p
                   key={i}
-                  className="text-[13px] sm:text-[14px] text-black font-semibold leading-[1.6] ml-2"
+                  className="text-[13px] sm:text-[14px] text-black font-light leading-[1.6] ml-2"
                 >
                   {r.children?.[0]?.text}
                 </p>
@@ -199,7 +199,7 @@ const HeroProduct = ({ product }: Props) => {
               {product.references?.map((r, i) => (
                 <p
                   key={i}
-                  className="text-[13px] sm:text-[14px] text-black font-semibold leading-[1.6]"
+                  className="text-[13px] sm:text-[14px] text-black font-light leading-[1.6]"
                 >
                   {r.children?.[0]?.text}
                 </p>
