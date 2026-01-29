@@ -43,7 +43,7 @@ const HeroProduct = ({ product }: Props) => {
       <ProductVideo product={product} />
 
       {/* MAIN CONTENT */}
-      <div className="w-full px-4 sm:px-8 md:px-[2vw] py-10 md:py-16 relative">
+      <div className="w-full px-4 sm:px-8 md:px-[2vw] md:py-12 relative">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start relative">
           {/* LEFT CONTENT */}
           <motion.div
@@ -65,7 +65,7 @@ const HeroProduct = ({ product }: Props) => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.6 }}
-              className="text-black font-bold leading-relaxed max-w-md text-base sm:text-lg"
+              className="text-black font-light leading-relaxed max-w-md text-base sm:text-lg"
             >
               {product.description?.[0]?.children?.[0]?.text}
             </motion.p>
@@ -119,6 +119,50 @@ const HeroProduct = ({ product }: Props) => {
                 value={product.aplc == null ? "-" : product.aplc}
               />
             </motion.div>
+            {/* Reference Panel for small screens */}
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6, duration: 0.7 }}
+              className="block lg:hidden mt-8 rounded-2xl border border-white/10 shadow-lg space-y-5 w-full h-auto p-3 backdrop-blur-lg transition-all duration-300 hover:shadow-2xl"
+              style={{
+                background: "rgba(255,255,255,0.08)",
+                backdropFilter: "blur(10px)",
+                WebkitBackdropFilter: "blur(10px)",
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLDivElement).style.background =
+                  "rgba(255,255,255,0.18)";
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLDivElement).style.background =
+                  "rgba(255,255,255,0.08)";
+              }}
+            >
+              <div className="rounded-2xl overflow-hidden flex items-center justify-center">
+                <img
+                  src={structureImg}
+                  alt="Structure"
+                  className="w-full h-[320px] sm:h-[380px] object-contain"
+                />
+              </div>
+              <div>
+                <h4 className="font-bold text-xl sm:text-2xl text-black m-0 ml-2">
+                  References:
+                </h4>
+                {product.references?.map((r, i) => (
+                  <p
+                    key={i}
+                    className="text-[13px] sm:text-[14px] text-black font-light leading-[1.6] ml-2"
+                  >
+                    {r.children?.[0]?.text}
+                  </p>
+                ))}
+              </div>
+              <p className="text-xl sm:text-2xl font-semibold text-gray-800 m-0 ml-2">
+                For Research Use Only
+              </p>
+            </motion.div>
           </motion.div>
 
           {/* RIGHT REFERENCE PANEL */}
@@ -128,7 +172,7 @@ const HeroProduct = ({ product }: Props) => {
             initial={{ opacity: 0, x: 40 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.4, duration: 0.7 }}
-            className="hidden lg:block absolute top-0 right-8 rounded-2xl border border-white/10 shadow-lg space-y-5 w-80 h-auto p-3 backdrop-blur-lg transition-all duration-300 hover:shadow-2xl"
+            className="hidden lg:block absolute top-0 right-0 rounded-2xl border border-white/10 shadow-lg space-y-5 w-80 h-auto p-3 backdrop-blur-lg transition-all duration-300 hover:shadow-2xl"
             style={{
               background: "rgba(255,255,255,0.08)",
               backdropFilter: "blur(10px)",
@@ -158,7 +202,7 @@ const HeroProduct = ({ product }: Props) => {
               {product.references?.map((r, i) => (
                 <p
                   key={i}
-                  className="text-[13px] sm:text-[14px] text-black font-semibold leading-[1.6] ml-2"
+                  className="text-[13px] sm:text-[14px] text-black font-light leading-[1.6] ml-2"
                 >
                   {r.children?.[0]?.text}
                 </p>
@@ -166,47 +210,6 @@ const HeroProduct = ({ product }: Props) => {
             </div>
 
             <p className="text-xl sm:text-2xl font-semibold text-gray-800 m-0 ml-2">
-              For Research Use Only
-            </p>
-          </motion.div>
-
-          {/* Mobile Panel (below content) */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.7 }}
-            className="block lg:hidden col-span-1 w-full mt-8"
-            style={{
-              background: "rgba(255,255,255,0.08)",
-              backdropFilter: "blur(10px)",
-              WebkitBackdropFilter: "blur(10px)",
-              borderRadius: "1rem",
-              border: "1px solid rgba(255,255,255,0.1)",
-              boxShadow: "0 4px 24px 0 rgba(0,0,0,0.08)",
-              padding: "1.5rem 0",
-            }}
-          >
-            <img
-              src={structureImg}
-              alt="Structure"
-              className="w-full h-[160px] sm:h-[180px] object-contain rounded-2xl"
-            />
-
-            <div>
-              <h4 className="font-bold text-lg sm:text-xl text-black m-0 ml-2">
-                References:
-              </h4>
-              {product.references?.map((r, i) => (
-                <p
-                  key={i}
-                  className="text-[13px] sm:text-[14px] text-black font-semibold leading-[1.6]"
-                >
-                  {r.children?.[0]?.text}
-                </p>
-              ))}
-            </div>
-
-            <p className="text-lg sm:text-xl font-semibold text-gray-800 m-0 ml-2">
               For Research Use Only
             </p>
           </motion.div>

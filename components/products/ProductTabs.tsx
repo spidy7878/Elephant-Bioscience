@@ -22,18 +22,19 @@ export default function ProductTabs({ product }: { product: Product }) {
     : "";
 
   return (
-    <section className="relative py-14">
-      <div className="max-w-[1400px] mx-auto px-6">
+    <section className="relative py-16 sm:py-0">
+      <div className="max-w-[1800px] mx-auto px-6 md:pb-16">
         {/* TAB HEADER */}
         <div className="rounded-xl py-2 sm:py-4 flex gap-2 sm:gap-3 flex-wrap">
           {tabs.map((tab) => (
             <button
               key={tab}
               onClick={() => setActive(tab)}
-              className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-md sm:rounded transition-all duration-300 text-xs sm:text-sm ${active === tab
-                ? "bg-[#8c2224] text-white"
-                : "bg-transparent text-white hover:bg-[#8c2224] hover:text-white"
-                }`}
+              className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-md sm:rounded transition-all duration-300 text-xs sm:text-sm ${
+                active === tab
+                  ? "bg-[#8c2224] text-white"
+                  : "bg-transparent text-white hover:bg-[#8c2224] hover:text-white"
+              }`}
             >
               {tab}
             </button>
@@ -44,14 +45,13 @@ export default function ProductTabs({ product }: { product: Product }) {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-8 mt-6 lg:mt-8 items-start">
           {/* LEFT CONTENT */}
           <div
-            className="col-span-1 lg:col-span-7 rounded-lg lg:rounded-2xl shadow p-4 sm:p-6 md:p-8"
+            className="col-span-1 lg:col-span-7 rounded-lg lg:rounded-2xl shadow p-4 sm:p-6 md:p-8 min-h-[500px]"
             style={{
               background: "rgba(255,255,255,0.08)",
               backdropFilter: "blur(10px)",
               WebkitBackdropFilter: "blur(10px)",
               border: "1px solid rgba(255,255,255,0.1)",
               boxShadow: "0 4px 24px 0 rgba(0,0,0,0.08)",
-              minHeight: "260px",
             }}
           >
             <AnimatePresence mode="wait">
@@ -69,7 +69,7 @@ export default function ProductTabs({ product }: { product: Product }) {
                     {product.description?.map((d, i) => (
                       <p
                         key={i}
-                        className="leading-relaxed text-black font-semibold text-base md:text-lg lg:text-xl"
+                        className="leading-relaxed text-black font-light text-base md:text-lg lg:text-xl"
                       >
                         {d.children?.[0]?.text}
                       </p>
