@@ -76,7 +76,7 @@ export default function AboutBrandGrid() {
             <div className="text-xs sm:text-sm font-light text-white/80 leading-relaxed">
               <div className="uppercase tracking-widest text-xs mb-1">Est.</div>
               <div>Scientific Excellence</div>
-              <div>Since 2024</div>
+              <div>Since 2014</div>
             </div>
           </div>
 

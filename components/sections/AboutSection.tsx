@@ -80,7 +80,7 @@ export default function AboutSection() {
                 <div className="text-xs sm:text-sm font-light">
                   SCIENTIFIC EXCELLENCE
                 </div>
-                <div className="text-xs sm:text-sm font-light">SINCE 2024</div>
+                <div className="text-xs sm:text-sm font-light">SINCE 2014</div>
               </div>
             </div>
 
