@@ -200,10 +200,11 @@ export default function ProductPage() {
                     const newUrl = `/products${categorySlug === "all-peptides" ? "" : "/" + categorySlug}`;
                     window.history.replaceState(null, "", newUrl);
                   }}
-                  className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-md sm:rounded transition-all duration-300 text-xs sm:text-sm ${activeCategory === category
-                    ? "bg-[#8c2224] text-white"
-                    : "bg-transparent text-white hover:bg-[#8c2224] hover:text-white"
-                    }`}
+                  className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-md sm:rounded transition-all duration-300 text-xs sm:text-sm ${
+                    activeCategory === category
+                      ? "bg-[#8c2224] text-white"
+                      : "bg-transparent text-white hover:bg-[#8c2224] hover:text-white"
+                  }`}
                 >
                   {category}
                 </button>
@@ -238,51 +239,62 @@ export default function ProductPage() {
                   />
 
                   {/* Product Media */}
-                  <div className="absolute mt-10 flex items-center justify-center product-media-container">
-                    <style jsx>{`
-                      @media (max-width: 900px) {
-                        .product-media-container {
-                          inset: unset !important;
-                          margin-top: 1.25rem !important; /* mt-5 */
+                  <div className="absolute inset-0 flex items-center justify-center p-4 pb-20">
+                    <div className="relative w-full h-full max-w-[70%] max-h-[70%] flex items-center justify-center">
+                      {(() => {
+                        // Get the media URL from productVideo field
+                        const mediaUrl = product.productVideo?.[0]?.url
+                          ? product.productVideo[0].url.startsWith("http")
+                            ? product.productVideo[0].url
+                            : `${process.env.NEXT_PUBLIC_API_URL}${product.productVideo[0].url}`
+                          : null;
+
+                        // Check if the URL is actually a video file by extension
+                        const isVideo =
+                          mediaUrl && /\.(mp4|webm|ogg|mov)$/i.test(mediaUrl);
+
+                        if (mediaUrl && isVideo) {
+                          // Render video
+                          return (
+                            <video
+                              src={mediaUrl}
+                              autoPlay
+                              loop
+                              muted
+                              playsInline
+                              controls={false}
+                              style={{
+                                width: "100%",
+                                height: "100%",
+                                objectFit: "contain",
+                                display: "block",
+                                mixBlendMode: "screen",
+                                willChange: "transform",
+                              }}
+                            />
+                          );
+                        } else {
+                          // Render image - try productVideo first (in case it's an image), then chemicalFormulaImg
+                          const imageUrl =
+                            mediaUrl ||
+                            (product.chemicalFormulaImg?.[0]?.url
+                              ? product.chemicalFormulaImg[0].url.startsWith(
+                                  "http"
+                                )
+                                ? product.chemicalFormulaImg[0].url
+                                : `${process.env.NEXT_PUBLIC_API_URL}${product.chemicalFormulaImg[0].url}`
+                              : "");
+
+                          return imageUrl ? (
+                            <Image
+                              src={imageUrl}
+                              alt={product.name}
+                              fill
+                              className="object-contain"
+                            />
+                          ) : null;
                         }
-                      }
-                    `}</style>
-                    <div className="relative w-1/2 h-1/2 flex items-center justify-center">
-                      {product.productVideo?.length ? (
-                        <video
-                          src={
-                            product.productVideo[0]?.url.startsWith("http")
-                              ? product.productVideo[0].url
-                              : `${process.env.NEXT_PUBLIC_API_URL}${product.productVideo[0].url}`
-                          }
-                          autoPlay
-                          loop
-                          muted
-                          playsInline
-                          controls={false}
-                          style={{
-                            width: "100%",
-                            height: "100%",
-                            objectFit: "contain",
-                            display: "block",
-                            mixBlendMode: "screen",
-                            willChange: "transform"
-                          }}
-                        />
-                      ) : (
-                        <Image
-                          src={
-                            product.chemicalFormulaImg?.[0]?.url.startsWith(
-                              "http"
-                            )
-                              ? product.chemicalFormulaImg[0].url
-                              : `${process.env.NEXT_PUBLIC_API_URL}${product.chemicalFormulaImg?.[0]?.url || ""}`
-                          }
-                          alt={product.name}
-                          fill
-                          className="object-contain"
-                        />
-                      )}
+                      })()}
                     </div>
                   </div>
 
