@@ -29,18 +29,18 @@ function ProductVideo({ product }: { product: Product }) {
     isMobile ? [1.3, 0.35] : [1, 0.75]
   );
 
-  const rawVideo =
+  const rawMedia =
     typeof product?.productVideo === "string"
       ? product.productVideo
       : product?.productVideo?.[0]?.url;
 
-  const videoUrl = rawVideo || null;
+  const mediaUrl = rawMedia || null;
+  if (!mediaUrl) return null;
 
-  if (!videoUrl) return null;
+  // Check if the URL is a video file by extension
+  const isVideo = /\.(mp4|webm|ogg|mov)$/i.test(mediaUrl);
 
-  console.log("PRODUCT VIDEO RAW:", product?.productVideo);
-  console.log("VIDEO URL:", videoUrl);
-
+  // Animation applies to both video and image
   return (
     <>
       <motion.div
@@ -48,14 +48,22 @@ function ProductVideo({ product }: { product: Product }) {
         className="fixed top-1/2 left-1/2 z-[40] pointer-events-none"
       >
         <div className="relative flex flex-col items-center">
-          <video
-            src={videoUrl}
-            autoPlay
-            muted
-            loop
-            playsInline
-            className="w-[480px] xl:w-[720px] object-contain drop-shadow-[0_20px_60px_rgba(0,0,0,0.25)]"
-          />
+          {isVideo ? (
+            <video
+              src={mediaUrl}
+              autoPlay
+              muted
+              loop
+              playsInline
+              className="w-[480px] xl:w-[720px] object-contain drop-shadow-[0_20px_60px_rgba(0,0,0,0.25)]"
+            />
+          ) : (
+            <img
+              src={mediaUrl}
+              alt={product.name}
+              className="w-[480px] xl:w-[720px] object-contain drop-shadow-[0_20px_60px_rgba(0,0,0,0.25)]"
+            />
+          )}
         </div>
       </motion.div>
     </>
