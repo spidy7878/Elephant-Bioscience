@@ -24,7 +24,7 @@ export default async function Page({ params }: Props) {
 
   if (!product) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#dedada]">
+      <div className="min-h-[100dvh] flex items-center justify-center bg-[#dedada]">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-800">
             Product not found
@@ -60,7 +60,7 @@ export default async function Page({ params }: Props) {
       {/* Responsive overlay for readability */}
       <div className="fixed top-0 left-0 w-full h-full z-10 pointer-events-none" />
       <div className="relative z-20">
-        <section className="relative w-full min-h-screen flex flex-col">
+        <section className="relative w-full min-h-[100dvh] flex flex-col">
           {/* Hero Section */}
           <div className="snap-start w-full min-h-[60vh] md:min-h-[80vh] flex items-center justify-center px-2 sm:px-4 md:px-8">
             <HeroProduct product={product} />
