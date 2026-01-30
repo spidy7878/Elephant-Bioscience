@@ -310,12 +310,8 @@ function BackgroundVideo({ progress }: { progress: MotionValue<number> }) {
         loop
         muted
         playsInline
-        preload="auto"
         className="absolute top-0 left-0 w-full h-full object-cover"
-        style={{
-          opacity,
-          willChange: "transform, opacity"
-        }}
+        style={{ opacity }}
       >
         <source src="/videos/movement.mp4" type="video/mp4" />
       </motion.video>
