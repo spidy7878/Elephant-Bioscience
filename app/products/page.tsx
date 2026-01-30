@@ -240,7 +240,21 @@ export default function ProductPage() {
 
                   {/* Product Media */}
                   <div className="absolute inset-0 flex items-center justify-center p-4 pb-20">
-                    <div className="relative w-full h-full max-w-[70%] max-h-[70%] flex items-center justify-center">
+                    <div className="relative w-full h-full flex items-center justify-center product-media-responsive">
+                      <style jsx>{`
+                        .product-media-responsive {
+                          max-width: 70%;
+                          max-height: 70%;
+                          margin-top: 2.5rem; /* 40px, shifts down on desktop */
+                        }
+                        @media (max-width: 600px) {
+                          .product-media-responsive {
+                            max-width: 100%;
+                            max-height: 100%;
+                            margin-top: 1.25rem; /* 20px, shifts down on mobile */
+                          }
+                        }
+                      `}</style>
                       {(() => {
                         // Get the media URL from productVideo field
                         const mediaUrl = product.productVideo?.[0]?.url
@@ -299,7 +313,7 @@ export default function ProductPage() {
                   </div>
 
                   {/* Product Info */}
-                  <div className="absolute bottom-0 left-0 w-full pt-4 sm:pt-6 text-center z-10 ">
+                  <div className="absolute bottom-0 left-0 w-full text-center z-10 ">
                     <h3
                       className="text-lg sm:text-xl font-medium text-white mb-4 truncate mx-auto px-4"
                       style={{
