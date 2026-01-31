@@ -5,10 +5,13 @@ import { useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 
-// Strapi API endpoint for authentication
+// Strapi API endpoints
 const STRAPI_LOGIN_URL = process.env.NEXT_PUBLIC_STRAPI_URL
   ? `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/auth/local`
   : "/api/auth/local";
+const STRAPI_REQUEST_ENTRY_URL = process.env.NEXT_PUBLIC_STRAPI_URL
+  ? `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/request-entries`
+  : "/api/request-entries";
 
 type LoginHandlerResult =
   | boolean
@@ -142,10 +145,12 @@ function ModalInner({
         setLoading(false);
 
         if (res.ok && data.jwt) {
-          // Optionally, store JWT in localStorage or cookie for session
+          // Store JWT in localStorage
           localStorage.setItem("strapi_jwt", data.jwt);
-          // You may also want to store user info
+          // Store user info
           localStorage.setItem("strapi_user", JSON.stringify(data.user));
+          // Set JWT in cookie for middleware authentication
+          document.cookie = `strapi_jwt=${data.jwt}; path=/;`;
           onClose();
           router.push("/products");
         } else {
@@ -192,47 +197,32 @@ function ModalInner({
       }
       if (hasError) return;
 
-      if (onRequest) {
-        try {
-          setLoading(true);
-          const result = await Promise.resolve(
-            onRequest({ email: email.trim(), phone: phone.trim() })
-          );
-          setLoading(false);
+      setLoading(true);
+      try {
+        // Send request entry to Strapi backend
+        const res = await fetch(STRAPI_REQUEST_ENTRY_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            data: {
+              email: email.trim(),
+              phone: phone.trim(),
+            },
+          }),
+        });
+        setLoading(false);
 
-          if (result === undefined) {
-            onClose();
-            return;
-          }
-
-          if (typeof result === "boolean") {
-            if (result === true) {
-              onClose();
-              return;
-            } else {
-              setEmailError("Invalid Email");
-              setPhoneError("Invalid Phone");
-              return;
-            }
-          } else {
-            if (result.success) {
-              onClose();
-              return;
-            } else {
-              setEmailError(result.errors?.email ?? "Invalid Email");
-              setPhoneError(result.errors?.phone ?? "Invalid Phone");
-              return;
-            }
-          }
-        } catch {
-          setLoading(false);
-          setEmailError("Request failed. Try again.");
+        if (res.ok) {
+          onClose();
+        } else {
+          setEmailError("Failed to submit request.");
         }
-      } else {
-        onClose();
+      } catch {
+        setLoading(false);
+        setEmailError("Request failed. Try again.");
       }
     },
-    [email, phone, onRequest, onClose]
+    [email, phone, onClose]
   );
 
   const handleClose = useCallback(() => {
