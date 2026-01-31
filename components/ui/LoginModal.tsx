@@ -7,7 +7,7 @@ import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 
 // Strapi API endpoint for authentication
 const STRAPI_LOGIN_URL = process.env.NEXT_PUBLIC_STRAPI_URL
-  ? `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/auth/local`
+  ? `${process.env.NEXT_PUBLIC_STRAPI_URL.replace(/\/$/, "")}/api/auth/local`
   : "/api/auth/local";
 
 type LoginHandlerResult =

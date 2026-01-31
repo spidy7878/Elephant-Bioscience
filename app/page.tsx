@@ -24,7 +24,7 @@ import HangingContainer from "../components/sections/HangingContainer";
 import { useRouter } from "next/navigation";
 import HeroVisual from "@/components/sections/HeroVisual";
 import ProductShowcase from "components/sections/ProductShowcase";
-import Modal from "components/ui/LoginModal"; // Restored
+import Modal from "components/ui/LoginModal";
 
 export default function Home() {
   // Refs
@@ -33,11 +33,15 @@ export default function Home() {
   const frameRef = useRef(0);
   const rafRef = useRef<number>();
 
+  // Ref for intersection observer
+  const showcaseRef = useRef<HTMLDivElement>(null);
+
   // States
   const [scrollY, setScrollYState] = useState(0);
   const [windowHeight, setWindowHeight] = useState(1000);
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [isImagesLoaded, setIsImagesLoaded] = useState(false);
+  const [showStickyButton, setShowStickyButton] = useState(true);
   const router = useRouter();
 
   // Modal State
@@ -50,6 +54,29 @@ export default function Home() {
 
   // Opacity for the internal title (revealed via mask)
   const internalTitleOpacity = 1;
+
+  // Intersection Observer to hide sticky button when product showcase is visible
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        // If showcase is intersecting (visible), hide sticky button. 
+        // We might want a threshold, e.g., if 10% is visible.
+        setShowStickyButton(!entry.isIntersecting);
+      },
+      { threshold: 0.1 }
+    );
+
+    if (showcaseRef.current) {
+      observer.observe(showcaseRef.current);
+    }
+
+    return () => {
+      if (showcaseRef.current) {
+        observer.unobserve(showcaseRef.current);
+      }
+    };
+  }, []);
+
 
   // Preload microscope images
   useEffect(() => {
@@ -119,10 +146,18 @@ export default function Home() {
     return unsubscribe;
   }, [microscopeProgress, isImagesLoaded]);
 
-  // General scroll handling
+  // General scroll handling with throttling to prevent update depth error
   useEffect(() => {
+    let ticking = false;
+
     const handleScroll = () => {
-      setScrollYState(window.scrollY);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setScrollYState(window.scrollY);
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
 
     const handleResize = () => {
@@ -144,14 +179,8 @@ export default function Home() {
 
   // Handlers for Login Modal
   const handleModalClose = () => setLoginOpen(false);
-  const handleLogin = async () => {
-    // Logic for login handled in modal, but we can close it here on success if needed
-    // returning boolean as expected by Modal's interface
-    return true;
-  };
-  const handleRequest = async () => {
-    return true;
-  }
+  const handleLogin = async () => true;
+  const handleRequest = async () => true;
 
   return (
     <div className="bg-transparent">
@@ -218,23 +247,29 @@ export default function Home() {
         >
           <HeroVisual />
         </div>
-        <ProductShowcase />
+
+        {/* Wrap ProductShowcase in ref to detect intersection */}
+        <div ref={showcaseRef}>
+          <ProductShowcase onOpenLogin={() => setLoginOpen(true)} />
+        </div>
       </motion.div>
 
+      {/* Sticky Button managed by state */}
       {isImagesLoaded && (
         <div
           style={{
             position: "fixed",
             left: "50%",
             bottom: "40px",
-            transform: "translateX(-50%)",
+            transform: `translateX(-50%) ${showStickyButton ? 'scale(1)' : 'scale(0)'}`,
             zIndex: 10001,
-            opacity: 1,
-            transition: "opacity 200ms ease",
+            opacity: showStickyButton ? 1 : 0,
+            transition: "opacity 300ms ease, transform 300ms ease",
+            pointerEvents: showStickyButton ? "auto" : "none"
           }}
         >
           <button
-            onClick={() => setLoginOpen(true)} // Open Login Modal
+            onClick={() => setLoginOpen(true)}
             style={{
               padding: "12px 24px",
               background: "#8C2224",
@@ -258,7 +293,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* Restored Modal */}
+      {/* Login Modal */}
       <Modal
         isOpen={isLoginOpen}
         onClose={handleModalClose}

@@ -29,8 +29,10 @@ export default function ProductPage() {
   useEffect(() => {
     async function fetchProducts() {
       try {
+        // Remove trailing slash from API URL if present to avoid double slashes
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") || "";
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/products?populate=*`
+          `${apiUrl}/api/products?populate=*`
         );
         const json = await res.json();
         setProducts(Array.isArray(json.data) ? json.data : []);
@@ -200,11 +202,10 @@ export default function ProductPage() {
                     const newUrl = `/products${categorySlug === "all-peptides" ? "" : "/" + categorySlug}`;
                     window.history.replaceState(null, "", newUrl);
                   }}
-                  className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-md sm:rounded transition-all duration-300 text-xs sm:text-sm ${
-                    activeCategory === category
+                  className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-md sm:rounded transition-all duration-300 text-xs sm:text-sm ${activeCategory === category
                       ? "bg-[#8c2224] text-white"
                       : "bg-transparent text-white hover:bg-[#8c2224] hover:text-white"
-                  }`}
+                    }`}
                 >
                   {category}
                 </button>
@@ -257,10 +258,11 @@ export default function ProductPage() {
                       `}</style>
                       {(() => {
                         // Get the media URL from productVideo field
+                        const apiUrl = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") || "";
                         const mediaUrl = product.productVideo?.[0]?.url
                           ? product.productVideo[0].url.startsWith("http")
                             ? product.productVideo[0].url
-                            : `${process.env.NEXT_PUBLIC_API_URL}${product.productVideo[0].url}`
+                            : `${apiUrl}${product.productVideo[0].url}`
                           : null;
 
                         // Check if the URL is actually a video file by extension
@@ -293,10 +295,10 @@ export default function ProductPage() {
                             mediaUrl ||
                             (product.chemicalFormulaImg?.[0]?.url
                               ? product.chemicalFormulaImg[0].url.startsWith(
-                                  "http"
-                                )
+                                "http"
+                              )
                                 ? product.chemicalFormulaImg[0].url
-                                : `${process.env.NEXT_PUBLIC_API_URL}${product.chemicalFormulaImg[0].url}`
+                                : `${apiUrl}${product.chemicalFormulaImg[0].url}`
                               : "");
 
                           return imageUrl ? (
