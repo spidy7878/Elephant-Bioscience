@@ -1,4 +1,3 @@
-// src/app/page.tsx
 "use client";
 
 import { useRef, useState, useEffect, useCallback } from "react";
@@ -21,10 +20,11 @@ import {
 import AboutBrandGrid from "../components/sections/AboutBrandGrid";
 import AboutSection from "../components/sections/AboutSection";
 import Hero from "components/sections/Hero";
-import Modal from "components/ui/LoginModal";
 import HangingContainer from "../components/sections/HangingContainer";
 import { useRouter } from "next/navigation";
 import HeroVisual from "@/components/sections/HeroVisual";
+import ProductShowcase from "components/sections/ProductShowcase";
+import Modal from "components/ui/LoginModal"; // Restored
 
 export default function Home() {
   // Refs
@@ -39,7 +39,9 @@ export default function Home() {
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [isImagesLoaded, setIsImagesLoaded] = useState(false);
   const router = useRouter();
-  const [isProductsOpen, setProductsOpen] = useState(false);
+
+  // Modal State
+  const [isLoginOpen, setLoginOpen] = useState(false);
 
   const [microscopeProgress, setMicroscopeProgress] =
     useState<MotionValue<number> | null>(null);
@@ -140,30 +142,16 @@ export default function Home() {
 
   const totalScrollProgress = scrollY / (windowHeight * 11);
 
-  // Modal handlers
-  const handleModalClose = useCallback(() => {
-    setProductsOpen(false);
-  }, [setProductsOpen]);
-
-  const handleLogin = useCallback(
-    async ({ id, password } = { id: "", password: "" }) => {
-      const dummyId = process.env.NEXT_PUBLIC_LOGIN_ID || "admin";
-      const dummyPassword = process.env.NEXT_PUBLIC_LOGIN_PASSWORD || "admin";
-
-      if (id === dummyId && password === dummyPassword) {
-        setProductsOpen(false);
-        router.push("/products");
-        return true;
-      }
-      return false;
-    },
-    [router, setProductsOpen]
-  );
-
-  const handleRequest = useCallback(() => {
-    setProductsOpen(false);
-    router.push("/request-entry");
-  }, [router, setProductsOpen]);
+  // Handlers for Login Modal
+  const handleModalClose = () => setLoginOpen(false);
+  const handleLogin = async () => {
+    // Logic for login handled in modal, but we can close it here on success if needed
+    // returning boolean as expected by Modal's interface
+    return true;
+  };
+  const handleRequest = async () => {
+    return true;
+  }
 
   return (
     <div className="bg-transparent">
@@ -188,8 +176,6 @@ export default function Home() {
           transition: "opacity 0.5s",
         }}
       />
-
-      {/* Noise Overlay Removed */}
 
       {/* Navigation */}
       <NavigationBar
@@ -232,6 +218,7 @@ export default function Home() {
         >
           <HeroVisual />
         </div>
+        <ProductShowcase />
       </motion.div>
 
       {isImagesLoaded && (
@@ -242,13 +229,12 @@ export default function Home() {
             bottom: "40px",
             transform: "translateX(-50%)",
             zIndex: 10001,
-            opacity: isProductsOpen ? 0 : 1,
-            pointerEvents: isProductsOpen ? "none" : "auto",
+            opacity: 1,
             transition: "opacity 200ms ease",
           }}
         >
           <button
-            onClick={() => setProductsOpen(true)}
+            onClick={() => setLoginOpen(true)} // Open Login Modal
             style={{
               padding: "12px 24px",
               background: "#8C2224",
@@ -266,15 +252,15 @@ export default function Home() {
               (e.currentTarget.style.transform = "scale(1.05)")
             }
             onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
-            aria-hidden={isProductsOpen}
           >
             Explore Products
           </button>
         </div>
       )}
 
+      {/* Restored Modal */}
       <Modal
-        isOpen={isProductsOpen}
+        isOpen={isLoginOpen}
         onClose={handleModalClose}
         onLogin={handleLogin}
         onRequest={handleRequest}
