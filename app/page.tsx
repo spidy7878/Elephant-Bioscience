@@ -60,10 +60,9 @@ export default function Home() {
     const observer = new IntersectionObserver(
       ([entry]) => {
         // If showcase is intersecting (visible), hide sticky button. 
-        // We might want a threshold, e.g., if 10% is visible.
         setShowStickyButton(!entry.isIntersecting);
       },
-      { threshold: 0.1 }
+      { threshold: 0.5 }
     );
 
     if (showcaseRef.current) {
@@ -182,6 +181,11 @@ export default function Home() {
   const handleLogin = async () => true;
   const handleRequest = async () => true;
 
+  // Stable callback to prevent infinite re-renders
+  const handleProgressChange = useCallback((progress: MotionValue<number>) => {
+    setMicroscopeProgress(progress);
+  }, []);
+
   return (
     <div className="bg-transparent">
       {/* Loading Screen */}
@@ -218,9 +222,7 @@ export default function Home() {
         canvasRef={canvasRef}
         isImagesLoaded={isImagesLoaded}
         frameRef={frameRef}
-        onProgressChange={(progress: MotionValue<number>) =>
-          setMicroscopeProgress(progress)
-        }
+        onProgressChange={handleProgressChange} // Use the stable callback
       >
         {/* Inlined HomePage content (without video) */}
         <div className="relative w-full bg-transparent">
@@ -250,48 +252,51 @@ export default function Home() {
 
         {/* Wrap ProductShowcase in ref to detect intersection */}
         <div ref={showcaseRef}>
-          <ProductShowcase onOpenLogin={() => setLoginOpen(true)} />
+          <ProductShowcase
+            onOpenLogin={() => setLoginOpen(true)}
+            showButton={!showStickyButton}
+          />
         </div>
       </motion.div>
 
       {/* Sticky Button managed by state */}
-      {isImagesLoaded && (
-        <div
-          style={{
-            position: "fixed",
-            left: "50%",
-            bottom: "40px",
-            transform: `translateX(-50%) ${showStickyButton ? 'scale(1)' : 'scale(0)'}`,
-            zIndex: 10001,
-            opacity: showStickyButton ? 1 : 0,
-            transition: "opacity 300ms ease, transform 300ms ease",
-            pointerEvents: showStickyButton ? "auto" : "none"
-          }}
-        >
-          <button
-            onClick={() => setLoginOpen(true)}
+      <AnimatePresence>
+        {isImagesLoaded && showStickyButton && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: 1, scale: 1 }}
+            // exit prop removed to prevent interference with layoutId transfer
             style={{
-              padding: "12px 24px",
-              background: "#8C2224",
-              border: "none",
-              borderRadius: "100px",
-              color: "#fff",
-              fontSize: "15px",
-              fontWeight: 700,
-              cursor: "pointer",
-              boxShadow: "0 4px 20px rgba(140, 34, 36, 0.15)",
-              transition: "transform 0.3s, box-shadow 0.3s",
-              letterSpacing: 0.5,
+              position: "fixed",
+              left: "50%",
+              bottom: "40px",
+              x: "-50%", // transform translateX
+              zIndex: 10001,
             }}
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.transform = "scale(1.05)")
-            }
-            onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
           >
-            Explore Products
-          </button>
-        </div>
-      )}
+            <motion.button
+              layoutId="explore-cta"
+              onClick={() => setLoginOpen(true)}
+              style={{
+                padding: "12px 24px",
+                background: "#8C2224",
+                border: "none",
+                borderRadius: "100px",
+                color: "#fff",
+                fontSize: "15px",
+                fontWeight: 700,
+                cursor: "pointer",
+                boxShadow: "0 4px 20px rgba(140, 34, 36, 0.15)",
+                letterSpacing: 0.5,
+              }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Explore Products
+            </motion.button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Login Modal */}
       <Modal

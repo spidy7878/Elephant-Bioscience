@@ -4,12 +4,14 @@ import { useState, useRef, useEffect } from "react";
 import { Product } from "app/types/product";
 import Image from "next/image";
 import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface ProductShowcaseProps {
     onOpenLogin?: () => void;
+    showButton?: boolean;
 }
 
-export default function ProductShowcase({ onOpenLogin }: ProductShowcaseProps) {
+export default function ProductShowcase({ onOpenLogin, showButton = true }: ProductShowcaseProps) {
     const [products, setProducts] = useState<Product[]>([]);
 
     // Fetch products from API
@@ -166,7 +168,7 @@ export default function ProductShowcase({ onOpenLogin }: ProductShowcaseProps) {
                     {/* Products Grid - BLURRED */}
                     <div className="relative">
                         <div
-                            className="grid grid-cols-2 lg:grid-cols-4 gap-6 blur-[6px] select-none pointer-events-none opacity-60 grayscale-[30%]"
+                            className="grid grid-cols-2 lg:grid-cols-4 gap-6 blur-[12px] select-none pointer-events-none opacity-60 grayscale-[30%]"
                             aria-hidden="true"
                         >
                             {/* LIMIT to 8 items to ensure it fits in the screen (2 rows) */}
@@ -233,8 +235,13 @@ export default function ProductShowcase({ onOpenLogin }: ProductShowcaseProps) {
                                                             />
                                                         );
                                                     } else {
-                                                        const imageUrl = mediaUrl || (product.chemicalFormulaImg?.[0]?.url ? product.chemicalFormulaImg[0].url.startsWith("http") ? product.chemicalFormulaImg[0].url : `${apiUrl}${product.chemicalFormulaImg[0].url}` : "/163360068.webp");
-                                                        return imageUrl ? <Image src={imageUrl} alt={product.name} fill className="object-contain" /> : null;
+                                                        // Fix double slash issue for fallback or chemicalFormulaImg
+                                                        const rawUrl = product.chemicalFormulaImg?.[0]?.url || "";
+                                                        // If rawUrl is absolute (http), use it.
+                                                        // If relative (starts with /), ensure apiUrl doesn't trail with /.
+                                                        // Fallback to placeholder.
+                                                        const fullUrl = rawUrl.startsWith("http") ? rawUrl : (rawUrl ? `${apiUrl}${rawUrl}` : "/163360068.webp");
+                                                        return <Image src={fullUrl} alt={product.name} fill className="object-contain" />;
                                                     }
                                                 })()}
                                             </div>
@@ -266,26 +273,31 @@ export default function ProductShowcase({ onOpenLogin }: ProductShowcaseProps) {
 
                         {/* Centered Explore Product Button */}
                         <div className="absolute inset-0 flex items-center justify-center z-50">
-                            <button
-                                onClick={onOpenLogin}
-                                style={{
-                                    padding: "16px 36px",
-                                    background: "#8C2224",
-                                    border: "none",
-                                    borderRadius: "100px",
-                                    color: "#fff",
-                                    fontSize: "18px",
-                                    fontWeight: 700,
-                                    cursor: "pointer",
-                                    boxShadow: "0 8px 30px rgba(140, 34, 36, 0.4)",
-                                    transition: "transform 0.3s, box-shadow 0.3s",
-                                    letterSpacing: 0.5,
-                                    textTransform: "uppercase"
-                                }}
-                                className="hover:scale-105 active:scale-95"
-                            >
-                                Explore Products
-                            </button>
+                            <AnimatePresence>
+                                {showButton && (
+                                    <motion.button
+                                        layoutId="explore-cta"
+                                        onClick={onOpenLogin}
+                                        style={{
+                                            padding: "12px 24px",
+                                            background: "#8C2224",
+                                            border: "none",
+                                            borderRadius: "100px",
+                                            color: "#fff",
+                                            fontSize: "15px",
+                                            fontWeight: 700,
+                                            cursor: "pointer",
+                                            boxShadow: "0 4px 20px rgba(140, 34, 36, 0.15)",
+                                            letterSpacing: 0.5,
+                                        }}
+                                        whileHover={{ scale: 1.05 }}
+                                        whileTap={{ scale: 0.95 }}
+                                        transition={{ type: "spring", stiffness: 100, damping: 20 }}
+                                    >
+                                        Explore Products
+                                    </motion.button>
+                                )}
+                            </AnimatePresence>
                         </div>
                     </div>
                 </div>
