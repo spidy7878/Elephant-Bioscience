@@ -144,7 +144,7 @@ export default function ProductShowcase({ onOpenLogin, showButton = true }: Prod
                     {/* Category Filter Buttons - BLURRED */}
                     <div
                         ref={categoryRowRef}
-                        className="flex flex-nowrap gap-4 mb-12 overflow-x-auto scrollbar-hide whitespace-nowrap cursor-grab blur-[4px] opacity-70 pointer-events-none"
+                        className="flex flex-nowrap gap-4 mb-12 mt-24 overflow-x-auto scrollbar-hide whitespace-nowrap cursor-grab blur-[4px] opacity-70 pointer-events-none"
                         onMouseDown={handleMouseDown}
                         onMouseLeave={handleMouseLeave}
                         onMouseUp={handleMouseUp}

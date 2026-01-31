@@ -55,31 +55,13 @@ export default function Home() {
   // Opacity for the internal title (revealed via mask)
   const internalTitleOpacity = 1;
 
-  // Intersection Observer to hide sticky button when product showcase is visible
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        // If showcase is intersecting (visible), hide sticky button. 
-        setShowStickyButton(!entry.isIntersecting);
-      },
-      { threshold: 0.5 }
-    );
-
-    if (showcaseRef.current) {
-      observer.observe(showcaseRef.current);
-    }
-
-    return () => {
-      if (showcaseRef.current) {
-        observer.unobserve(showcaseRef.current);
-      }
-    };
-  }, []);
-
 
   // Preload microscope images
   useEffect(() => {
     let isMounted = true;
+
+    // Initial window height set
+    setWindowHeight(window.innerHeight);
 
     loadMicroscopeImages((progress: number) => {
       if (isMounted) {
@@ -152,27 +134,42 @@ export default function Home() {
     const handleScroll = () => {
       if (!ticking) {
         window.requestAnimationFrame(() => {
-          setScrollYState(window.scrollY);
+          const currentScrollY = window.scrollY;
+          setScrollYState(currentScrollY);
+
+          // Instant Sticky Button Logic using Direct Read
+          // This avoids "stale closure" issues with cached heights and handles dynamic resizing instantly
+          if (showcaseRef.current) {
+            const rect = showcaseRef.current.getBoundingClientRect();
+            const currentWindowHeight = window.innerHeight; // Read live height
+
+            // Calculate center of showcase relative to viewport top
+            // rect.top is already relative to viewport
+            const showcaseCenterViewport = rect.top + (rect.height / 2);
+
+            // Trigger when center is at bottom (minus visual offest)
+            const triggerPoint = currentWindowHeight - 60;
+
+            // If center is lower than trigger (offscreen or just entering bottom), Show.
+            const shouldShow = showcaseCenterViewport > triggerPoint;
+
+            setShowStickyButton(prev => prev === shouldShow ? prev : shouldShow);
+          }
+
           ticking = false;
         });
         ticking = true;
       }
     };
 
-    const handleResize = () => {
-      setWindowHeight(window.innerHeight);
-    };
-
-    handleResize();
-
     window.addEventListener("scroll", handleScroll, { passive: true });
-    window.addEventListener("resize", handleResize);
+    window.addEventListener("resize", () => setWindowHeight(window.innerHeight));
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("resize", () => setWindowHeight(window.innerHeight));
     };
-  }, []);
+  }, []); // Empty dependency array - purely Ref based
 
   const totalScrollProgress = scrollY / (windowHeight * 11);
 
@@ -263,13 +260,11 @@ export default function Home() {
       <AnimatePresence>
         {isImagesLoaded && showStickyButton && (
           <motion.div
-            initial={{ opacity: 0, scale: 0 }}
-            animate={{ opacity: 1, scale: 1 }}
-            // exit prop removed to prevent interference with layoutId transfer
+            // initial and animate props removed to stop disappearance on scroll up
             style={{
               position: "fixed",
               left: "50%",
-              bottom: "40px",
+              bottom: "50px",
               x: "-50%", // transform translateX
               zIndex: 10001,
             }}
@@ -307,21 +302,6 @@ export default function Home() {
       />
     </div>
   );
-}
-
-// Helper component to handle opacity transform based on specific progress
-function SectionsContainer({
-  progress,
-  children,
-}: {
-  progress: MotionValue<number>;
-  children: React.ReactNode;
-}) {
-  // We trigger the fade-in only at the very end of the zoom (0.95 to 1.0),
-  // matching the mask expansion in HeroSection.
-  const opacity = useTransform(progress, [0.95, 1], [0, 1]);
-
-  return <motion.div style={{ opacity }}>{children}</motion.div>;
 }
 
 function BackgroundVideo({ progress }: { progress: MotionValue<number> }) {
