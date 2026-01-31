@@ -5,9 +5,10 @@ import { useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 
-// Assign env variables to constants at build time for client-side use
-const ENV_LOGIN_ID = process.env.NEXT_PUBLIC_LOGIN_ID;
-const ENV_LOGIN_PASSWORD = process.env.NEXT_PUBLIC_LOGIN_PASSWORD;
+// Strapi API endpoint for authentication
+const STRAPI_LOGIN_URL = process.env.NEXT_PUBLIC_STRAPI_URL
+  ? `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/auth/local`
+  : "/api/auth/local";
 
 type LoginHandlerResult =
   | boolean
@@ -52,7 +53,6 @@ const containerStyle: React.CSSProperties = {
   willChange: "transform, opacity",
   transform: "translate3d(0, 0, 0)",
   backfaceVisibility: "hidden" as const,
-
 };
 
 function ModalInner({
@@ -67,7 +67,7 @@ function ModalInner({
   const [mode, setMode] = useState<"choices" | "login" | "request">("choices");
 
   // Login fields
-  const [id, setId] = useState("");
+  const [id, setId] = useState(""); // username or email
   const [password, setPassword] = useState("");
   const [idError, setIdError] = useState<string | null>(null);
   const [passwordError, setPasswordError] = useState<string | null>(null);
@@ -112,6 +112,7 @@ function ModalInner({
     }
   }, [isOpen, onClose]);
 
+  // Login handler for Strapi CMS
   const handleLoginSubmit = useCallback(
     async (e?: React.FormEvent) => {
       e?.preventDefault();
@@ -120,7 +121,7 @@ function ModalInner({
 
       let hasError = false;
       if (!id.trim()) {
-        setIdError("Please enter ID");
+        setIdError("Please enter username or email");
         hasError = true;
       }
       if (!password.trim()) {
@@ -129,57 +130,37 @@ function ModalInner({
       }
       if (hasError) return;
 
-      if (onLogin) {
-        try {
-          setLoading(true);
-          const result = await Promise.resolve(
-            onLogin({ id: id.trim(), password })
-          );
-          setLoading(false);
+      setLoading(true);
+      try {
+        // Strapi allows login with either identifier (username or email) and password
+        const res = await fetch(STRAPI_LOGIN_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ identifier: id.trim(), password }),
+        });
+        const data = await res.json();
+        setLoading(false);
 
-          if (typeof result === "boolean") {
-            if (result === true) {
-              onClose();
-              router.push("/products");
-              return;
-            } else {
-              setIdError("Invalid ID");
-              setPasswordError("Invalid Password");
-              setPassword("");
-              return;
-            }
-          } else {
-            if (result.success) {
-              onClose();
-              router.push("/products");
-              return;
-            } else {
-              setIdError(result.errors?.id ?? "Invalid ID");
-              setPasswordError(result.errors?.password ?? "Invalid Password");
-              setPassword("");
-              return;
-            }
-          }
-        } catch {
-          setLoading(false);
-          setIdError("Login failed. Try again.");
-        }
-      } else {
-        // Use credentials from environment variables or dummy fallback
-        const dummyId = ENV_LOGIN_ID || "admin";
-        const dummyPassword = ENV_LOGIN_PASSWORD || "admin";
-
-        if (id.trim() === dummyId && password === dummyPassword) {
+        if (res.ok && data.jwt) {
+          // Optionally, store JWT in localStorage or cookie for session
+          localStorage.setItem("strapi_jwt", data.jwt);
+          // You may also want to store user info
+          localStorage.setItem("strapi_user", JSON.stringify(data.user));
           onClose();
           router.push("/products");
         } else {
-          setIdError("Invalid ID");
-          setPasswordError("Invalid Password");
+          // Strapi error format: { error: { message: ... } }
+          const errorMsg = data?.error?.message || "Invalid credentials";
+          setIdError(errorMsg);
+          setPasswordError(errorMsg);
           setPassword("");
         }
+      } catch (err) {
+        setLoading(false);
+        setIdError("Login failed. Try again.");
       }
     },
-    [id, password, onLogin, onClose, router]
+    [id, password, onClose, router]
   );
 
   const handleRequestSubmit = useCallback(
@@ -302,12 +283,11 @@ function ModalInner({
                 ease: "easeIn",
               },
             }}
-
             role="dialog"
             aria-modal="true"
             className="relative flex rounded-xl w-[85vw] h-[70vw] max-w-[280px] max-h-[280px] sm:w-[300px] sm:h-[300px] md:w-[320px] md:h-[320px] px-3 py-4 shadow-none border border-white/10 overflow-hidden items-center justify-center"
-            style={containerStyle}>
-
+            style={containerStyle}
+          >
             {/* Top Navigation Bar: Back and Close buttons */}
             <div className="absolute top-2 left-0 right-0 flex items-center justify-between px-3 z-[100] w-full pointer-events-none">
               <div className="flex-1 pointer-events-auto">
