@@ -145,20 +145,12 @@ export default function Home() {
     setProductsOpen(false);
   }, [setProductsOpen]);
 
-  const handleLogin = useCallback(
-    async ({ id, password } = { id: "", password: "" }) => {
-      const dummyId = process.env.NEXT_PUBLIC_LOGIN_ID || "admin";
-      const dummyPassword = process.env.NEXT_PUBLIC_LOGIN_PASSWORD || "admin";
-
-      if (id === dummyId && password === dummyPassword) {
-        setProductsOpen(false);
-        router.push("/products");
-        return true;
-      }
-      return false;
-    },
-    [router, setProductsOpen]
-  );
+  // No-op login handler; authentication and redirect handled in LoginModal
+  const handleLogin = useCallback(() => {
+    setProductsOpen(false);
+    // Do not redirect here; LoginModal handles redirect after successful login
+    return false;
+  }, [setProductsOpen]);
 
   const handleRequest = useCallback(() => {
     setProductsOpen(false);

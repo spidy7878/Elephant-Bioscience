@@ -145,10 +145,12 @@ function ModalInner({
         setLoading(false);
 
         if (res.ok && data.jwt) {
-          // Optionally, store JWT in localStorage or cookie for session
+          // Store JWT in localStorage
           localStorage.setItem("strapi_jwt", data.jwt);
-          // You may also want to store user info
+          // Store user info
           localStorage.setItem("strapi_user", JSON.stringify(data.user));
+          // Set JWT in cookie for middleware authentication
+          document.cookie = `strapi_jwt=${data.jwt}; path=/;`;
           onClose();
           router.push("/products");
         } else {
