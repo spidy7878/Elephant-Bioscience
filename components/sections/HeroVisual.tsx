@@ -1,46 +1,57 @@
 "use client";
 
-export default function HeroVisual() {
-  // Responsive styles for the containers
-  const liquidWrapperStyle: React.CSSProperties = {
-    width: "800px",
-    height: "800px",
-    maxWidth: "100%",
-    marginTop: "-160px",
-  };
-  const textImgContainerStyle: React.CSSProperties = {
-    margin: 0,
-    padding: 0,
-    position: "relative",
-    top: "-325px",
-  };
+import { useState, useEffect } from "react";
 
-  // Responsive adjustments for small screens
-  if (typeof window !== "undefined" && window.innerWidth <= 600) {
-    liquidWrapperStyle.width = "330px";
-    liquidWrapperStyle.height = "330px";
-    liquidWrapperStyle.marginTop = "-80px";
-    textImgContainerStyle.top = "-120px";
-  }
+export default function HeroVisual() {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth <= 600);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   return (
-    <section className="hero-visual-section">
-      {/* Red liquid */}
-      <div className="liquid-img-wrapper" style={liquidWrapperStyle}>
+    <section className="hero-visual-section w-full overflow-hidden">
+      {/* Red liquid - responsive sizing */}
+      <div
+        className="liquid-img-wrapper mx-auto"
+        style={{
+          width: isMobile ? "min(330px, 90vw)" : "min(800px, 90vw)",
+          height: isMobile ? "min(330px, 90vw)" : "min(800px, 90vw)",
+          maxWidth: "100%",
+          marginTop: isMobile ? "-80px" : "-160px",
+        }}
+      >
         <img
-          src="ell (3).svg"
+          src="/ell (3).svg"
           alt="Liquid"
           style={{ width: "100%", height: "100%", objectFit: "contain" }}
         />
       </div>
 
-      {/* Text as image */}
-      <div className="text-img-container" style={textImgContainerStyle}>
+      {/* Text as image - responsive positioning */}
+      <div
+        className="text-img-container w-full flex justify-center"
+        style={{
+          margin: 0,
+          padding: 0,
+          position: "relative",
+          top: isMobile ? "-120px" : "-325px",
+        }}
+      >
         <img
           src="/ell (2).svg"
           alt="Text"
           className="text-img"
-          style={{ margin: 0, padding: 0, display: "block" }}
+          style={{
+            margin: 0,
+            padding: 0,
+            display: "block",
+            maxWidth: "90vw",
+            height: "auto",
+          }}
         />
       </div>
     </section>
