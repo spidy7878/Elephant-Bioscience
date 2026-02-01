@@ -43,7 +43,7 @@ export default function HeroVisual() {
 
       {/* Text as image */}
       <div className="text-img-container">
-        <img src="/text.PNG" alt="Text" className="text-img" />
+        <img src="/ell.svg" alt="Text" className="text-img" />
       </div>
     </section>
   );
