@@ -1,49 +1,47 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { gsap } from "gsap";
-
 export default function HeroVisual() {
-  const containerRef = useRef<HTMLDivElement>(null);
+  // Responsive styles for the containers
+  const liquidWrapperStyle: React.CSSProperties = {
+    width: "800px",
+    height: "800px",
+    maxWidth: "100%",
+    marginTop: "-160px",
+  };
+  const textImgContainerStyle: React.CSSProperties = {
+    margin: 0,
+    padding: 0,
+    position: "relative",
+    top: "-325px",
+  };
 
-  useEffect(() => {
-    if (!containerRef.current) return;
-
-    // Hanging swing animation
-    gsap.to(containerRef.current, {
-      rotation: 1.8,
-      duration: 3,
-      ease: "sine.inOut",
-      yoyo: true,
-      repeat: -1,
-      transformOrigin: "top center",
-    });
-
-    // Very subtle vibration
-    gsap.to(containerRef.current, {
-      x: 0.5,
-      duration: 0.15,
-      ease: "power1.inOut",
-      yoyo: true,
-      repeat: -1,
-    });
-  }, []);
+  // Responsive adjustments for small screens
+  if (typeof window !== "undefined" && window.innerWidth <= 600) {
+    liquidWrapperStyle.width = "330px";
+    liquidWrapperStyle.height = "330px";
+    liquidWrapperStyle.marginTop = "-80px";
+    textImgContainerStyle.top = "-120px";
+  }
 
   return (
     <section className="hero-visual-section">
-      {/* Hanging container - behind everything */}
-      <div ref={containerRef} className="container-img-wrapper">
-        <img src="/container.PNG" alt="Container" />
-      </div>
-
       {/* Red liquid */}
-      <div className="liquid-img-wrapper">
-        <img src="/liquid.PNG" alt="Liquid" />
+      <div className="liquid-img-wrapper" style={liquidWrapperStyle}>
+        <img
+          src="ell (3).svg"
+          alt="Liquid"
+          style={{ width: "100%", height: "100%", objectFit: "contain" }}
+        />
       </div>
 
       {/* Text as image */}
-      <div className="text-img-container">
-        <img src="/ell.svg" alt="Text" className="text-img" />
+      <div className="text-img-container" style={textImgContainerStyle}>
+        <img
+          src="/ell (2).svg"
+          alt="Text"
+          className="text-img"
+          style={{ margin: 0, padding: 0, display: "block" }}
+        />
       </div>
     </section>
   );
