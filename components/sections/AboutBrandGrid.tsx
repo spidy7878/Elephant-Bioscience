@@ -57,7 +57,7 @@ export default function AboutBrandGrid() {
     <div className="relative min-h-fit w-full bg-transparent px-4 sm:px-8 md:px-12 lg:px-8">
       <div
         ref={gridRef}
-        className="brand-grid-main relative z-10 w-full max-w-7xl mx-auto px-2 sm:px-4 md:px-8 pt-12 pb-4 sm:py-12 md:py-16"
+        className="brand-grid-main relative z-10 w-full max-w-7xl mx-auto px-2 sm:px-4 md:px-8 pt-0 pb-4 sm:py-12 md:py-16"
       >
         <div className="grid grid-cols-1 text-white">
           {/* MAIN CONTENT GRID */}
