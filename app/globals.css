@@ -100,7 +100,7 @@
     flex-direction: column;
     align-items: center;
     margin-top: 3rem;
-    margin-bottom: 18rem;
+    margin-bottom: -340px;
   }
 
   .container-img-wrapper {
@@ -219,7 +219,7 @@
   .hero-visual-section {
     min-height: 250px;
     margin-top: 2rem;
-    margin-bottom: 12rem;
+    margin-bottom: -100px;
   }
 
   .container-img-wrapper {
@@ -245,7 +245,7 @@
 @media (max-width: 480px) {
   .hero-visual-section {
     margin-top: 1.5rem;
-    margin-bottom: 8rem;
+    margin-bottom: -120px;
   }
 
   .container-img-wrapper {
