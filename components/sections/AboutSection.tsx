@@ -68,7 +68,7 @@ export default function AboutSection() {
             precision.
           </h2>
 
-          <div className="flex flex-col sm:flex-row flex-wrap gap-6 sm:gap-8 mt-10 sm:mt-16 text-white/90">
+          {/* <div className="flex flex-col sm:flex-row flex-wrap gap-6 sm:gap-8 mt-10 sm:mt-16 text-white/90">
             <div className="about-item flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
               <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-white/40 flex items-center justify-center text-base sm:text-xl">
                 🔬
@@ -105,7 +105,7 @@ export default function AboutSection() {
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </section>
