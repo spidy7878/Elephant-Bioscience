@@ -265,7 +265,7 @@ export default function Home() {
       {microscopeProgress && <BackgroundVideo progress={microscopeProgress} />}
 
       <motion.div
-        className="relative z-10"
+        className="relative z-10 mt-24 md:-mt-32"
         style={{ opacity: useTransform(totalProgress, [0.25, 0.4], [0, 1]) }}
       >
 
@@ -341,7 +341,7 @@ export default function Home() {
         onClose={() => setConnectOpen(false)}
         onRequest={handleRequest}
       />
-    </div>
+    </div >
   );
 }
 
