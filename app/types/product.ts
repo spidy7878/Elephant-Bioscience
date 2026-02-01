@@ -45,4 +45,6 @@ export interface Product {
   chemicalProperties: chemicalProperties;
   coa: Media[];
   chemicalFormulaImg: Media[];
+  image?: Media[];
+  productImage?: Media[];
 }

@@ -122,21 +122,10 @@ export default function ProductShowcase({ onOpenLogin, showButton = true, isLogg
     });
 
     return (
-        <div id="product-showcase" className="h-screen bg-black text-white py-12 px-4 relative overflow-hidden flex flex-col justify-center">
+        <div id="product-showcase" className={`${isLoggedIn ? "min-h-screen h-auto overflow-auto" : "h-screen overflow-hidden"} bg-transparent text-white py-12 px-4 relative flex flex-col justify-center`}>
 
-            {/* Background Video */}
-            <video
-                className="absolute top-0 left-0 w-full h-full object-cover z-0"
-                src="/videos/mov1.mp4"
-                autoPlay
-                loop
-                muted
-                playsInline
-                style={{ pointerEvents: "none" }}
-            />
-
-            {/* Overlay for readability */}
-            <div className="absolute top-0 left-0 w-full h-full bg-black/60 z-10 pointer-events-none" />
+            {/* Background Video - REMOVED to match landing page color */}
+            {/* Overlay - REMOVED */}
 
             {/* All content above the video */}
             <div className="relative z-20 w-full">
@@ -237,8 +226,10 @@ export default function ProductShowcase({ onOpenLogin, showButton = true, isLogg
                                                             />
                                                         );
                                                     } else {
-                                                        // Fix double slash issue for fallback or chemicalFormulaImg
-                                                        const rawUrl = product.chemicalFormulaImg?.[0]?.url || "";
+                                                        // Prioritize real images: image -> productImage -> chemicalFormulaImg
+                                                        const imgObj = product.image?.[0] || product.productImage?.[0] || product.chemicalFormulaImg?.[0];
+                                                        const rawUrl = imgObj?.url || "";
+
                                                         // If rawUrl is absolute (http), use it.
                                                         // If relative (starts with /), ensure apiUrl doesn't trail with /.
                                                         // Fallback to placeholder.

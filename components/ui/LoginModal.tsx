@@ -146,8 +146,13 @@ function ModalInner({
           localStorage.setItem("strapi_jwt", data.jwt);
           // You may also want to store user info
           localStorage.setItem("strapi_user", JSON.stringify(data.user));
+
+          if (onLogin) {
+            await onLogin({ id, password });
+          }
+
           onClose();
-          router.push("/products");
+          // router.push("/products"); // Removed redirect to stay on page
         } else {
           // Strapi error format: { error: { message: ... } }
           const errorMsg = data?.error?.message || "Invalid credentials";
