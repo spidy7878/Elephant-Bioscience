@@ -34,7 +34,7 @@ export default function LoadingSection({
           xmlns="http://www.w3.org/2000/svg"
           style={{
             transition: "transform 0.3s ease",
-            margin: "0 auto 24px auto",
+            margin: "0 auto 8px auto",
             display: "block",
           }}
         >
