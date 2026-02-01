@@ -283,14 +283,14 @@ export default function NavigationBar({
             display: block !important;
           }
           .navbar-logo-container {
-            margin-top: 0 !important;
+            margin-top: -10px !important;
             margin-left: 0 !important;
             justify-content: flex-start !important;
           }
           .navbar-logo-svg {
             display: block;
-            width: 48px !important;
-            height: 48px !important;
+            width: 70px !important;
+            height: 70px !important;
           }
         }
       `}</style>
