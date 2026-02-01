@@ -276,7 +276,6 @@ export default function ProductShowcase({ onOpenLogin, showButton = true }: Prod
                             <AnimatePresence>
                                 {showButton && (
                                     <motion.button
-                                        layoutId="explore-cta"
                                         onClick={onOpenLogin}
                                         style={{
                                             padding: "12px 24px",

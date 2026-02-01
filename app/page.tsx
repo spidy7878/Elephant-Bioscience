@@ -273,7 +273,6 @@ export default function Home() {
             }}
           >
             <motion.button
-              layoutId="explore-cta"
               onClick={() => setLoginOpen(true)}
               style={{
                 padding: "12px 24px",
