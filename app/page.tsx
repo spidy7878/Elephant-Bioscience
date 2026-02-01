@@ -176,17 +176,28 @@ export default function Home() {
 
   const totalScrollProgress = scrollY / (windowHeight * 11);
 
+  // Stable callback to prevent infinite re-renders
+  const handleProgressChange = useCallback((progress: MotionValue<number>) => {
+    setMicroscopeProgress(progress);
+  }, []);
+
   // Modal handlers
   const handleModalClose = useCallback(() => {
-    setProductsOpen(false);
-  }, [setProductsOpen]);
+    setLoginOpen(false);
+  }, [setLoginOpen]);
 
-  // No-op login handler; authentication and redirect handled in LoginModal
+  // Login handler
   const handleLogin = useCallback(() => {
-    setProductsOpen(false);
-    // Do not redirect here; LoginModal handles redirect after successful login
-    return false;
-  }, [setProductsOpen]);
+    setLoginOpen(false); // Close modal
+    setIsLoggedIn(true); // Update UI state to show products
+    return true;
+  }, [setLoginOpen, setIsLoggedIn]);
+
+
+
+  const handleRequest = useCallback(async () => {
+    return true;
+  }, []);
 
   const handleExploreClick = () => {
     if (showcaseRef.current) {
