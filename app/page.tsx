@@ -202,10 +202,14 @@ export default function Home() {
   const handleExploreClick = () => {
     if (showcaseRef.current) {
       showcaseRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
-      // Small delay to let scroll start/finish before opening modal (optional, but feels better)
-      setTimeout(() => setLoginOpen(true), 800);
+      // Only open login modal if not logged in
+      if (!isLoggedIn) {
+        setTimeout(() => setLoginOpen(true), 800);
+      }
     } else {
-      setLoginOpen(true);
+      if (!isLoggedIn) {
+        setLoginOpen(true);
+      }
     }
   };
 
@@ -286,7 +290,7 @@ export default function Home() {
 
       {/* Sticky Button managed by state */}
       <AnimatePresence>
-        {isImagesLoaded && showStickyButton && !isLoggedIn && !isLoginOpen && (
+        {isImagesLoaded && showStickyButton && !isLoginOpen && (
           <motion.div
             // initial and animate props removed to stop disappearance on scroll up
             style={{
