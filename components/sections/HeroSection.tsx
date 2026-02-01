@@ -161,7 +161,7 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
         // Force layout update: Reverted to original 67.5% positioning
         className="relative z-10"
         style={{
-          height: "600vh", // Extended to ensure title reaches "atmost" before release
+          height: "200vh", // Reduced to speed up animation (approx 2 scrolls)
           backgroundColor: "transparent", // Enable background video reveal
         }}
       >
@@ -328,7 +328,7 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
               x: -60, // 👈 THIS is the fix
             }}
           >
-            
+
           </motion.div>
 
           {/* Right Content - "We are innovation" (hidden on small screens) */}
@@ -336,7 +336,7 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
             className="absolute right-8 md:right-20 top-1/2 -translate-y-1/2 max-w-md z-10 text-right hidden md:block"
             style={{ opacity: textOpacity, y: textY }}
           >
-            
+
           </motion.div>
         </div>
       </section>
