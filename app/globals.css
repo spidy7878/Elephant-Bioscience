@@ -83,11 +83,13 @@
 
   .scanlines {
     @apply fixed inset-0 pointer-events-none z-[8];
-    background: repeating-linear-gradient(0deg,
-        transparent,
-        transparent 2px,
-        rgba(0, 0, 0, 0.015) 2px,
-        rgba(0, 0, 0, 0.015) 4px);
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 0, 0, 0.015) 2px,
+      rgba(0, 0, 0, 0.015) 4px
+    );
   }
 
   .hero-visual-section {
@@ -100,7 +102,7 @@
     flex-direction: column;
     align-items: center;
     margin-top: 3rem;
-    margin-bottom: -340px;
+    margin-bottom: -240px;
   }
 
   .container-img-wrapper {
@@ -178,7 +180,6 @@
 }
 
 @keyframes gradientShift {
-
   0%,
   100% {
     background-position: 0% 50%;
@@ -281,7 +282,7 @@
     align-items: center;
   }
 
-  nav>div:first-child {
+  nav > div:first-child {
     flex: 0 0 auto;
     margin-top: -12px;
     /* Moves logo slightly upward */
@@ -291,7 +292,7 @@
     /* Keeps spacing from contact info */
   }
 
-  nav>div:last-child {
+  nav > div:last-child {
     flex: 0 0 auto;
     margin-left: auto;
     /* Push contact to right */
