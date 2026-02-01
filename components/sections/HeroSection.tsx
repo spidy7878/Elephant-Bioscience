@@ -328,14 +328,7 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
               x: -60, // 👈 THIS is the fix
             }}
           >
-            <h1 className="font-bold mb-8">
-              <div className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-6xl leading-tight text-[#8C2224] drop-shadow-lg">
-                We are
-              </div>
-              <div className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-6xl leading-tight text-[#8C2224] drop-shadow-lg">
-                Movement
-              </div>
-            </h1>
+            
           </motion.div>
 
           {/* Right Content - "We are innovation" (hidden on small screens) */}
@@ -343,14 +336,7 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
             className="absolute right-8 md:right-20 top-1/2 -translate-y-1/2 max-w-md z-10 text-right hidden md:block"
             style={{ opacity: textOpacity, y: textY }}
           >
-            <h1 className="font-bold">
-              <div className="text-5xl md:text-7xl leading-tight text-[#8C2224] drop-shadow-lg">
-                We are
-              </div>
-              <div className="text-5xl md:text-7xl leading-tight text-[#8C2224] drop-shadow-lg">
-                innovation
-              </div>
-            </h1>
+            
           </motion.div>
         </div>
       </section>

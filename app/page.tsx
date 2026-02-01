@@ -25,6 +25,7 @@ import { useRouter } from "next/navigation";
 import HeroVisual from "@/components/sections/HeroVisual";
 import ProductShowcase from "components/sections/ProductShowcase";
 import Modal from "components/ui/LoginModal";
+import ConnectModal from "components/ui/ConnectModal";
 
 export default function Home() {
   // Refs
@@ -46,6 +47,7 @@ export default function Home() {
 
   // Modal State
   const [isLoginOpen, setLoginOpen] = useState(false);
+  const [isConnectOpen, setConnectOpen] = useState(false);
 
   const [microscopeProgress, setMicroscopeProgress] =
     useState<MotionValue<number> | null>(null);
@@ -212,6 +214,7 @@ export default function Home() {
         scrollY={scrollY}
         isImagesLoaded={isImagesLoaded}
         transparent={scrollY > windowHeight * 5.5}
+        onConnectClick={() => setConnectOpen(true)}
       />
 
       {/* Microscope Zoom - Reveals Full Content through its lens */}
@@ -293,11 +296,17 @@ export default function Home() {
         )}
       </AnimatePresence>
 
-      {/* Login Modal */}
       <Modal
         isOpen={isLoginOpen}
         onClose={handleModalClose}
         onLogin={handleLogin}
+        onRequest={handleRequest}
+      />
+
+      {/* Connect Modal */}
+      <ConnectModal
+        isOpen={isConnectOpen}
+        onClose={() => setConnectOpen(false)}
         onRequest={handleRequest}
       />
     </div>

@@ -8,12 +8,14 @@ interface NavigationBarProps {
   scrollY?: number;
   isImagesLoaded: boolean;
   transparent?: boolean;
+  onConnectClick?: () => void;
 }
 
 export default function NavigationBar({
   scrollY: propScrollY,
   isImagesLoaded,
   transparent = false,
+  onConnectClick,
 }: NavigationBarProps) {
   const router = useRouter();
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
@@ -79,13 +81,12 @@ export default function NavigationBar({
         className="navbar-logo-container"
         style={{
           display: "flex",
-          alignItems: "flex start",
+          alignItems: "flex-start",
           cursor: "pointer",
           marginTop: "-7px",
           marginLeft: "4px",
           justifyContent: "flex-start",
           flexWrap: "nowrap",
-          position: "relative",
           width: "auto",
         }}
         onClick={() => router.push("/")}
@@ -221,6 +222,34 @@ export default function NavigationBar({
             />
           </div>
         ))}
+        <button
+          onClick={onConnectClick}
+          style={{
+            padding: "10px 24px",
+            background: "#8C2224",
+            border: "none",
+            borderRadius: "100px",
+            color: "#fff",
+            fontSize: "15px",
+            fontWeight: 700,
+            cursor: "pointer",
+            boxShadow: "0 4px 20px rgba(140, 34, 36, 0.15)",
+            letterSpacing: 0.5,
+            transition: "transform 0.2s ease, box-shadow 0.2s ease",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = "scale(1.05)";
+            e.currentTarget.style.boxShadow =
+              "0 6px 24px rgba(140, 34, 36, 0.25)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = "scale(1)";
+            e.currentTarget.style.boxShadow =
+              "0 4px 20px rgba(140, 34, 36, 0.15)";
+          }}
+        >
+          Connect
+        </button>
       </div>
 
       <style>{`

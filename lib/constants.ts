@@ -294,7 +294,7 @@ export interface NavLink {
 }
 
 export const NAV_LINKS: NavLink[] = [
-  { label: "contact@elephantbiosciences.com", href: "#about", color: "#8C2224" },
+  // { label: "contact@elephantbiosciences.com", href: "#about", color: "#8C2224" },
 ];
 
 export const FOOTER_LINKS = {
