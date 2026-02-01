@@ -22,11 +22,11 @@ export default function Hero({ opacity = 1 }: { opacity?: any }) {
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1.5, ease: "easeOut" }}
-          className="flex flex-col items-start justify-center w-full max-w-7xl px-4 md:px-8"
+          className="flex flex-col items-start justify-center w-full max-w-7xl px-8 md:px-12"
         >
           <motion.h2
             style={{ opacity }}
-            className="text-white text-left text-xl sm:text-2xl md:text-3xl lg:text-4xl font-light leading-relaxed mb-8 break-words max-w-5xl"
+            className="text-white text-left text-xl sm:text-2xl md:text-3xl lg:text-4xl font-light leading-relaxed mb-8 mt-8 md:mt-0 break-words max-w-5xl"
           >
             Elephant Biosciences is a leading manufacturer of short-chain amino acids and next-generation enzymes and specialty agents. With over 10 years of industry experience and more than three advanced manufacturing facilities, the company focuses on high-purity, scalable production supported by strong R&D and robust quality systems, serving pharmaceutical, biotech, and life-science applications globally for research purposes only.
           </motion.h2>
