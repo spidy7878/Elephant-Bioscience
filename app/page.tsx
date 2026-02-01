@@ -48,6 +48,7 @@ export default function Home() {
   // Modal State
   const [isLoginOpen, setLoginOpen] = useState(false);
   const [isConnectOpen, setConnectOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const [microscopeProgress, setMicroscopeProgress] =
     useState<MotionValue<number> | null>(null);
@@ -177,13 +178,26 @@ export default function Home() {
 
   // Handlers for Login Modal
   const handleModalClose = () => setLoginOpen(false);
-  const handleLogin = async () => true;
+  const handleLogin = async () => {
+    setIsLoggedIn(true);
+    return true;
+  };
   const handleRequest = async () => true;
 
   // Stable callback to prevent infinite re-renders
   const handleProgressChange = useCallback((progress: MotionValue<number>) => {
     setMicroscopeProgress(progress);
   }, []);
+
+  const handleExploreClick = () => {
+    if (showcaseRef.current) {
+      showcaseRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+      // Small delay to let scroll start/finish before opening modal (optional, but feels better)
+      setTimeout(() => setLoginOpen(true), 800);
+    } else {
+      setLoginOpen(true);
+    }
+  };
 
   return (
     <div className="bg-transparent">
@@ -254,14 +268,15 @@ export default function Home() {
         <div ref={showcaseRef}>
           <ProductShowcase
             onOpenLogin={() => setLoginOpen(true)}
-            showButton={!showStickyButton}
+            showButton={!showStickyButton && !isLoggedIn && !isLoginOpen}
+            isLoggedIn={isLoggedIn}
           />
         </div>
       </motion.div>
 
       {/* Sticky Button managed by state */}
       <AnimatePresence>
-        {isImagesLoaded && showStickyButton && (
+        {isImagesLoaded && showStickyButton && !isLoggedIn && !isLoginOpen && (
           <motion.div
             // initial and animate props removed to stop disappearance on scroll up
             style={{
@@ -273,7 +288,7 @@ export default function Home() {
             }}
           >
             <motion.button
-              onClick={() => setLoginOpen(true)}
+              onClick={handleExploreClick}
               style={{
                 padding: "12px 24px",
                 background: "#8C2224",
@@ -288,6 +303,10 @@ export default function Home() {
               }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              transition={{ duration: 0.3 }}
             >
               Explore Products
             </motion.button>

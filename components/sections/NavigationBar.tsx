@@ -252,23 +252,43 @@ export default function NavigationBar({
         </button>
       </div>
 
+      {/* Mobile Connect Button */}
+      <button
+        className="navbar-connect-mobile"
+        onClick={onConnectClick}
+        style={{
+          padding: "8px 16px",
+          background: "#8C2224",
+          border: "none",
+          borderRadius: "12px",
+          color: "#fff",
+          fontSize: "13px",
+          fontWeight: 700,
+          cursor: "pointer",
+          boxShadow: "0 4px 20px rgba(140, 34, 36, 0.15)",
+          letterSpacing: 0.5,
+          marginRight: "-12px", // Negative margin to push closer to edge
+          display: "none", // Hidden by default on desktop
+        }}
+      >
+        Connect
+      </button>
+
       <style>{`
-        @media (max-width: 900px) {
+        @media (max-width: 1024px) {
           .navbar-links-desktop {
             display: none !important;
           }
+          .navbar-connect-mobile {
+            display: block !important;
+          }
           .navbar-logo-container {
-            position: absolute !important;
-            left: 50% !important;
-            top: 16px !important;
-            transform: translateX(-50%) !important;
+            margin-top: 0 !important;
             margin-left: 0 !important;
-            width: auto !important;
-            justify-content: center !important;
+            justify-content: flex-start !important;
           }
           .navbar-logo-svg {
             display: block;
-            margin: 0 auto;
             width: 48px !important;
             height: 48px !important;
           }

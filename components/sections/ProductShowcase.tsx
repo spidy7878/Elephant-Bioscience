@@ -9,9 +9,10 @@ import { motion, AnimatePresence } from "framer-motion";
 interface ProductShowcaseProps {
     onOpenLogin?: () => void;
     showButton?: boolean;
+    isLoggedIn?: boolean;
 }
 
-export default function ProductShowcase({ onOpenLogin, showButton = true }: ProductShowcaseProps) {
+export default function ProductShowcase({ onOpenLogin, showButton = true, isLoggedIn = false }: ProductShowcaseProps) {
     const [products, setProducts] = useState<Product[]>([]);
 
     // Fetch products from API
@@ -26,7 +27,7 @@ export default function ProductShowcase({ onOpenLogin, showButton = true }: Prod
                 const json = await res.json();
                 setProducts(Array.isArray(json.data) ? json.data : []);
             } catch (err) {
-                console.error("Fetch error:", err);
+                console.warn("Fetch error (Strapi might be down):", err);
             }
         }
         fetchProducts();
@@ -144,17 +145,18 @@ export default function ProductShowcase({ onOpenLogin, showButton = true }: Prod
                     {/* Category Filter Buttons - BLURRED */}
                     <div
                         ref={categoryRowRef}
-                        className="flex flex-nowrap gap-4 mb-12 mt-24 overflow-x-auto scrollbar-hide whitespace-nowrap cursor-grab blur-[4px] opacity-70 pointer-events-none"
+                        className={`flex flex-nowrap gap-4 mb-12 mt-24 overflow-x-auto scrollbar-hide whitespace-nowrap cursor-grab ${!isLoggedIn ? "blur-[4px] opacity-70 pointer-events-none" : ""}`}
                         onMouseDown={handleMouseDown}
                         onMouseLeave={handleMouseLeave}
                         onMouseUp={handleMouseUp}
                         onMouseMove={handleMouseMove}
-                        style={{ userSelect: "none" }}
+                        style={{ userSelect: !isLoggedIn ? "none" : "auto" }}
                     >
                         {categories.map((category) => (
                             <button
                                 key={category}
-                                disabled
+                                disabled={!isLoggedIn}
+                                onClick={() => setActiveCategory(category)}
                                 className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-md sm:rounded transition-all duration-300 text-xs sm:text-sm ${activeCategory === category
                                     ? "bg-[#8c2224] text-white"
                                     : "bg-transparent text-white"
@@ -168,8 +170,8 @@ export default function ProductShowcase({ onOpenLogin, showButton = true }: Prod
                     {/* Products Grid - BLURRED */}
                     <div className="relative">
                         <div
-                            className="grid grid-cols-2 lg:grid-cols-4 gap-6 blur-[12px] select-none pointer-events-none opacity-60 grayscale-[30%]"
-                            aria-hidden="true"
+                            className={`grid grid-cols-2 lg:grid-cols-4 gap-6 ${!isLoggedIn ? "blur-[12px] select-none pointer-events-none opacity-60 grayscale-[30%]" : ""}`}
+                            aria-hidden={!isLoggedIn}
                         >
                             {/* LIMIT to 8 items to ensure it fits in the screen (2 rows) */}
                             {filteredProducts.length > 0 ? (
@@ -291,6 +293,9 @@ export default function ProductShowcase({ onOpenLogin, showButton = true }: Prod
                                         }}
                                         whileHover={{ scale: 1.05 }}
                                         whileTap={{ scale: 0.95 }}
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: 10 }}
                                         transition={{ type: "spring", stiffness: 100, damping: 20 }}
                                     >
                                         Explore Products

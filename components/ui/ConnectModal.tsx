@@ -191,7 +191,7 @@ function ConnectModalInner({ isOpen, onClose, onRequest }: ConnectModalProps) {
                         }}
                         role="dialog"
                         aria-modal="true"
-                        className="relative flex flex-col rounded-xl w-[85vw] max-w-[320px] min-h-[340px] p-6 shadow-none border border-white/10 overflow-hidden items-center justify-center"
+                        className="relative flex flex-col rounded-xl w-[85vw] max-w-[320px] min-h-[280px] p-6 shadow-none border border-white/10 overflow-hidden items-center justify-center"
                         style={containerStyle}
                     >
                         {/* Close button */}
