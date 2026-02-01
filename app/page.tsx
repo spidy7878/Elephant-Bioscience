@@ -174,7 +174,7 @@ export default function Home() {
     };
   }, []); // Empty dependency array - purely Ref based
 
-  const totalScrollProgress = scrollY / (windowHeight * 11);
+  const totalScrollProgress = scrollY / (windowHeight * 5);
 
   // Stable callback to prevent infinite re-renders
   const handleProgressChange = useCallback((progress: MotionValue<number>) => {
@@ -202,10 +202,14 @@ export default function Home() {
   const handleExploreClick = () => {
     if (showcaseRef.current) {
       showcaseRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
-      // Small delay to let scroll start/finish before opening modal (optional, but feels better)
-      setTimeout(() => setLoginOpen(true), 800);
+      // Only open login modal if not logged in
+      if (!isLoggedIn) {
+        setTimeout(() => setLoginOpen(true), 800);
+      }
     } else {
-      setLoginOpen(true);
+      if (!isLoggedIn) {
+        setLoginOpen(true);
+      }
     }
   };
 
@@ -237,7 +241,7 @@ export default function Home() {
       <NavigationBar
         scrollY={scrollY}
         isImagesLoaded={isImagesLoaded}
-        transparent={scrollY > windowHeight * 5.5}
+        transparent={scrollY > windowHeight * 1.5}
         onConnectClick={() => setConnectOpen(true)}
       />
 
@@ -262,9 +266,9 @@ export default function Home() {
 
       <motion.div
         className="relative z-10"
-        style={{ opacity: useTransform(totalProgress, [0.45, 0.52], [0, 1]) }}
+        style={{ opacity: useTransform(totalProgress, [0.25, 0.4], [0, 1]) }}
       >
-        <AboutSection />
+
         <AboutBrandGrid />
         {/* GSAP Hanging Animation - after AboutBrandGrid */}
         <div
@@ -286,7 +290,7 @@ export default function Home() {
 
       {/* Sticky Button managed by state */}
       <AnimatePresence>
-        {isImagesLoaded && showStickyButton && !isLoggedIn && !isLoginOpen && (
+        {isImagesLoaded && showStickyButton && !isLoginOpen && (
           <motion.div
             // initial and animate props removed to stop disappearance on scroll up
             style={{
