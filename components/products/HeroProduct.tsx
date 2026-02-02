@@ -8,9 +8,10 @@ import ProductVideo from "./ProductVideo";
 interface Props {
   product: Product;
   skipAnimation?: boolean;
+  hideFloatingVideo?: boolean;
 }
 
-const HeroProduct = ({ product, skipAnimation = false }: Props) => {
+const HeroProduct = ({ product, skipAnimation = false, hideFloatingVideo = false }: Props) => {
   // Track global page scroll (not a local container)
   const { scrollYProgress } = useScroll({ layoutEffect: false });
 
@@ -40,8 +41,8 @@ const HeroProduct = ({ product, skipAnimation = false }: Props) => {
 
   return (
     <section className="relative w-full min-h-[100dvh] overflow-hidden">
-      {/* FLOATING VIDEO */}
-      <ProductVideo product={product} />
+      {/* FLOATING VIDEO - Only render if not hidden */}
+      {!hideFloatingVideo && <ProductVideo product={product} />}
 
       {/* MAIN CONTENT */}
       <div className="w-full px-4 sm:px-8 md:px-[2vw] md:py-12 relative">
