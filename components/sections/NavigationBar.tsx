@@ -236,6 +236,7 @@ export default function NavigationBar({
             boxShadow: "0 4px 20px rgba(140, 34, 36, 0.15)",
             letterSpacing: 0.5,
             transition: "transform 0.2s ease, box-shadow 0.2s ease",
+            opacity: 0.84,
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.transform = "scale(1.05)";
