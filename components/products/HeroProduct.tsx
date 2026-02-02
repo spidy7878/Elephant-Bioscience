@@ -53,13 +53,13 @@ const HeroProduct = ({ product, skipAnimation = false, hideFloatingVideo = false
           <motion.div
             initial={skipAnimation ? false : { opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: "easeOut" }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
             className="col-span-1 lg:col-span-4 space-y-5 z-10"
           >
             <motion.h1
               initial={skipAnimation ? false : { opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1, duration: 0.6 }}
+              transition={{ delay: 0.05, duration: 0.3 }}
               className="text-3xl sm:text-4xl md:text-[42px] leading-tight font-extrabold tracking-tight text-black"
             >
               {product.name}
@@ -68,7 +68,7 @@ const HeroProduct = ({ product, skipAnimation = false, hideFloatingVideo = false
             <motion.p
               initial={skipAnimation ? false : { opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2, duration: 0.6 }}
+              transition={{ delay: 0.08, duration: 0.3 }}
               className="text-black font-light leading-relaxed max-w-md text-base sm:text-lg"
             >
               {product.description?.[0]?.children?.[0]?.text}
@@ -78,7 +78,7 @@ const HeroProduct = ({ product, skipAnimation = false, hideFloatingVideo = false
               <motion.div
                 initial={skipAnimation ? false : { opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3, duration: 0.6 }}
+                transition={{ delay: 0.1, duration: 0.3 }}
                 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-black"
               >
                 ${product.price}
@@ -86,7 +86,7 @@ const HeroProduct = ({ product, skipAnimation = false, hideFloatingVideo = false
               <motion.button
                 initial={skipAnimation ? false : { opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.35, duration: 0.6 }}
+                transition={{ delay: 0.12, duration: 0.3 }}
                 className="inline-flex items-center gap-2 px-6 sm:px-8 py-3 rounded-2xl border border-white/10 shadow-lg font-medium text-black backdrop-blur-lg transition-all duration-300 hover:shadow-2xl text-base sm:text-lg mt-2 sm:mt-0"
                 style={{
                   background: "rgba(255,255,255,0.08)",
@@ -108,7 +108,7 @@ const HeroProduct = ({ product, skipAnimation = false, hideFloatingVideo = false
             <motion.div
               initial={skipAnimation ? false : { opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5, duration: 0.7 }}
+              transition={{ delay: 0.15, duration: 0.3 }}
               className="flex flex-row gap-6 sm:gap-10 mt-6 w-full"
             >
               <Stat
@@ -127,7 +127,7 @@ const HeroProduct = ({ product, skipAnimation = false, hideFloatingVideo = false
             <motion.div
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6, duration: 0.7 }}
+              transition={{ delay: 0.2, duration: 0.3 }}
               className="block lg:hidden mt-8 rounded-2xl border border-white/10 shadow-lg space-y-5 w-full h-auto p-3 backdrop-blur-lg transition-all duration-300 hover:shadow-2xl"
               style={{
                 background: "rgba(255,255,255,0.08)",
@@ -175,7 +175,7 @@ const HeroProduct = ({ product, skipAnimation = false, hideFloatingVideo = false
           <motion.div
             initial={{ opacity: 0, x: 40 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.4, duration: 0.7 }}
+            transition={{ delay: 0.15, duration: 0.3 }}
             className="hidden lg:block absolute top-0 right-0 rounded-2xl border border-white/10 shadow-lg space-y-5 w-80 h-auto p-3 backdrop-blur-lg transition-all duration-300 hover:shadow-2xl"
             style={{
               background: "rgba(255,255,255,0.08)",

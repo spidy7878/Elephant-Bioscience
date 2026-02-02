@@ -219,8 +219,9 @@ export default function ProductPage() {
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
               {filteredProducts.map((product, index) => (
                 <Link
-                  key={index}
+                  key={product.documentId || index}
                   href={`/productListing/${product.documentId}`}
+                  prefetch={true}
                   className="group relative rounded-3xl overflow-hidden transition-all duration-500 hover:scale-105 block aspect-square"
                   style={{
                     background: "rgba(255, 255, 255, 0.03)",

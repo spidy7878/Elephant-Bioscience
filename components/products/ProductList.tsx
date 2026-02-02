@@ -359,7 +359,7 @@ export default function ProductList({
                         if (onProductSelect) {
                             return (
                                 <div
-                                    key={index}
+                                    key={product.documentId || index}
                                     id={isCurrent ? "target-product-card" : undefined}
                                     onClick={() => onProductSelect(product)}
                                     className={cardClasses}
@@ -380,9 +380,10 @@ export default function ProductList({
                         // Otherwise, render the original Link
                         return (
                             <Link
-                                key={index}
+                                key={product.documentId || index}
                                 id={isCurrent ? "target-product-card" : undefined}
                                 href={`/productListing/${product.documentId}`}
+                                prefetch={true}
                                 className={cardClasses}
                                 style={cardStyles}
                             >

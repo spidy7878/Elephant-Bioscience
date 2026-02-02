@@ -156,8 +156,9 @@ export default function ShowcaseProductDetails({
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 pb-20">
                     {filteredProducts.map((product, index) => (
                         <Link
-                            key={index}
+                            key={product.documentId || index}
                             href={`/productListing/${product.documentId}`}
+                            prefetch={true}
                             className="group relative rounded-3xl overflow-hidden transition-all duration-500 hover:scale-105 block aspect-square"
                             style={{
                                 background: "rgba(255, 255, 255, 0.03)",
@@ -180,20 +181,21 @@ export default function ShowcaseProductDetails({
                             <div className="absolute inset-0 flex items-center justify-center p-4 pb-20">
                                 <div className="relative w-full h-full flex items-center justify-center product-media-responsive">
                                     <style jsx>{`
-                        .product-media-responsive {
-                          max-width: 70%;
-                          max-height: 70%;
-                          margin-top: 2.5rem;
-                        }
-                        @media (max-width: 600px) {
-                          .product-media-responsive {
-                            max-width: 100%;
-                            max-height: 100%;
-                            margin-top: 1.25rem;
-                          }
-                        }
-                      `}</style>
+                                        .product-media-responsive {
+                                          max-width: 70%;
+                                          max-height: 70%;
+                                          margin-top: 2.5rem; /* 40px, shifts down on desktop */
+                                        }
+                                        @media (max-width: 600px) {
+                                          .product-media-responsive {
+                                            max-width: 100%;
+                                            max-height: 100%;
+                                            margin-top: 1.25rem; /* 20px, shifts down on mobile */
+                                          }
+                                        }
+                                      `}</style>
                                     {(() => {
+                                        // Get the media URL from productVideo field
                                         const apiUrl = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") || "";
                                         const mediaUrl = product.productVideo?.[0]?.url
                                             ? product.productVideo[0].url.startsWith("http")
@@ -201,10 +203,12 @@ export default function ShowcaseProductDetails({
                                                 : `${apiUrl}${product.productVideo[0].url}`
                                             : null;
 
+                                        // Check if the URL is actually a video file by extension
                                         const isVideo =
                                             mediaUrl && /\.(mp4|webm|ogg|mov)$/i.test(mediaUrl);
 
                                         if (mediaUrl && isVideo) {
+                                            // Render video
                                             return (
                                                 <video
                                                     src={mediaUrl}
@@ -224,10 +228,13 @@ export default function ShowcaseProductDetails({
                                                 />
                                             );
                                         } else {
+                                            // Render image - try productVideo first (in case it's an image), then chemicalFormulaImg
                                             const imageUrl =
                                                 mediaUrl ||
                                                 (product.chemicalFormulaImg?.[0]?.url
-                                                    ? product.chemicalFormulaImg[0].url.startsWith("http")
+                                                    ? product.chemicalFormulaImg[0].url.startsWith(
+                                                        "http"
+                                                    )
                                                         ? product.chemicalFormulaImg[0].url
                                                         : `${apiUrl}${product.chemicalFormulaImg[0].url}`
                                                     : "");
