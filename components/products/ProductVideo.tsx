@@ -55,7 +55,7 @@ function ProductVideo({ product }: { product: Product }) {
       const mobileStartScale = 1.125;
 
       // Phase 2: Slide to right
-      const mobileRightX = currentVw * 0.25; // Move right for 2nd card
+      const mobileRightX = currentVw * 0.05; // Move right for 2nd card
       const mobileRightY = currentVh * 0.05; // Move down
       const mobileRightScale = 0.5;
 
@@ -147,9 +147,17 @@ function ProductVideo({ product }: { product: Product }) {
             const targetY = (cardCenterY - vh / 2) - videoHeight / 2;
             const targetScaleRaw = (rect.width * 0.5) / videoWidth; // Reduced from 0.8 to 0.6
 
-            currentX = lerp(currentX, targetX, q);
-            currentY = lerp(currentY, targetY, q);
-            currentScale = lerp(currentScale, targetScaleRaw, q);
+            // If fully locked (q close to 1), STOP animating and lock to target
+            // Lowered threshold to 0.95 to ensure it SNAPS and STAYS easier
+            if (q > 0.95) {
+              currentX = targetX;
+              currentY = targetY;
+              currentScale = targetScaleRaw;
+            } else {
+              currentX = lerp(currentX, targetX, q);
+              currentY = lerp(currentY, targetY, q);
+              currentScale = lerp(currentScale, targetScaleRaw, q);
+            }
           }
         }
       }
