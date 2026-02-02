@@ -84,7 +84,7 @@ export default function ShowcaseProductDetails({
 
                 {/* Product List Section - Only show when logged in */}
                 {isLoggedIn && (
-                    <div className="w-full px-4 py-20 mt-10">
+                    <div className="w-full px-4 py-10 mt-0">
                         <ProductList
                             showLoading={false}
                             currentProductId={currentProduct.documentId}
