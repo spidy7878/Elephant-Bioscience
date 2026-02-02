@@ -94,9 +94,12 @@ function ProductVideo({ product }: { product: Product }) {
             const maxX = currentVw / 2;
             targetX = Math.max(-maxX, Math.min(targetX, maxX));
 
+            // Delayed scale for mobile too
+            const scaleQ = q * q * q * q;
+
             currentX = lerp(currentX, targetX, q);
             currentY = lerp(currentY, targetY, q);
-            currentScale = lerp(currentScale, targetScaleRaw, q);
+            currentScale = lerp(currentScale, targetScaleRaw, scaleQ);
           }
         }
       }
@@ -154,9 +157,12 @@ function ProductVideo({ product }: { product: Product }) {
               currentY = targetY;
               currentScale = targetScaleRaw;
             } else {
+              // Delayed scale: Keep size equal (Phase 2 size) for longer, then reduce (q*q*q)
+              const scaleQ = q * q * q * q;
+
               currentX = lerp(currentX, targetX, q);
               currentY = lerp(currentY, targetY, q);
-              currentScale = lerp(currentScale, targetScaleRaw, q);
+              currentScale = lerp(currentScale, targetScaleRaw, scaleQ);
             }
           }
         }

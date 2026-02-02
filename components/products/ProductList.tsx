@@ -180,16 +180,24 @@ export default function ProductList({
     });
 
     // Reorder: Place current product at 1st position on mobile, 4th position on desktop
-    if (currentProductId && filteredProducts.length > 0) {
-        const currentIndex = filteredProducts.findIndex(p => p.documentId === currentProductId);
+    if (currentProductId) {
+        let currentProductIndex = filteredProducts.findIndex(p => p.documentId === currentProductId);
+        let currentProduct: Product | undefined;
 
-        if (currentIndex !== -1) {
-            // Remove it from its current position
-            const [currentProduct] = filteredProducts.splice(currentIndex, 1);
+        if (currentProductIndex !== -1) {
+            // Found in filtered list - remove it to reinsert
+            [currentProduct] = filteredProducts.splice(currentProductIndex, 1);
+        } else {
+            // Not in filtered list - find in full list
+            currentProduct = products.find(p => p.documentId === currentProductId);
+        }
 
+        if (currentProduct) {
             // Insert at index 1 for mobile (2nd position - right side), index 3 for desktop (4th position)
             const targetIndex = isMobile ? 1 : 3;
-            filteredProducts.splice(targetIndex, 0, currentProduct);
+            // Ensure we don't go out of bounds if list is short
+            const safeIndex = Math.min(targetIndex, filteredProducts.length);
+            filteredProducts.splice(safeIndex, 0, currentProduct);
         }
     }
 
