@@ -138,10 +138,10 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
                   transparent ${vignetteInner}%, 
                   ${vignetteColor1} ${vignetteOuter}%, 
                   ${vignetteColor2} ${useTransform(
-                    smoothProgress,
-                    [0, 0.95],
-                    [45, 200]
-                  )}%, 
+      smoothProgress,
+      [0, 0.95],
+      [45, 200]
+    )}%, 
                   ${vignetteColor3} 100%
                 )`;
 
@@ -220,8 +220,22 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
                     ref={mobileVideoRef}
                     autoPlay
                     muted
+                    loop
                     playsInline
+                    controls={false}
                     preload="auto"
+                    onSuspend={() => {
+                      // If suspended (Low Power Mode), try to play on interaction
+                      const playVideo = () => {
+                        if (mobileVideoRef.current && mobileVideoRef.current.paused) {
+                          mobileVideoRef.current.play().catch(() => { });
+                        }
+                        window.removeEventListener('touchstart', playVideo);
+                        window.removeEventListener('scroll', playVideo);
+                      };
+                      window.addEventListener('touchstart', playVideo, { once: true });
+                      window.addEventListener('scroll', playVideo, { once: true });
+                    }}
                     className="w-full h-full object-cover"
                     style={{
                       width: "100%",
