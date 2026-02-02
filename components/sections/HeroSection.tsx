@@ -27,7 +27,7 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
   ) => {
     const sectionRef = useRef<HTMLElement>(null);
     const router = useRouter();
-    const [isLowPower, setLowPower] = useState(false);
+    const [isLowPower, setLowPower] = useState(true); // Start hidden, reveal on autoplay success
 
     // Scroll tracking for zoom animation
     const { scrollYProgress } = useScroll({
@@ -217,47 +217,45 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
                     transformOrigin: "50% 50%",
                   }}
                 >
-                  {!isLowPower ? (
-                    <video
-                      ref={mobileVideoRef}
-                      autoPlay
-                      muted
-                      playsInline
-                      controls={false}
-                      preload="auto"
-                      onSuspend={() => {
-                        // If suspended (Low Power Mode), switch to fallback image
-                        if (mobileVideoRef.current && mobileVideoRef.current.paused) {
-                          setLowPower(true);
-                        }
-                      }}
-                      className="w-full h-full object-cover"
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                        position: "absolute",
-                        inset: 0,
-                        zIndex: -1,
-                      }}
-                    >
-                      <source src="/videos/mobile.mp4" type="video/mp4" />
-                    </video>
-                  ) : (
-                    <img
-                      src="/fallback_img.jpeg"
-                      alt="Hero Fallback"
-                      className="w-full h-full object-cover"
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                        position: "absolute",
-                        inset: 0,
-                        zIndex: -1,
-                      }}
-                    />
-                  )}
+                  {/* Fallback image - always rendered as base layer */}
+                  <img
+                    src="/fallback_img.jpeg"
+                    alt="Hero Fallback"
+                    className="w-full h-full object-cover"
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      position: "absolute",
+                      inset: 0,
+                      zIndex: 0,
+                    }}
+                  />
+                  {/* Video - hidden until autoplay succeeds */}
+                  <video
+                    ref={mobileVideoRef}
+                    autoPlay
+                    muted
+                    playsInline
+                    controls={false}
+                    preload="auto"
+                    onPlaying={() => {
+                      // Autoplay succeeded - reveal video
+                      setLowPower(false);
+                    }}
+                    className="w-full h-full object-cover transition-opacity duration-500"
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      position: "absolute",
+                      inset: 0,
+                      zIndex: 1,
+                      opacity: isLowPower ? 0 : 1, // Hidden until playing confirmed
+                    }}
+                  >
+                    <source src="/videos/mobile.mp4" type="video/mp4" />
+                  </video>
                 </motion.div>
               </>
             )}
