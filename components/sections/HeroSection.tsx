@@ -8,7 +8,7 @@ import {
   useTransform,
   useMotionTemplate,
 } from "framer-motion";
-import { forwardRef, useRef, useEffect } from "react";
+import { forwardRef, useRef, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { TOTAL_FRAMES } from "../../lib/imageUtils";
 
@@ -27,6 +27,7 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
   ) => {
     const sectionRef = useRef<HTMLElement>(null);
     const router = useRouter();
+    const [isLowPower, setLowPower] = useState(false);
 
     // Scroll tracking for zoom animation
     const { scrollYProgress } = useScroll({
@@ -216,38 +217,47 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
                     transformOrigin: "50% 50%",
                   }}
                 >
-                  <video
-                    ref={mobileVideoRef}
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    controls={false}
-                    preload="auto"
-                    onSuspend={() => {
-                      // If suspended (Low Power Mode), try to play on interaction
-                      const playVideo = () => {
+                  {!isLowPower ? (
+                    <video
+                      ref={mobileVideoRef}
+                      autoPlay
+                      muted
+                      playsInline
+                      controls={false}
+                      preload="auto"
+                      onSuspend={() => {
+                        // If suspended (Low Power Mode), switch to fallback image
                         if (mobileVideoRef.current && mobileVideoRef.current.paused) {
-                          mobileVideoRef.current.play().catch(() => { });
+                          setLowPower(true);
                         }
-                        window.removeEventListener('touchstart', playVideo);
-                        window.removeEventListener('scroll', playVideo);
-                      };
-                      window.addEventListener('touchstart', playVideo, { once: true });
-                      window.addEventListener('scroll', playVideo, { once: true });
-                    }}
-                    className="w-full h-full object-cover"
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                      position: "absolute",
-                      inset: 0,
-                      zIndex: -1,
-                    }}
-                  >
-                    <source src="/videos/mobile.mp4" type="video/mp4" />
-                  </video>
+                      }}
+                      className="w-full h-full object-cover"
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        position: "absolute",
+                        inset: 0,
+                        zIndex: -1,
+                      }}
+                    >
+                      <source src="/videos/mobile.mp4" type="video/mp4" />
+                    </video>
+                  ) : (
+                    <img
+                      src="/fallback_image.png"
+                      alt="Hero Fallback"
+                      className="w-full h-full object-cover"
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        position: "absolute",
+                        inset: 0,
+                        zIndex: -1,
+                      }}
+                    />
+                  )}
                 </motion.div>
               </>
             )}
