@@ -104,17 +104,18 @@ function ProductVideo({ product }: { product: Product }) {
     } else {
       // ========== DESKTOP ANIMATION ==========
 
-      // Phase 1: Centered
-      const startX = -videoWidth / 2;
-      const startY = -videoHeight / 2;
-      const startScale = 1;
+      // Phase 1: Centered - REDUCED starting scale to 0.7
+      // Added left margin (shift right) by 10% of viewport width
+      const startX = -videoWidth / 2 + (vw * 0.045);
+      const startY = -videoHeight / 2 - (vh * 0.1);
+      const startScale = 0.7; // Reduced from 1 to make video smaller at start
 
       // Phase 2: Right Side
       const rightCenterX = vw * 0.80;
       const rightCenterY = vh * 0.50;
       const rightSideX = (rightCenterX - vw / 2) - videoWidth / 2;
       const rightSideY = (rightCenterY - vh / 2) - videoHeight / 2;
-      const rightSideScale = 1;
+      const rightSideScale = 0.7; // Kept small to match start scale
 
       currentX = lerp(startX, rightSideX, heroProgress);
       currentY = lerp(startY, rightSideY, heroProgress);
