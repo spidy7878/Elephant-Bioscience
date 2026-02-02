@@ -1,6 +1,6 @@
-import { api } from "lib/api";
 import { Product } from "app/types/product";
 import ProductPageClient from "components/products/ProductPageClient";
+const getApiUrl = () => (process.env.NEXT_PUBLIC_API_URL || "https://appetizing-cabbage-e4ead111c1.strapiapp.com").replace(/\/$/, "");
 
 interface Props {
   params: { documentId: string };
@@ -8,8 +8,10 @@ interface Props {
 
 async function getProduct(documentId: string): Promise<Product | null> {
   try {
-    const res = await api.get(`/api/products/${documentId}?populate=*`);
-    return res.data.data;
+    const res = await fetch(`${getApiUrl()}/api/products/${documentId}?populate=*`, { cache: 'no-store' });
+    if (!res.ok) return null;
+    const json = await res.json();
+    return json.data;
   } catch (error) {
     console.error("Failed to fetch product:", error);
     return null;
@@ -18,8 +20,10 @@ async function getProduct(documentId: string): Promise<Product | null> {
 
 async function getAllProducts(): Promise<Product[]> {
   try {
-    const res = await api.get(`/api/products?populate=*`);
-    return Array.isArray(res.data.data) ? res.data.data : [];
+    const res = await fetch(`${getApiUrl()}/api/products?populate=*`, { cache: 'no-store' });
+    if (!res.ok) return [];
+    const json = await res.json();
+    return Array.isArray(json.data) ? json.data : [];
   } catch (error) {
     console.error("Failed to fetch all products:", error);
     return [];
