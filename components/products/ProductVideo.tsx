@@ -1,7 +1,7 @@
 "use client";
 import { Product } from "app/types/product";
-import { motion, useScroll, useMotionValue, useMotionValueEvent } from "framer-motion";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { motion, useScroll, useMotionValue } from "framer-motion";
+import { useState, useRef, useCallback, useLayoutEffect } from "react";
 
 function lerp(start: number, end: number, t: number) {
   return start + (end - start) * t;
@@ -159,9 +159,12 @@ function ProductVideo({ product }: { product: Product }) {
     scale.set(currentScale);
   }, [x, y, scale]);
 
-  useMotionValueEvent(scrollY, "change", handleScroll);
+  // Synchronously update position to prevent bouncing/jitter during scroll locking
+  useLayoutEffect(() => {
+    return scrollY.on("change", handleScroll);
+  }, [scrollY, handleScroll]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const ua = navigator.userAgent.toLowerCase();
     const safari = ua.includes("safari") && !ua.includes("chrome") && !ua.includes("android");
     setIsSafari(safari);
