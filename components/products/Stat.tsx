@@ -28,10 +28,10 @@ const Stat = ({ label, value, big }: Props) => {
             "rgba(255,255,255,0.08)";
         }}
       >
-        <span className="text-xs sm:text-sm md:text-base font-semibold text-black truncate whitespace-nowrap overflow-hidden">
+        <span className="text-xs sm:text-sm md:text-base font-normal text-black truncate whitespace-nowrap overflow-hidden">
           {label}
         </span>
-        <div className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-black mt-1 sm:mt-2">
+        <div className="text-2xl sm:text-3xl md:text-4xl font-normal text-black mt-1 sm:mt-2">
           {value}
         </div>
       </motion.div>

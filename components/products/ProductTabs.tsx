@@ -14,7 +14,7 @@ const tabs = [
   "Storage",
 ];
 
-export default function ProductTabs({ product }: { product: Product }) {
+export default function ProductTabs({ product, skipAnimation = false }: { product: Product; skipAnimation?: boolean }) {
   const [active, setActive] = useState("Description");
 
   const thirdPartyTestingImage = product?.thirdpartytesting?.[0]?.url
@@ -30,11 +30,10 @@ export default function ProductTabs({ product }: { product: Product }) {
             <button
               key={tab}
               onClick={() => setActive(tab)}
-              className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-md sm:rounded transition-all duration-300 text-xs sm:text-sm ${
-                active === tab
+              className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-md sm:rounded transition-all duration-300 text-xs sm:text-sm ${active === tab
                   ? "bg-[#8c2224] text-white"
                   : "bg-transparent text-white hover:bg-[#8c2224] hover:text-white"
-              }`}
+                }`}
             >
               {tab}
             </button>
