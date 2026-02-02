@@ -138,10 +138,10 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
                   transparent ${vignetteInner}%, 
                   ${vignetteColor1} ${vignetteOuter}%, 
                   ${vignetteColor2} ${useTransform(
-      smoothProgress,
-      [0, 0.95],
-      [45, 200]
-    )}%, 
+                    smoothProgress,
+                    [0, 0.95],
+                    [45, 200]
+                  )}%, 
                   ${vignetteColor3} 100%
                 )`;
 
@@ -232,7 +232,7 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
                       zIndex: -1,
                     }}
                   >
-                    <source src="/videos/mob2.mp4" type="video/mp4" />
+                    <source src="/videos/mobile.mp4" type="video/mp4" />
                   </video>
                 </motion.div>
               </>
@@ -327,17 +327,13 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
               y: textY,
               x: -60, // 👈 THIS is the fix
             }}
-          >
-
-          </motion.div>
+          ></motion.div>
 
           {/* Right Content - "We are innovation" (hidden on small screens) */}
           <motion.div
             className="absolute right-8 md:right-20 top-1/2 -translate-y-1/2 max-w-md z-10 text-right hidden md:block"
             style={{ opacity: textOpacity, y: textY }}
-          >
-
-          </motion.div>
+          ></motion.div>
         </div>
       </section>
     );

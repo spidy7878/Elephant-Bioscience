@@ -34,20 +34,20 @@ function ShowcaseProductVideo({ product, containerRef }: ShowcaseProductVideoPro
         const containerTop = window.scrollY + containerRect.top;
         const containerBottom = containerTop + containerRect.height;
 
-        // Hide video if scrolled past container
-        if (window.scrollY < containerTop || window.scrollY > containerBottom) {
+        // Check if scrolled past container - if so, FREEZE at last position
+        if (window.scrollY > containerBottom) {
+            // Don't update position - stay frozen at last position
+            return;
+        }
+
+        // Hide video if before container starts
+        if (window.scrollY < containerTop) {
             opacity.set(0);
             return;
-        } else {
-            // Fade out near the end
-            const distanceFromEnd = containerBottom - window.scrollY;
-            const fadeDistance = window.innerHeight * 0.5;
-            if (distanceFromEnd < fadeDistance) {
-                opacity.set(distanceFromEnd / fadeDistance);
-            } else {
-                opacity.set(1);
-            }
         }
+
+        // Show video when inside container
+        opacity.set(1);
 
         const { vw, vh } = viewportRef.current;
         const currentVw = vw || window.innerWidth;
