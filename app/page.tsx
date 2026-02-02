@@ -181,6 +181,14 @@ export default function Home() {
     setMicroscopeProgress(progress);
   }, []);
 
+  // Check for persisted login state
+  useEffect(() => {
+    const persistedLogin = localStorage.getItem("isLoggedIn");
+    if (persistedLogin === "true") {
+      setIsLoggedIn(true);
+    }
+  }, []);
+
   // Modal handlers
   const handleModalClose = useCallback(() => {
     setLoginOpen(false);
@@ -190,6 +198,7 @@ export default function Home() {
   const handleLogin = useCallback(() => {
     setLoginOpen(false); // Close modal
     setIsLoggedIn(true); // Update UI state to show products
+    localStorage.setItem("isLoggedIn", "true"); // Persist state
     return true;
   }, [setLoginOpen, setIsLoggedIn]);
 

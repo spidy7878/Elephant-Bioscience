@@ -1,7 +1,7 @@
 "use client";
 import { Product } from "app/types/product";
-import { motion, useScroll, useMotionValue, useMotionValueEvent, useTransform } from "framer-motion";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { motion, useScroll, useMotionValue, useTransform } from "framer-motion";
+import { useState, useEffect, useRef, useCallback, useLayoutEffect } from "react";
 
 function lerp(start: number, end: number, t: number) {
     return start + (end - start) * t;
@@ -20,6 +20,7 @@ function ShowcaseProductVideo({ product, containerRef }: ShowcaseProductVideoPro
     const targetCardRef = useRef<HTMLElement | null>(null);
     const viewportRef = useRef({ vw: 0, vh: 0 });
     const containerBoundsRef = useRef({ top: 0, bottom: 0 });
+    const isLockedRef = useRef(false);
 
     const x = useMotionValue(0);
     const y = useMotionValue(0);
@@ -34,11 +35,7 @@ function ShowcaseProductVideo({ product, containerRef }: ShowcaseProductVideoPro
         const containerTop = window.scrollY + containerRect.top;
         const containerBottom = containerTop + containerRect.height;
 
-        // Check if scrolled past container - if so, FREEZE at last position
-        if (window.scrollY > containerBottom) {
-            // Don't update position - stay frozen at last position
-            return;
-        }
+
 
         // Show video always (even before container starts) to keep it visible
         // When scrollY < containerTop, heroProgress will be 0, effectively clamping it to start position
@@ -101,9 +98,12 @@ function ShowcaseProductVideo({ product, containerRef }: ShowcaseProductVideoPro
                         const maxX = currentVw / 2;
                         targetX = Math.max(-maxX, Math.min(targetX, maxX));
 
+                        // Delayed scale for mobile too
+                        const scaleQ = q * q * q * q;
+
                         currentX = lerp(currentX, targetX, q);
                         currentY = lerp(currentY, targetY, q);
-                        currentScale = lerp(currentScale, targetScaleRaw, q);
+                        currentScale = lerp(currentScale, targetScaleRaw, scaleQ);
                     }
                 }
             }
@@ -112,7 +112,7 @@ function ShowcaseProductVideo({ product, containerRef }: ShowcaseProductVideoPro
             // Phase 1: Centered - REDUCED starting scale to 0.7
             // Added left margin (shift right) by 10% of viewport width
             const startX = -videoWidth / 2 + (vw * 0.01);
-            const startY = -videoHeight / 2 - (vh * 0.2);
+            const startY = -videoHeight / 2 - (vh * 0.1);
             const startScale = 0.7; // Reduced from 1 to make video smaller at start
 
             const rightCenterX = vw * 0.80;
@@ -125,41 +125,64 @@ function ShowcaseProductVideo({ product, containerRef }: ShowcaseProductVideoPro
             currentY = lerp(startY, rightSideY, heroProgress);
             currentScale = lerp(startScale, rightSideScale, heroProgress);
 
-            // Lock to Grid Card
-            if (!targetCardRef.current) {
+            // Phase 3: Lock to Grid Card
+            // Check if ref is missing OR if it is stale (detached from DOM)
+            if (!targetCardRef.current || !targetCardRef.current.isConnected) {
                 targetCardRef.current = document.getElementById("target-product-card");
             }
             const targetCard = targetCardRef.current;
 
             if (targetCard && heroProgress >= 0.8) {
                 const rect = targetCard.getBoundingClientRect();
+
+                // Ensure rect is valid
                 if (rect.width > 0 && rect.height > 0) {
                     const startTrigger = vh * 1.5;
                     const endTrigger = vh * 0.4;
+
                     let q = (startTrigger - rect.top) / (startTrigger - endTrigger);
                     q = Math.min(Math.max(q, 0), 1);
+                    // Smoothstep for smoother approach
                     q = q * q * (3 - 2 * q);
 
                     if (q > 0) {
                         const cardCenterX = rect.left + rect.width / 2;
                         const cardCenterY = rect.top + (rect.height / 2) - 60;
+
                         const targetX = (cardCenterX - vw / 2) - videoWidth / 2;
                         const targetY = (cardCenterY - vh / 2) - videoHeight / 2;
                         const targetScaleRaw = (rect.width * 0.5) / videoWidth; // Reduced from 0.8 to 0.6
 
-                        // If fully locked (q close to 1), STOP animating and lock to target
-                        // Lowered threshold to 0.95 to ensure it SNAPS and STAYS easier
+                        // --- SENIOR ENGINEER FIX: STRONG LATCHING HYSTERESIS ---
+                        // Entry Threshold: High (0.95) - ensures we are aligned before snapping.
+                        // Exit Threshold: Low (0.1) - ensures we STAY locked even if scrolling back up.
+                        // This gives the "Strong Lock" feel. It won't detach unless you leave the section.
+
                         if (q > 0.95) {
+                            isLockedRef.current = true;
+                        } else if (q < 0.1) {
+                            isLockedRef.current = false;
+                        }
+
+                        if (isLockedRef.current) {
+                            // STRICT LOCK: Absolutely zero lerp. Glue it to the card.
                             currentX = targetX;
                             currentY = targetY;
                             currentScale = targetScaleRaw;
                         } else {
+                            // Approach with lerp
+                            // Delayed scale: Keep size equal (Phase 2 size) for longer, then reduce (q*q*q)
+                            const scaleQ = q * q * q * q;
+
                             currentX = lerp(currentX, targetX, q);
                             currentY = lerp(currentY, targetY, q);
-                            currentScale = lerp(currentScale, targetScaleRaw, q);
+                            currentScale = lerp(currentScale, targetScaleRaw, scaleQ);
                         }
                     }
                 }
+            } else {
+                // Reset lock if we are completely out of range (scrolling very fast)
+                isLockedRef.current = false;
             }
         }
 
@@ -175,19 +198,14 @@ function ShowcaseProductVideo({ product, containerRef }: ShowcaseProductVideoPro
         scale.set(currentScale);
     }, [x, y, scale, opacity, containerRef]);
 
-    useMotionValueEvent(scrollY, "change", handleScroll);
-
-    useEffect(() => {
-        const ua = navigator.userAgent.toLowerCase();
-        const safari = ua.includes("safari") && !ua.includes("chrome") && !ua.includes("android");
-        setIsSafari(safari);
-
+    useLayoutEffect(() => {
         const updateViewport = () => {
             if (typeof window !== "undefined") {
                 viewportRef.current = {
                     vw: window.innerWidth,
                     vh: window.innerHeight,
                 };
+                // Force update position immediately on resize/load using current scroll
                 handleScroll(scrollY.get());
             }
         };
@@ -195,13 +213,27 @@ function ShowcaseProductVideo({ product, containerRef }: ShowcaseProductVideoPro
         updateViewport();
         window.addEventListener("resize", updateViewport);
 
+        // Subscribe to scroll changes synchronously
+        const cleanupScroll = scrollY.on("change", handleScroll);
+
+        // Safety check for mobile load race conditions
         const safetyTimer = setTimeout(() => {
             if (typeof window !== "undefined") handleScroll(scrollY.get());
         }, 100);
 
+        // Periodic check to ensuring we have the target card
+        const checkInterval = setInterval(() => {
+            if (!targetCardRef.current) {
+                targetCardRef.current = document.getElementById("target-product-card");
+                if (targetCardRef.current) handleScroll(scrollY.get());
+            }
+        }, 1000);
+
         return () => {
             window.removeEventListener("resize", updateViewport);
+            cleanupScroll();
             clearTimeout(safetyTimer);
+            clearInterval(checkInterval);
         };
     }, [handleScroll, scrollY]);
 
