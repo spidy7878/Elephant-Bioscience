@@ -275,7 +275,10 @@ export default function Home() {
 
       <motion.div
         className="relative z-10 mt-24 md:-mt-32"
-        style={{ opacity: useTransform(totalProgress, [0.25, 0.4], [0, 1]) }}
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
       >
 
         <AboutBrandGrid />
