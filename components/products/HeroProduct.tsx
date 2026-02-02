@@ -11,6 +11,8 @@ interface Props {
   hideFloatingVideo?: boolean;
 }
 
+
+
 const HeroProduct = ({ product, skipAnimation = false, hideFloatingVideo = false }: Props) => {
   // Track global page scroll (not a local container)
   const { scrollYProgress } = useScroll({ layoutEffect: false });
