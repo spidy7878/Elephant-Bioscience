@@ -112,18 +112,20 @@ export default function AboutBrandGrid() {
             </div>
 
             {/* Block 4 */}
-            {/* <div className="brand-block">
+            <div className="brand-block">
               <h3 className="text-2xl sm:text-3xl md:text-4xl font-light leading-snug">
                 Global <br className="hidden sm:block" /> Standards
               </h3>
               <div className="w-8 sm:w-10 h-px bg-white my-4 sm:my-6" />
               <p className="text-xs sm:text-sm leading-relaxed text-white/90 max-w-md">
-                With partnerships in over 150 research institutions, Elephant
-                Biosciences brings the world of discovery closer. Our experts
-                manage every molecular interaction, ensuring a flawless
-                scientific journey.
+                As a global partner to leading researchers and institutions
+                worldwide, Elephant Biosciences supports advanced scientific
+                work across diverse geographies. Our teams oversee each stage of
+                molecular handling and coordination with precision and
+                consistency, supporting reliable research outcomes and sustained
+                continuity across international research efforts.
               </p>
-            </div> */}
+            </div>
           </div>
         </div>
       </div>
