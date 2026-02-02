@@ -115,8 +115,8 @@ function ShowcaseProductVideo({ product, containerRef }: ShowcaseProductVideoPro
             // EXACT same desktop animation as ProductVideo
             // Phase 1: Centered - REDUCED starting scale to 0.7
             // Added left margin (shift right) by 10% of viewport width
-            const startX = -videoWidth / 2 + (vw * 0.1);
-            const startY = -videoHeight / 2;
+            const startX = -videoWidth / 2 + (vw * 0.045);
+            const startY = -videoHeight / 2 - (vh * 0.1);
             const startScale = 0.7; // Reduced from 1 to make video smaller at start
 
             const rightCenterX = vw * 0.80;
@@ -149,7 +149,7 @@ function ShowcaseProductVideo({ product, containerRef }: ShowcaseProductVideoPro
                         const cardCenterY = rect.top + (rect.height / 2) - 60;
                         const targetX = (cardCenterX - vw / 2) - videoWidth / 2;
                         const targetY = (cardCenterY - vh / 2) - videoHeight / 2;
-                        const targetScaleRaw = (rect.width * 0.8) / videoWidth;
+                        const targetScaleRaw = (rect.width * 0.6) / videoWidth;
 
                         currentX = lerp(currentX, targetX, q);
                         currentY = lerp(currentY, targetY, q);

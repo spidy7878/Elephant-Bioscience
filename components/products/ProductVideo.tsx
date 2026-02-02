@@ -106,7 +106,7 @@ function ProductVideo({ product }: { product: Product }) {
 
       // Phase 1: Centered - REDUCED starting scale to 0.7
       // Added left margin (shift right) by 10% of viewport width
-      const startX = -videoWidth / 2 + (vw * 0.045);
+      const startX = -videoWidth / 2 + (vw * 0.01);
       const startY = -videoHeight / 2 - (vh * 0.1);
       const startScale = 0.7; // Reduced from 1 to make video smaller at start
 
@@ -145,7 +145,7 @@ function ProductVideo({ product }: { product: Product }) {
 
             const targetX = (cardCenterX - vw / 2) - videoWidth / 2;
             const targetY = (cardCenterY - vh / 2) - videoHeight / 2;
-            const targetScaleRaw = (rect.width * 0.8) / videoWidth;
+            const targetScaleRaw = (rect.width * 0.5) / videoWidth; // Reduced from 0.8 to 0.6
 
             currentX = lerp(currentX, targetX, q);
             currentY = lerp(currentY, targetY, q);
