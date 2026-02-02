@@ -237,7 +237,11 @@ function ProductVideo({ product }: { product: Product }) {
               muted
               loop
               playsInline
-              style={{ backgroundColor: "transparent", filter: "drop-shadow(0 20px 60px rgba(0,0,0,0.25))" }}
+              style={{
+                backgroundColor: "transparent",
+                filter: "drop-shadow(0 20px 60px rgba(0,0,0,0.25))",
+                mixBlendMode: "screen", // Fix Safari WebM transparency
+              }}
               className="w-[400px] sm:w-[480px] xl:w-[720px] object-contain"
             >
               <source src={mediaUrl} type={/\.webm$/i.test(mediaUrl) ? "video/webm" : "video/mp4"} />

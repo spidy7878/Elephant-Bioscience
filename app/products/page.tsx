@@ -29,10 +29,14 @@ export default function ProductPage() {
   useEffect(() => {
     async function fetchProducts() {
       try {
-        // Remove trailing slash from API URL if present to avoid double slashes
         const apiUrl = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") || "";
+        // Check for development mode - works in browser
+        const isDev = typeof window !== 'undefined' && window.location.hostname === 'localhost';
+        // Strapi v5 uses 'status=draft', v4 uses 'publicationState=preview'
+        const draftParam = isDev ? '&status=draft' : '';
+        console.log(`Fetching products with draft mode: ${isDev}, URL: ${apiUrl}/api/products?populate=*${draftParam}`);
         const res = await fetch(
-          `${apiUrl}/api/products?populate=*`
+          `${apiUrl}/api/products?populate=*${draftParam}`
         );
         const json = await res.json();
         setProducts(Array.isArray(json.data) ? json.data : []);
@@ -203,8 +207,8 @@ export default function ProductPage() {
                     window.history.replaceState(null, "", newUrl);
                   }}
                   className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-md sm:rounded transition-all duration-300 text-xs sm:text-sm ${activeCategory === category
-                      ? "bg-[#8c2224] text-white"
-                      : "bg-transparent text-white hover:bg-[#8c2224] hover:text-white"
+                    ? "bg-[#8c2224] text-white"
+                    : "bg-transparent text-white hover:bg-[#8c2224] hover:text-white"
                     }`}
                 >
                   {category}
@@ -223,7 +227,7 @@ export default function ProductPage() {
                   href={`/productListing/${product.documentId}`}
                   className="group relative rounded-3xl overflow-hidden transition-all duration-500 hover:scale-105 block aspect-square"
                   style={{
-                    background: "rgba(255, 255, 255, 0.03)",
+                    background: "rgba(0, 0, 0, 0.6)", // Darker background for Safari WebM compatibility
                     backdropFilter: "blur(10px)",
                     boxShadow: "0 8px 32px 0 rgba(0, 0, 0, 0.37)",
                     textDecoration: "none",

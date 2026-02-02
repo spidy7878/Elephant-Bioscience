@@ -46,8 +46,10 @@ export default function ProductList({
 
         async function fetchProducts() {
             try {
+                const isDev = typeof window !== 'undefined' && window.location.hostname === 'localhost';
+                const draftParam = isDev ? '&status=draft' : '';
                 const res = await fetch(
-                    `${process.env.NEXT_PUBLIC_API_URL}/api/products?populate=*`
+                    `${process.env.NEXT_PUBLIC_API_URL}/api/products?populate=*${draftParam}`
                 );
                 const json = await res.json();
                 setProducts(Array.isArray(json.data) ? json.data : []);
@@ -236,7 +238,7 @@ export default function ProductList({
 
                         const cardClasses = "group relative rounded-3xl overflow-hidden transition-all duration-500 hover:scale-105 block aspect-square cursor-pointer";
                         const cardStyles = {
-                            background: "rgba(255, 255, 255, 0.03)",
+                            background: "rgba(0, 0, 0, 0.6)", // Darker background for Safari WebM compatibility
                             backdropFilter: "blur(10px)",
                             boxShadow: "0 8px 32px 0 rgba(0, 0, 0, 0.37)",
                             textDecoration: "none",

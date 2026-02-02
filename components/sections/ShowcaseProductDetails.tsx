@@ -28,7 +28,9 @@ export default function ShowcaseProductDetails({
         async function fetchProducts() {
             try {
                 const apiUrl = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") || "";
-                const res = await fetch(`${apiUrl}/api/products?populate=*`);
+                const isDev = typeof window !== 'undefined' && window.location.hostname === 'localhost';
+                const draftParam = isDev ? '&status=draft' : '';
+                const res = await fetch(`${apiUrl}/api/products?populate=*${draftParam}`);
                 const json = await res.json();
                 const fetchedProducts = Array.isArray(json.data) ? json.data : [];
                 setProducts(fetchedProducts);

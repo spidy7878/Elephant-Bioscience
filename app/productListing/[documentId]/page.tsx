@@ -7,8 +7,10 @@ interface Props {
 }
 
 async function getProduct(documentId: string): Promise<Product | null> {
+  const isDev = process.env.NODE_ENV === 'development';
+  const draftParam = isDev ? '&status=draft' : '';
   try {
-    const res = await api.get(`/api/products/${documentId}?populate=*`);
+    const res = await api.get(`/api/products/${documentId}?populate=*${draftParam}`);
     return res.data.data;
   } catch (error) {
     console.error("Failed to fetch product:", error);
@@ -17,8 +19,10 @@ async function getProduct(documentId: string): Promise<Product | null> {
 }
 
 async function getAllProducts(): Promise<Product[]> {
+  const isDev = process.env.NODE_ENV === 'development';
+  const draftParam = isDev ? '&status=draft' : '';
   try {
-    const res = await api.get(`/api/products?populate=*`);
+    const res = await api.get(`/api/products?populate=*${draftParam}`);
     return Array.isArray(res.data.data) ? res.data.data : [];
   } catch (error) {
     console.error("Failed to fetch all products:", error);
