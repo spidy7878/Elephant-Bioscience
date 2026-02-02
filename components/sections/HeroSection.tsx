@@ -245,7 +245,7 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
                     </video>
                   ) : (
                     <img
-                      src="/fallback_image.png"
+                      src="/fallback_img.jpeg"
                       alt="Hero Fallback"
                       className="w-full h-full object-cover"
                       style={{
