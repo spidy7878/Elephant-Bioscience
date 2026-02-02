@@ -40,13 +40,8 @@ function ShowcaseProductVideo({ product, containerRef }: ShowcaseProductVideoPro
             return;
         }
 
-        // Hide video if before container starts
-        if (window.scrollY < containerTop) {
-            opacity.set(0);
-            return;
-        }
-
-        // Show video when inside container
+        // Show video always (even before container starts) to keep it visible
+        // When scrollY < containerTop, heroProgress will be 0, effectively clamping it to start position
         opacity.set(1);
 
         const { vw, vh } = viewportRef.current;
@@ -115,8 +110,8 @@ function ShowcaseProductVideo({ product, containerRef }: ShowcaseProductVideoPro
             // EXACT same desktop animation as ProductVideo
             // Phase 1: Centered - REDUCED starting scale to 0.7
             // Added left margin (shift right) by 10% of viewport width
-            const startX = -videoWidth / 2 + (vw * 0.045);
-            const startY = -videoHeight / 2 - (vh * 0.1);
+            const startX = -videoWidth / 2 + (vw * 0.01);
+            const startY = -videoHeight / 2 - (vh * 0.2);
             const startScale = 0.7; // Reduced from 1 to make video smaller at start
 
             const rightCenterX = vw * 0.80;
@@ -157,6 +152,13 @@ function ShowcaseProductVideo({ product, containerRef }: ShowcaseProductVideoPro
                     }
                 }
             }
+        }
+
+        // Fix: If we are scrolling ABOVE the container (scrolling up), 
+        // move the video DOWN with the container so it doesn't overlap previous section
+        if (latest < containerTop) {
+            const offset = containerTop - latest;
+            currentY += offset;
         }
 
         x.set(currentX);
