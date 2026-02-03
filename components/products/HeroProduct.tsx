@@ -72,7 +72,9 @@ const HeroProduct = ({
   return (
     <section className="relative w-full min-h-[100dvh] overflow-hidden">
       {/* FLOATING VIDEO - Only render if not hidden and modal is closed */}
-      {!hideFloatingVideo && !showQuantityModal && <ProductVideo product={product} />}
+      {!hideFloatingVideo && !showQuantityModal && (
+        <ProductVideo product={product} />
+      )}
 
       {/* MAIN CONTENT */}
       <div className="w-full px-4 sm:px-8 md:px-[2vw] md:py-12 relative">
@@ -155,83 +157,84 @@ const HeroProduct = ({
             </motion.div>
 
             {/* Quantity Modal - Rendered as Portal */}
-            {showQuantityModal && createPortal(
-              <motion.div
-                initial="hidden"
-                animate="visible"
-                exit="exit"
-                className="fixed inset-0 z-50 flex items-center justify-center"
-              >
-                {/* Backdrop: static blur like LoginModal */}
+            {showQuantityModal &&
+              createPortal(
                 <motion.div
-                  className="absolute inset-0 bg-black/50"
-                  onClick={handleCloseModal}
-                  style={{
-                    backdropFilter: "blur(8px)",
-                    WebkitBackdropFilter: "blur(8px)",
-                  }}
-                />
-
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                  transition={{ duration: 0.3, ease: "easeOut" }}
-                  className="relative rounded-3xl shadow-2xl p-8 sm:p-10 max-w-md w-full mx-4 flex flex-col items-center justify-center gap-6"
-                  style={{
-                    background: "rgba(255,255,255,0.15)",
-                    backdropFilter: "blur(40px) saturate(180%)",
-                    WebkitBackdropFilter: "blur(40px) saturate(180%)",
-                    boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.4), inset 0 1px 0 0 rgba(255, 255, 255, 0.4)",
-                    minHeight: "250px",
-                  }}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  className="fixed inset-0 z-50 flex items-center justify-center"
                 >
-                  {/* Glass shine effect */}
-                  <div 
-                    className="absolute inset-0 rounded-3xl pointer-events-none"
-                    style={{
-                      background: "linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 50%)",
-                    }}
-                  />
-
-                  {/* Close Button */}
-                  <button
-                    aria-label="Close modal"
+                  {/* Backdrop: static blur like LoginModal */}
+                  <motion.div
+                    className="absolute inset-0 bg-black/50"
                     onClick={handleCloseModal}
-                    className="absolute top-3 right-3 sm:top-5 sm:right-5 text-white/90 hover:text-white transition flex items-center justify-center w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white/6 hover:bg-white/10 text-xl sm:text-2xl z-10"
-                    type="button"
-                  >
-                    ×
-                  </button>
-
-                  {/* Quantity Input */}
-                  <input
-                    type="number"
-                    value={tempQuantity}
-                    onChange={(e) => setTempQuantity(e.target.value)}
-                    min="1"
-                    className="w-48 px-6 py-4 rounded-2xl text-white font-bold text-4xl text-center focus:outline-none focus:ring-4 focus:ring-white/30 transition-all duration-200 placeholder-white/40 relative z-10 remove-spinner"
                     style={{
-                      background: "rgba(255,255,255,0.25)",
-                      backdropFilter: "blur(20px)",
-                      WebkitBackdropFilter: "blur(20px)",
-                      boxShadow: "inset 0 2px 8px rgba(0,0,0,0.2), 0 4px 16px rgba(255,255,255,0.1)",
+                      backdropFilter: "blur(8px)",
+                      WebkitBackdropFilter: "blur(8px)",
                     }}
-                    placeholder="1"
-                    autoFocus
                   />
 
-                  {/* Confirm Button */}
-                  <button
-                    onClick={handleConfirmQuantity}
-                    className="px-8 py-3 rounded-2xl bg-[#8C2224] text-white font-medium text-lg hover:bg-[#a62628] hover:scale-105 active:scale-95 transition-all duration-200 shadow-2xl relative z-10"
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                    transition={{ duration: 0.3, ease: "easeOut" }}
+                    role="dialog"
+                    aria-modal="true"
+                    className="relative flex rounded-xl w-[85vw] h-[70vw] max-w-[280px] max-h-[280px] sm:w-[300px] sm:h-[300px] md:w-[320px] md:h-[320px] px-3 py-4 shadow-none border border-white/10 overflow-hidden items-center justify-center"
+                    style={{
+                      background:
+                        "linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03))",
+                      boxShadow:
+                        "0 10px 30px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.03)",
+                      willChange: "transform, opacity",
+                      transform: "translate3d(0, 0, 0)",
+                      backfaceVisibility: "hidden",
+                    }}
                   >
-                    Confirm
-                  </button>
-                </motion.div>
-              </motion.div>,
-              document.body
-            )}
+                    {/* Close Button - Top Right */}
+                    <div className="absolute top-2 right-2 z-[100] pointer-events-auto">
+                      <button
+                        aria-label="Close modal"
+                        onClick={handleCloseModal}
+                        className="text-white/90 hover:text-white transition flex items-center justify-center w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white/6 hover:bg-white/10 text-2xl sm:text-3xl"
+                        type="button"
+                      >
+                        ×
+                      </button>
+                    </div>
+
+                    {/* Content */}
+                    <div className="relative z-10 w-full flex flex-col items-center gap-4">
+                      {/* Quantity Input */}
+                      <input
+                        type="number"
+                        value={tempQuantity}
+                        onChange={(e) => setTempQuantity(e.target.value)}
+                        min="1"
+                        className="w-36 sm:w-44 px-4 py-3 rounded-lg text-[#8C2224] font-bold text-3xl sm:text-4xl text-center focus:outline-none placeholder-[#8C2224]/60 remove-spinner"
+                        style={{
+                          background: "rgba(255,255,255,0.95)",
+                          boxShadow: "inset 0 1px 0 rgba(0,0,0,0.06)",
+                        }}
+                        placeholder="1"
+                        autoFocus
+                      />
+
+                      {/* Confirm Button */}
+                      <button
+                        onClick={handleConfirmQuantity}
+                        className="w-36 sm:w-44 py-2.5 rounded-xl bg-[#8C2224] text-white font-semibold text-lg shadow-md"
+                        style={{ boxShadow: "0 8px 30px rgba(140,34,36,0.18)" }}
+                      >
+                        Confirm
+                      </button>
+                    </div>
+                  </motion.div>
+                </motion.div>,
+                document.body
+              )}
             {/* Reference Panel for small screens */}
             <motion.div
               initial={{ opacity: 0, y: 40 }}
