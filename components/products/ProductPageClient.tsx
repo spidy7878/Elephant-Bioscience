@@ -5,112 +5,130 @@ import { Product } from "app/types/product";
 import dynamic from "next/dynamic";
 import HeroProduct from "./HeroProduct"; // Ensure this is a default export
 import NavigationBar from "@/components/sections/NavigationBar";
+import ConnectModal from "components/ui/ConnectModal";
 
 const ProductTabs = dynamic(() => import("./ProductTabs"), { ssr: false });
 const ProductList = dynamic(() => import("./ProductList"), { ssr: false });
 
 interface ProductPageClientProps {
-    initialProduct: Product;
-    products: Product[];
+  initialProduct: Product;
+  products: Product[];
 }
 
 export default function ProductPageClient({
-    initialProduct,
-    products,
+  initialProduct,
+  products,
 }: ProductPageClientProps) {
-    const [currentProduct, setCurrentProduct] = useState<Product>(initialProduct);
-    const hasInteracted = useRef(false); // Track if user has switched products
-    const [showDeferredSections, setShowDeferredSections] = useState(false);
+  const [currentProduct, setCurrentProduct] = useState<Product>(initialProduct);
+  const hasInteracted = useRef(false); // Track if user has switched products
+  const [showDeferredSections, setShowDeferredSections] = useState(false);
+  const [isConnectOpen, setConnectOpen] = useState(false);
 
-    useEffect(() => {
-        const id = window.requestAnimationFrame(() => setShowDeferredSections(true));
-        return () => window.cancelAnimationFrame(id);
-    }, []);
+  useEffect(() => {
+    const id = window.requestAnimationFrame(() =>
+      setShowDeferredSections(true)
+    );
+    return () => window.cancelAnimationFrame(id);
+  }, []);
 
-    const handleProductSelect = useCallback(
-        (product: Product) => {
-            // Mark that user has interacted (switched products)
-            hasInteracted.current = true;
+  const handleProductSelect = useCallback((product: Product) => {
+    // Mark that user has interacted (switched products)
+    hasInteracted.current = true;
 
-            // Remove focus from clicked element to prevent browser scroll anchoring
-            if (document.activeElement instanceof HTMLElement) {
-                document.activeElement.blur();
-            }
+    // Remove focus from clicked element to prevent browser scroll anchoring
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
 
-            // Update the current product state
-            setCurrentProduct(product);
+    // Update the current product state
+    setCurrentProduct(product);
 
-            // Update URL without triggering Next.js routing (pure browser history update)
-            window.history.replaceState(null, '', `/productListing/${product.documentId}`);
-
-            // Force scroll to top immediately and after a small delay to handle layout shifts
-            window.scrollTo({ top: 0, behavior: "instant" });
-
-            // Double ensure scroll happens after React render cycle
-            setTimeout(() => {
-                window.scrollTo({ top: 0, behavior: "smooth" });
-            }, 50);
-        },
-        []
+    // Update URL without triggering Next.js routing (pure browser history update)
+    window.history.replaceState(
+      null,
+      "",
+      `/productListing/${product.documentId}`
     );
 
+    // Force scroll to top immediately and after a small delay to handle layout shifts
+    window.scrollTo({ top: 0, behavior: "instant" });
 
-    return (
-        <>
-            {/* Extra space after back button for small screens */}
-            <div className="block sm:hidden h-8" />
+    // Double ensure scroll happens after React render cycle
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }, 50);
+  }, []);
 
-            <NavigationBar isImagesLoaded={true} />
+  const handleRequest = useCallback(async () => {
+    return true;
+  }, []);
 
-            <div className="mt-2 sm:mt-8" style={{ height: "20px" }} />
+  return (
+    <>
+      {/* Extra space after back button for small screens */}
+      <div className="block sm:hidden h-8" />
 
-            {/* Background Video */}
-            <video
-                className="fixed top-0 left-0 w-full h-full object-cover z-0"
-                src="/videos/movement.mp4"
-                autoPlay
-                loop
-                muted
-                playsInline
-                preload="none"
-                style={{ pointerEvents: "none" }}
+      <NavigationBar
+        isImagesLoaded={true}
+        onConnectClick={() => setConnectOpen(true)}
+      />
+
+      <div className="mt-2 sm:mt-8" style={{ height: "20px" }} />
+
+      {/* Background Video */}
+      <video
+        className="fixed top-0 left-0 w-full h-full object-cover z-0"
+        src="/videos/movement.mp4"
+        autoPlay
+        loop
+        muted
+        playsInline
+        preload="none"
+        style={{ pointerEvents: "none" }}
+      />
+      {/* Responsive overlay for readability */}
+      <div className="fixed top-0 left-0 w-full h-full z-10 pointer-events-none" />
+
+      <div className="relative z-20">
+        <section className="relative w-full min-h-[100dvh] flex flex-col">
+          {/* Hero Section */}
+          <div className="snap-start w-full min-h-[50vh] md:min-h-[60vh] flex items-center justify-center px-2 sm:px-4 md:px-8">
+            <HeroProduct
+              product={currentProduct}
+              skipAnimation={hasInteracted.current}
             />
-            {/* Responsive overlay for readability */}
-            <div className="fixed top-0 left-0 w-full h-full z-10 pointer-events-none" />
+          </div>
 
-            <div className="relative z-20">
-                <section className="relative w-full min-h-[100dvh] flex flex-col">
-                    {/* Hero Section */}
-                    <div className="snap-start w-full min-h-[50vh] md:min-h-[60vh] flex items-center justify-center px-2 sm:px-4 md:px-8">
-                        <HeroProduct
-                            product={currentProduct}
-                            skipAnimation={hasInteracted.current}
-                        />
-                    </div>
+          {/* Tabs Section */}
+          <div className="snap-start w-full flex-1 px-2 sm:px-4 md:px-8">
+            {showDeferredSections && (
+              <ProductTabs
+                product={currentProduct}
+                skipAnimation={hasInteracted.current}
+              />
+            )}
+          </div>
 
-                    {/* Tabs Section */}
-                    <div className="snap-start w-full flex-1 px-2 sm:px-4 md:px-8">
-                        {showDeferredSections && (
-                            <ProductTabs
-                                product={currentProduct}
-                                skipAnimation={hasInteracted.current}
-                            />
-                        )}
-                    </div>
+          {/* More Products Section */}
+          <div className="w-full px-4 py-20 mt-10">
+            {showDeferredSections && (
+              <ProductList
+                showLoading={false}
+                currentProductId={currentProduct.documentId}
+                onProductSelect={handleProductSelect}
+                products={products}
+              />
+            )}
+          </div>
+        </section>
+      </div>
 
-                    {/* More Products Section */}
-                    <div className="w-full px-4 py-20 mt-10">
-                        {showDeferredSections && (
-                            <ProductList
-                                showLoading={false}
-                                currentProductId={currentProduct.documentId}
-                                onProductSelect={handleProductSelect}
-                                products={products}
-                            />
-                        )}
-                    </div>
-                </section>
-            </div>
-        </>
-    );
+      {/* Connect Modal */}
+      <ConnectModal
+        isOpen={isConnectOpen}
+        onClose={() => setConnectOpen(false)}
+        onRequest={handleRequest}
+      />
+    </>
+  );
 }
