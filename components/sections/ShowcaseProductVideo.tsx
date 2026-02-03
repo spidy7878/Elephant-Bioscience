@@ -237,24 +237,34 @@ function ShowcaseProductVideo({ product, containerRef }: ShowcaseProductVideoPro
         };
     }, [handleScroll, scrollY]);
 
-    const rawMedia =
-        typeof product?.productVideo === "string"
-            ? product.productVideo
-            : product?.productVideo?.[0]?.url;
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
 
-    const fallbackMedia =
-        typeof product?.chemicalFormulaImg === "string"
-            ? product.chemicalFormulaImg
-            : product?.chemicalFormulaImg?.[0]?.url;
+    // Helper to build full URL
+    const buildUrl = (url: string | undefined): string | undefined => {
+        if (!url) return undefined;
+        return url.startsWith("http") ? url : `${apiUrl}${url}`;
+    };
 
-    const mediaUrl = rawMedia || fallbackMedia || null;
+    // Get Safari .mov URL (ProRes 4444 with alpha) - only if it exists AND is a .mov file
+    const safariRaw = product?.productVideoSafari?.[0]?.url;
+    const safariUrl = safariRaw && /\.mov$/i.test(safariRaw) ? buildUrl(safariRaw) : undefined;
 
-    if (!mediaUrl) {
+    // Get Chrome .webm URL (VP9 with alpha) - check productVideo for .webm files
+    const chromeRaw = product?.productVideo?.[0]?.url;
+    const chromeUrl = chromeRaw && /\.webm$/i.test(chromeRaw) ? buildUrl(chromeRaw) : undefined;
+
+    // Get fallback PNG URL from chemicalFormulaImg OR productVideo (if it's an image)
+    const fallbackFromFormula = product?.chemicalFormulaImg?.[0]?.url;
+    const fallbackFromVideo = chromeRaw && /\.(png|jpg|jpeg|gif|webp)$/i.test(chromeRaw) ? chromeRaw : undefined;
+    const fallbackUrl = buildUrl(fallbackFromFormula || fallbackFromVideo);
+
+    // Check if we have valid video sources
+    const hasVideoSources = safariUrl || chromeUrl;
+
+    if (!hasVideoSources && !fallbackUrl) {
         console.warn("ShowcaseProductVideo: No media URL found for product:", product?.name);
         return null;
     }
-
-    const isVideo = /\.(mp4|webm|ogg|mov)$/i.test(mediaUrl);
 
     return (
         <motion.div
@@ -268,25 +278,29 @@ function ShowcaseProductVideo({ product, containerRef }: ShowcaseProductVideoPro
             className="fixed top-1/2 left-1/2 z-[40] pointer-events-none"
         >
             <div className="relative flex flex-col items-center">
-                {isVideo ? (
+                {hasVideoSources ? (
                     <video
                         autoPlay
                         muted
                         loop
                         playsInline
+                        poster={fallbackUrl || undefined}
                         style={{ backgroundColor: "transparent", filter: "drop-shadow(0 20px 60px rgba(0,0,0,0.25))" }}
                         className="w-[400px] sm:w-[480px] xl:w-[720px] object-contain"
                     >
-                        <source src={mediaUrl} type={/\.webm$/i.test(mediaUrl) ? "video/webm" : "video/mp4"} />
+                        {/* Safari: ProRes 4444 .mov with alpha */}
+                        {safariUrl && <source src={safariUrl} type="video/mp4; codecs=hvc1" />}
+                        {/* Chrome/Firefox: VP9 .webm with alpha */}
+                        {chromeUrl && <source src={chromeUrl} type="video/webm" />}
                     </video>
-                ) : (
+                ) : fallbackUrl ? (
                     <img
-                        src={mediaUrl}
+                        src={fallbackUrl}
                         alt={product.name}
                         className="w-[400px] sm:w-[480px] xl:w-[720px] object-contain"
                         style={{ filter: "drop-shadow(0 20px 60px rgba(0,0,0,0.25))" }}
                     />
-                )}
+                ) : null}
             </div>
         </motion.div>
     );
