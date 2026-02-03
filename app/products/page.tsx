@@ -6,11 +6,9 @@ import NavigationBar from "components/sections/NavigationBar";
 import Link from "next/link";
 import { AnimatePresence } from "framer-motion";
 import LoadingSection from "components/sections/LoadingSection";
-import { useProducts } from "@/context/ProductsContext";
 
 export default function ProductPage() {
-  // Use shared products from context instead of fetching
-  const { products, isLoading: contextLoading } = useProducts();
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingProgress, setLoadingProgress] = useState(0);
 
@@ -26,8 +24,27 @@ export default function ProductPage() {
   const [activeCategory, setActiveCategory] = useState(categories[0]);
   const isImagesLoaded = true;
 
-  // Data is ready when context has finished loading
-  const dataReady = !contextLoading;
+  const [dataReady, setDataReady] = useState(false);
+
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        // Remove trailing slash from API URL if present to avoid double slashes
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") || "";
+        const res = await fetch(
+          `${apiUrl}/api/products?populate=*`
+        );
+        const json = await res.json();
+        setProducts(Array.isArray(json.data) ? json.data : []);
+      } catch (err) {
+        console.error("Fetch error:", err);
+      } finally {
+        setDataReady(true);
+      }
+    }
+
+    fetchProducts();
+  }, []);
 
   // Sync progress bar with data loading
   useEffect(() => {
@@ -143,36 +160,19 @@ export default function ProductPage() {
         {loading && <LoadingSection loadingProgress={loadingProgress} />}
       </AnimatePresence>
 
-      <div className="min-h-[100dvh] text-white py-12 px-4 relative overflow-hidden">
-        {/* Background Video - Scaled to cover edges */}
+      <div className="min-h-[100dvh] bg-black text-white py-12 px-4 relative overflow-hidden">
+        {/* Background Video */}
         <video
-          className="fixed object-cover z-0"
+          className="fixed top-0 left-0 w-full h-full object-cover z-0"
           src="/videos/mov1.mp4"
           autoPlay
           loop
           muted
           playsInline
-          style={{
-            pointerEvents: "none",
-            inset: 0,
-            width: "100%",
-            height: "100%",
-            /* Scale up to cover bounce/overscroll areas */
-            transform: "scale(1.2)",
-            transformOrigin: "center center"
-          }}
+          style={{ pointerEvents: "none" }}
         />
-        {/* Overlay for readability - matches video scale */}
-        <div
-          className="fixed bg-black/60 z-10 pointer-events-none"
-          style={{
-            inset: 0,
-            width: "100%",
-            height: "100%",
-            transform: "scale(1.2)",
-            transformOrigin: "center center"
-          }}
-        />
+        {/* Overlay for readability */}
+        <div className="fixed top-0 left-0 w-full h-full bg-black/60 z-10 pointer-events-none" />
 
         {/* All content above the video */}
         <div className="relative z-20">
