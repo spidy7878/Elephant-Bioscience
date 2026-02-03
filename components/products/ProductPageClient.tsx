@@ -1,11 +1,13 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { Product } from "app/types/product";
+import dynamic from "next/dynamic";
 import HeroProduct from "./HeroProduct"; // Ensure this is a default export
-import ProductTabs from "./ProductTabs"; // Ensure this is a default export
-import ProductList from "./ProductList"; // Ensure this is a default export
 import NavigationBar from "@/components/sections/NavigationBar";
+
+const ProductTabs = dynamic(() => import("./ProductTabs"), { ssr: false });
+const ProductList = dynamic(() => import("./ProductList"), { ssr: false });
 
 interface ProductPageClientProps {
     initialProduct: Product;
@@ -18,6 +20,12 @@ export default function ProductPageClient({
 }: ProductPageClientProps) {
     const [currentProduct, setCurrentProduct] = useState<Product>(initialProduct);
     const hasInteracted = useRef(false); // Track if user has switched products
+    const [showDeferredSections, setShowDeferredSections] = useState(false);
+
+    useEffect(() => {
+        const id = window.requestAnimationFrame(() => setShowDeferredSections(true));
+        return () => window.cancelAnimationFrame(id);
+    }, []);
 
     const handleProductSelect = useCallback(
         (product: Product) => {
@@ -54,6 +62,7 @@ export default function ProductPageClient({
                 loop
                 muted
                 playsInline
+                preload="none"
                 style={{ pointerEvents: "none" }}
             />
             {/* Responsive overlay for readability */}
@@ -71,20 +80,24 @@ export default function ProductPageClient({
 
                     {/* Tabs Section */}
                     <div className="snap-start w-full flex-1 px-2 sm:px-4 md:px-8">
-                        <ProductTabs
-                            product={currentProduct}
-                            skipAnimation={hasInteracted.current}
-                        />
+                        {showDeferredSections && (
+                            <ProductTabs
+                                product={currentProduct}
+                                skipAnimation={hasInteracted.current}
+                            />
+                        )}
                     </div>
 
                     {/* More Products Section */}
                     <div className="w-full px-4 py-20 mt-10">
-                        <ProductList
-                            showLoading={false}
-                            currentProductId={currentProduct.documentId}
-                            onProductSelect={handleProductSelect}
-                            products={products}
-                        />
+                        {showDeferredSections && (
+                            <ProductList
+                                showLoading={false}
+                                currentProductId={currentProduct.documentId}
+                                onProductSelect={handleProductSelect}
+                                products={products}
+                            />
+                        )}
                     </div>
                 </section>
             </div>

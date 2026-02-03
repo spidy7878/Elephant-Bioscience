@@ -249,7 +249,7 @@ export default function ShowcaseProductDetails({
         categoryRowRef.current.scrollLeft = scrollLeftRef.current - walk;
     }, []);
 
-    // Filter Logic - memoized with useMemo would be better but keeping simple
+    // Filter Logic
     const filteredProducts = products.filter((product) => {
         if (activeCategory === "All Peptides") return true;
 

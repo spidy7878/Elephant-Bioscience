@@ -11,8 +11,7 @@ function ProductVideo({ product }: { product: Product }) {
   const [isSafari, setIsSafari] = useState(false);
   const { scrollY } = useScroll();
 
-  // Cache the target card reference
-  const targetCardRef = useRef<HTMLElement | null>(null);
+
 
   // Cache viewport dimensions to handle mobile browser address bar behavior
   const viewportRef = useRef({ vw: 0, vh: 0 });
@@ -125,10 +124,7 @@ function ProductVideo({ product }: { product: Product }) {
       currentScale = lerp(startScale, rightSideScale, heroProgress);
 
       // Phase 3: Lock to Grid Card
-      if (!targetCardRef.current) {
-        targetCardRef.current = document.getElementById("target-product-card");
-      }
-      const targetCard = targetCardRef.current;
+      const targetCard = document.getElementById("target-product-card");
 
       if (targetCard && heroProgress >= 0.8) {
         const rect = targetCard.getBoundingClientRect();
