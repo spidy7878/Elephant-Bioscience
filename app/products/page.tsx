@@ -6,9 +6,11 @@ import NavigationBar from "components/sections/NavigationBar";
 import Link from "next/link";
 import { AnimatePresence } from "framer-motion";
 import LoadingSection from "components/sections/LoadingSection";
+import { useProducts } from "@/context/ProductsContext";
 
 export default function ProductPage() {
-  const [products, setProducts] = useState<Product[]>([]);
+  // Use shared products from context instead of fetching
+  const { products, isLoading: contextLoading } = useProducts();
   const [loading, setLoading] = useState(true);
   const [loadingProgress, setLoadingProgress] = useState(0);
 
@@ -24,27 +26,8 @@ export default function ProductPage() {
   const [activeCategory, setActiveCategory] = useState(categories[0]);
   const isImagesLoaded = true;
 
-  const [dataReady, setDataReady] = useState(false);
-
-  useEffect(() => {
-    async function fetchProducts() {
-      try {
-        // Remove trailing slash from API URL if present to avoid double slashes
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") || "";
-        const res = await fetch(
-          `${apiUrl}/api/products?populate=*`
-        );
-        const json = await res.json();
-        setProducts(Array.isArray(json.data) ? json.data : []);
-      } catch (err) {
-        console.error("Fetch error:", err);
-      } finally {
-        setDataReady(true);
-      }
-    }
-
-    fetchProducts();
-  }, []);
+  // Data is ready when context has finished loading
+  const dataReady = !contextLoading;
 
   // Sync progress bar with data loading
   useEffect(() => {

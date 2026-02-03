@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { AnimatePresence } from "framer-motion";
 import LoadingSection from "components/sections/LoadingSection";
+import { useProductsOptional } from "@/context/ProductsContext";
 
 interface ProductListProps {
     showLoading?: boolean;
@@ -19,7 +20,15 @@ export default function ProductList({
     onProductSelect,
     products: providedProducts,
 }: ProductListProps) {
-    const [products, setProducts] = useState<Product[]>(providedProducts || []);
+    // Try to use context products as fallback
+    const contextProducts = useProductsOptional();
+
+    const [products, setProducts] = useState<Product[]>(() => {
+        // Priority: props > context > empty
+        if (providedProducts && providedProducts.length > 0) return providedProducts;
+        if (contextProducts?.products && contextProducts.products.length > 0) return contextProducts.products;
+        return [];
+    });
     const [loading, setLoading] = useState(true);
     const [loadingProgress, setLoadingProgress] = useState(0);
     const [isMobile, setIsMobile] = useState(false);
@@ -37,29 +46,26 @@ export default function ProductList({
     const [dataReady, setDataReady] = useState(false);
 
     useEffect(() => {
-        // Skip fetch if products were provided via props
+        // Use provided products if available
         if (providedProducts && providedProducts.length > 0) {
             setProducts(providedProducts);
             setDataReady(true);
             return;
         }
 
-        async function fetchProducts() {
-            try {
-                const res = await fetch(
-                    `${process.env.NEXT_PUBLIC_API_URL}/api/products?populate=*`
-                );
-                const json = await res.json();
-                setProducts(Array.isArray(json.data) ? json.data : []);
-            } catch (err) {
-                console.error("Fetch error:", err);
-            } finally {
-                setDataReady(true);
-            }
+        // Use context products if available
+        if (contextProducts?.products && contextProducts.products.length > 0) {
+            setProducts(contextProducts.products);
+            setDataReady(true);
+            return;
         }
 
-        fetchProducts();
-    }, [providedProducts]);
+        // If context is loading, wait for it
+        if (contextProducts && !contextProducts.isLoading && contextProducts.products.length === 0) {
+            // Context finished loading but has no products - mark as ready
+            setDataReady(true);
+        }
+    }, [providedProducts, contextProducts?.products, contextProducts?.isLoading]);
 
     // Detect mobile on mount
     useEffect(() => {
