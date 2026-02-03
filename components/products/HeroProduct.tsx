@@ -49,7 +49,7 @@ const HeroProduct = ({
       {!hideFloatingVideo && <ProductVideo product={product} />}
 
       {/* MAIN CONTENT */}
-      <div className="w-full px-4 sm:px-8 md:px-[2vw] md:py-12 mt-8 sm:mt-0 relative">
+      <div className="w-full px-4 sm:px-8 md:px-[2vw] md:py-12 mt-4 sm:mt-0 relative">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start relative">
           {/* LEFT CONTENT */}
           <motion.div
