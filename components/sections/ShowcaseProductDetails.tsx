@@ -176,6 +176,9 @@ export default function ShowcaseProductDetails({
     showButton
 }: ShowcaseProductDetailsProps) {
     const [products, setProducts] = useState<Product[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [showLoader, setShowLoader] = useState(false);
+    const [progress, setProgress] = useState(0);
     const showcaseRef = useRef<HTMLDivElement>(null);
 
     // Categories
@@ -193,23 +196,64 @@ export default function ShowcaseProductDetails({
     // Fetch products from API - only once
     useEffect(() => {
         let isMounted = true;
+        let progressInterval: NodeJS.Timeout;
+        let autoHideTimeout: NodeJS.Timeout;
 
         async function fetchProducts() {
+            setProgress(0);
+            setIsLoading(true);
+            setShowLoader(true);
+
+            // Auto-hide loader after 5 seconds regardless of loading state
+            autoHideTimeout = setTimeout(() => {
+                if (isMounted) {
+                    setShowLoader(false);
+                }
+            }, 5000);
+
+            // Simulate progress
+            progressInterval = setInterval(() => {
+                setProgress((prev) => {
+                    if (prev < 90) {
+                        return prev + Math.random() * 30;
+                    }
+                    return prev;
+                });
+            }, 200);
+
             try {
                 const res = await fetch(`${API_URL}/api/products?populate=*`);
                 const json = await res.json();
                 const fetchedProducts = Array.isArray(json.data) ? json.data : [];
                 if (isMounted) {
-                    setProducts(fetchedProducts);
+                    setProgress(100);
+                    clearTimeout(autoHideTimeout);
+                    setTimeout(() => {
+                        setProducts(fetchedProducts);
+                        setIsLoading(false);
+                        setShowLoader(false);
+                        setProgress(0);
+                    }, 300);
                 }
             } catch (err) {
                 console.warn("Fetch error (Strapi might be down):", err);
+                if (isMounted) {
+                    setProgress(100);
+                    clearTimeout(autoHideTimeout);
+                    setTimeout(() => {
+                        setIsLoading(false);
+                        setShowLoader(false);
+                        setProgress(0);
+                    }, 300);
+                }
             }
         }
         fetchProducts();
 
         return () => {
             isMounted = false;
+            clearInterval(progressInterval);
+            clearTimeout(autoHideTimeout);
         };
     }, []);
 
@@ -290,6 +334,24 @@ export default function ShowcaseProductDetails({
             ref={showcaseRef}
             className={`relative w-full max-w-7xl mx-auto px-4 py-8 ${!isLoggedIn ? 'h-screen overflow-hidden' : 'min-h-screen'}`}
         >
+            {/* Loading Progress Bar - Single Line 0-100% */}
+            <AnimatePresence>
+                {showLoader && (
+                    <motion.div
+                        initial={{ scaleX: 0, originX: 0 }}
+                        animate={{ scaleX: 1, originX: 0 }}
+                        exit={{ scaleX: 0, originX: 0 }}
+                        transition={{ duration: 0.5, ease: "easeInOut" }}
+                        className="fixed top-0 left-0 right-0 z-50 h-1 bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600"
+                        style={{
+                            width: `${Math.min(progress, 100)}%`,
+                            boxShadow: `0 0 20px rgba(59, 130, 246, 0.8), 0 0 10px rgba(34, 197, 94, 0.6)`,
+                            transition: 'width 0.3s ease-out'
+                        }}
+                    />
+                )}
+            </AnimatePresence>
+
             {/* Full blur overlay when not logged in */}
             <div className={`relative z-20 ${!isLoggedIn ? "blur-[12px] select-none pointer-events-none opacity-60 grayscale-[30%]" : ""}`}>
 
