@@ -1,14 +1,18 @@
 import { Product } from "app/types/product";
 import ProductPageClient from "components/products/ProductPageClient";
-const getApiUrl = () => (process.env.NEXT_PUBLIC_API_URL || "https://appetizing-cabbage-e4ead111c1.strapiapp.com").replace(/\/$/, "");
+
+const getApiUrl = () => (process.env.NEXT_PUBLIC_API_URL || "https://tremendous-appliance-db25f878e9.strapiapp.com").replace(/\/$/, "");
 
 interface Props {
-  params: { documentId: string };
+  params: Promise<{ documentId: string }>;
 }
 
+// Enable ISR with 60 second revalidation for fast cached responses
 async function getProduct(documentId: string): Promise<Product | null> {
   try {
-    const res = await fetch(`${getApiUrl()}/api/products/${documentId}?populate=*`, { cache: 'no-store' });
+    const res = await fetch(`${getApiUrl()}/api/products/${documentId}?populate=*`, {
+      next: { revalidate: 60 }
+    });
     if (!res.ok) return null;
     const json = await res.json();
     return json.data;
@@ -20,12 +24,26 @@ async function getProduct(documentId: string): Promise<Product | null> {
 
 async function getAllProducts(): Promise<Product[]> {
   try {
-    const res = await fetch(`${getApiUrl()}/api/products?populate=*`, { cache: 'no-store' });
+    const res = await fetch(`${getApiUrl()}/api/products?populate=*`, {
+      next: { revalidate: 60 }
+    });
     if (!res.ok) return [];
     const json = await res.json();
     return Array.isArray(json.data) ? json.data : [];
   } catch (error) {
     console.error("Failed to fetch all products:", error);
+    return [];
+  }
+}
+
+// Pre-generate all product pages at build time for instant navigation
+export async function generateStaticParams() {
+  try {
+    const products = await getAllProducts();
+    return products.map((product) => ({
+      documentId: product.documentId,
+    }));
+  } catch {
     return [];
   }
 }
