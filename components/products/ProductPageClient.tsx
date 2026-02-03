@@ -75,35 +75,19 @@ export default function ProductPageClient({
 
             <div className="mt-2 sm:mt-8" style={{ height: "20px" }} />
 
-            {/* Background Video - Scaled to cover edges */}
+            {/* Background Video */}
             <video
-                className="fixed object-cover z-0"
+                className="fixed top-0 left-0 w-full h-full object-cover z-0"
                 src="/videos/movement.mp4"
                 autoPlay
                 loop
                 muted
                 playsInline
                 preload="none"
-                style={{
-                    pointerEvents: "none",
-                    inset: 0,
-                    width: "100%",
-                    height: "100%",
-                    transform: "scale(1.2)",
-                    transformOrigin: "center center"
-                }}
+                style={{ pointerEvents: "none" }}
             />
-            {/* Responsive overlay - matches video scale */}
-            <div
-                className="fixed z-10 pointer-events-none"
-                style={{
-                    inset: 0,
-                    width: "100%",
-                    height: "100%",
-                    transform: "scale(1.2)",
-                    transformOrigin: "center center"
-                }}
-            />
+            {/* Responsive overlay for readability */}
+            <div className="fixed top-0 left-0 w-full h-full z-10 pointer-events-none" />
 
             <div className="relative z-20">
                 <section className="relative w-full min-h-[100dvh] flex flex-col">
