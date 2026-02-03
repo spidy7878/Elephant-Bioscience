@@ -363,7 +363,16 @@ function BackgroundVideo({ progress }: { progress: MotionValue<number> }) {
   const opacity = useTransform(progress, [0.8, 0.9], [0, 1]);
 
   return (
-    <div className="fixed inset-0 z-0 pointer-events-none">
+    <div
+      className="fixed z-0 pointer-events-none"
+      style={{
+        inset: 0,
+        width: "100%",
+        height: "100%",
+        transform: "scale(1.2)",
+        transformOrigin: "center center"
+      }}
+    >
       <motion.video
         autoPlay
         loop

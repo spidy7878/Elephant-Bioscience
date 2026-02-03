@@ -34,6 +34,66 @@
   font-display: swap;
 }
 
+/* ========================================
+   iOS FULL-BLEED BACKGROUND FIX
+   Prevents black bars on Safari/Chrome
+   ======================================== */
+
+/* Root element - prevent overscroll bounce */
+html {
+  background-color: #1a1a1a;
+  /* Match video's dark grey tone */
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Body - prevent bounce and extend background */
+body {
+  background-color: #1a1a1a;
+  /* Match video's dark grey tone */
+  color: white;
+  min-height: 100vh;
+  min-height: 100dvh;
+  margin: 0;
+  padding: 0;
+  /* overflow-x: hidden; - Removed from body too just in case, relying on layout control */
+  overscroll-behavior-y: none;
+  /* Prevent vertical bounce */
+  -webkit-overscroll-behavior: none;
+  /* Prevent pull-to-refresh on mobile */
+  overscroll-behavior: contain;
+}
+
+/* Extended background that covers rubber-band areas */
+body::before {
+  content: "";
+  position: fixed;
+  top: -100vh;
+  left: -50vw;
+  right: -50vw;
+  bottom: -100vh;
+  width: 200vw;
+  height: 300vh;
+  background-color: #1a1a1a;
+  /* Match video color */
+  z-index: -999;
+  pointer-events: none;
+}
+
+/* iOS Safari specific - extend into safe areas */
+@supports (padding: env(safe-area-inset-top)) {
+  html {
+    padding: 0;
+    /* REMOVE PADDING to allow full bleed */
+    background-attachment: fixed;
+  }
+
+  body::before {
+    top: calc(-100vh - env(safe-area-inset-top));
+    bottom: calc(-100vh - env(safe-area-inset-bottom));
+  }
+}
+
 /* Hide scrollbar for Chrome, Safari and Opera */
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
@@ -126,13 +186,11 @@
 
   .scanlines {
     @apply fixed inset-0 pointer-events-none z-[8];
-    background: repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 2px,
-      rgba(0, 0, 0, 0.015) 2px,
-      rgba(0, 0, 0, 0.015) 4px
-    );
+    background: repeating-linear-gradient(0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 0, 0, 0.015) 2px,
+        rgba(0, 0, 0, 0.015) 4px);
   }
 
   .hero-visual-section {
@@ -223,6 +281,7 @@
 }
 
 @keyframes gradientShift {
+
   0%,
   100% {
     background-position: 0% 50%;
@@ -325,7 +384,7 @@
     align-items: center;
   }
 
-  nav > div:first-child {
+  nav>div:first-child {
     flex: 0 0 auto;
     margin-top: -12px;
     /* Moves logo slightly upward */
@@ -335,7 +394,7 @@
     /* Keeps spacing from contact info */
   }
 
-  nav > div:last-child {
+  nav>div:last-child {
     flex: 0 0 auto;
     margin-left: auto;
     /* Push contact to right */
