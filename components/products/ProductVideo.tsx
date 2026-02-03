@@ -1,7 +1,7 @@
 "use client";
 import { Product } from "app/types/product";
 import { motion, useScroll, useMotionValue } from "framer-motion";
-import { useState, useRef, useCallback, useLayoutEffect } from "react";
+import { useState, useRef, useCallback, useLayoutEffect, useEffect } from "react";
 
 function lerp(start: number, end: number, t: number) {
   return start + (end - start) * t;
@@ -19,6 +19,10 @@ function ProductVideo({ product }: { product: Product }) {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const scale = useMotionValue(1);
+  const opacity = useMotionValue(1);
+
+  // Track if the target card exists in the DOM
+  const [isTargetVisible, setIsTargetVisible] = useState(true);
 
   const handleScroll = useCallback((latest: number) => {
     if (typeof window === "undefined") return;
@@ -205,6 +209,34 @@ function ProductVideo({ product }: { product: Product }) {
     };
   }, [handleScroll, scrollY]);
 
+  // Periodic check for target card visibility (handles category changes without scroll)
+  useEffect(() => {
+    const checkTargetVisibility = () => {
+      const targetCard = document.getElementById("target-product-card");
+      const isVisible = targetCard !== null && targetCard.offsetParent !== null;
+
+      if (isVisible !== isTargetVisible) {
+        setIsTargetVisible(isVisible);
+      }
+
+      // Also update the opacity motion value for smooth transition
+      opacity.set(isVisible ? 1 : 0);
+
+      // Recalculate position when target changes
+      if (isVisible) {
+        handleScroll(scrollY.get());
+      }
+    };
+
+    // Check immediately
+    checkTargetVisibility();
+
+    // Check periodically to catch category changes
+    const interval = setInterval(checkTargetVisibility, 150);
+
+    return () => clearInterval(interval);
+  }, [isTargetVisible, handleScroll, scrollY, opacity]);
+
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
 
   // Helper to build full URL
@@ -242,9 +274,10 @@ function ProductVideo({ product }: { product: Product }) {
           x,
           y,
           scale,
-          willChange: "transform",
+          opacity,
+          willChange: "transform, opacity",
         }}
-        className="fixed top-1/2 left-1/2 z-[40] pointer-events-none"
+        className="fixed top-1/2 left-1/2 z-[40] pointer-events-none transition-opacity duration-300"
       >
         <div className="relative flex flex-col items-center">
           {hasVideoSources ? (
