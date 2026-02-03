@@ -362,24 +362,76 @@ function BackgroundVideo({ progress }: { progress: MotionValue<number> }) {
   // Matching the microscope fade-out for a smooth cross-fade.
   const opacity = useTransform(progress, [0.8, 0.9], [0, 1]);
 
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [videoCanPlay, setVideoCanPlay] = useState(false);
+
+  // Logic to handle autoplay and low power mode
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    // Function to try playing
+    const attemptPlay = () => {
+      const playPromise = video.play();
+
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            // Success! Video is playing.
+            // Now we can reveal it.
+            setVideoCanPlay(true);
+          })
+          .catch((error) => {
+            // Auto-play failed.
+            // We keep it hidden (videoCanPlay is false).
+            // We don't need to remove it from DOM yet, just keep it invisible.
+            // It will wait for the global touch listener below.
+            console.log("Autoplay failed:", error);
+          });
+      }
+    };
+
+    // 1. Try immediate play
+    attemptPlay();
+
+    // 2. Setup touch listener for Low Power Mode
+    // If autoplay fails, the first user interaction will trigger this
+    const handleInteraction = () => {
+      // If already playing, do nothing
+      if (video.paused) {
+        attemptPlay();
+      }
+    };
+
+    // Passive listener for better scrolling performance
+    window.addEventListener('touchstart', handleInteraction, { passive: true });
+    window.addEventListener('click', handleInteraction);
+
+    return () => {
+      window.removeEventListener('touchstart', handleInteraction);
+      window.removeEventListener('click', handleInteraction);
+    };
+  }, []);
+
   return (
-    <div
-      className="fixed z-0 pointer-events-none"
-      style={{
-        inset: 0,
-        width: "100%",
-        height: "100%",
-        transform: "scale(1.2)",
-        transformOrigin: "center center"
-      }}
-    >
+    <div className="fixed inset-0 z-0 pointer-events-none">
       <motion.video
+        ref={videoRef}
         autoPlay
         loop
         muted
         playsInline
+        controls={false}
+        onPlaying={() => setVideoCanPlay(true)} // Backup: If native autoplay works, show it!
         className="absolute top-0 left-0 w-full h-full object-cover"
-        style={{ opacity }}
+        style={{
+          // Combine scroll opacity with our 'can play' flag
+          // If videoCanPlay is false, opacity is 0 (invisible)
+          opacity: videoCanPlay ? opacity : 0,
+          // Extra iOS safety
+          WebkitAppearance: "none",
+          pointerEvents: "none"
+        }}
       >
         <source src="/videos/movement.mp4" type="video/mp4" />
       </motion.video>

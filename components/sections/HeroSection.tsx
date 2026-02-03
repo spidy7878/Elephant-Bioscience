@@ -26,8 +26,35 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
     ref
   ) => {
     const sectionRef = useRef<HTMLElement>(null);
+    const mobileVideoRef = useRef<HTMLVideoElement>(null);
     const router = useRouter();
-    const [isLowPower, setLowPower] = useState(true); // Start hidden, reveal on autoplay success
+    const [videoCanPlay, setVideoCanPlay] = useState(false); // Start hidden until playback confirmed
+    const [isLowPowerConfirmed, setLowPowerConfirmed] = useState(false);
+
+    // Attempt to play video and detect Low Power Mode via play() promise
+    useEffect(() => {
+      const video = mobileVideoRef.current;
+      if (!video || isLowPowerConfirmed) return;
+
+      // Small delay to ensure video element is mounted
+      const timer = setTimeout(() => {
+        const playPromise = video.play();
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => {
+              // Autoplay succeeded - video is playing, now we can show it
+              setVideoCanPlay(true);
+            })
+            .catch(() => {
+              // Autoplay failed - likely Low Power Mode
+              // Remove video from DOM to prevent iOS showing play button
+              setLowPowerConfirmed(true);
+            });
+        }
+      }, 100);
+
+      return () => clearTimeout(timer);
+    }, [isLowPowerConfirmed]);
 
     // Scroll tracking for zoom animation
     const { scrollYProgress } = useScroll({
@@ -154,8 +181,6 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
     const focusDepth = ((currentFrame / TOTAL_FRAMES) * 5).toFixed(2);
     const frameNumber = (currentFrame + 1).toString().padStart(4, "0");
 
-    const mobileVideoRef = useRef<HTMLVideoElement>(null);
-
     return (
       <section
         ref={sectionRef}
@@ -231,31 +256,37 @@ const HeroSection = forwardRef<HTMLElement, HeroSectionProps>(
                       zIndex: 0,
                     }}
                   />
-                  {/* Video - hidden until autoplay succeeds */}
-                  <video
-                    ref={mobileVideoRef}
-                    autoPlay
-                    muted
-                    playsInline
-                    controls={false}
-                    preload="auto"
-                    onPlaying={() => {
-                      // Autoplay succeeded - reveal video
-                      setLowPower(false);
-                    }}
-                    className="w-full h-full object-cover transition-opacity duration-500"
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                      position: "absolute",
-                      inset: 0,
-                      zIndex: 1,
-                      opacity: isLowPower ? 0 : 1, // Hidden until playing confirmed
-                    }}
-                  >
-                    <source src="/videos/mobile.mp4" type="video/mp4" />
-                  </video>
+                  {/* Video - ONLY rendered when NOT in confirmed Low Power Mode */}
+                  {/* This prevents iOS from showing any play/pause controls */}
+                  {!isLowPowerConfirmed && (
+                    <video
+                      ref={mobileVideoRef}
+                      autoPlay
+                      muted
+                      playsInline
+                      controls={false}
+                      preload="auto"
+                      onPlaying={() => setVideoCanPlay(true)} // Backup: If native autoplay works, show it!
+                      className="w-full h-full object-cover transition-opacity duration-300"
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        position: "absolute",
+                        inset: 0,
+                        zIndex: 1,
+                        // Video starts HIDDEN (opacity 0)
+                        // It only becomes visible (opacity 1) if videoCanPlay becomes TRUE (play() success)
+                        // This prevents the 'Play Button' from ever being seen on a visible paused video
+                        opacity: videoCanPlay ? 1 : 0,
+                        // Extra iOS fixes - disable all default controls
+                        WebkitAppearance: "none",
+                        pointerEvents: "none" // Prevent any clicks/taps on the video itself
+                      }}
+                    >
+                      <source src="/videos/mobile.mp4" type="video/mp4" />
+                    </video>
+                  )}
                 </motion.div>
               </>
             )}

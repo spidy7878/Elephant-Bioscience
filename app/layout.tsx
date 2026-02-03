@@ -1,7 +1,6 @@
 "use client";
 import "./globals.css";
 import { useEffect } from "react";
-import { ProductsProvider } from "@/context/ProductsContext";
 
 function ScrollToTopOnMount() {
   useEffect(() => {
@@ -20,15 +19,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
         <link rel="icon" type="image/svg+xml" href="/fevicon.svg" />
         <meta name="theme-color" content="#8C2224" />
       </head>
       <body>
-        <ProductsProvider>
-          <ScrollToTopOnMount />
-          <div className="relative z-10">{children}</div>
-        </ProductsProvider>
+        <ScrollToTopOnMount />
+        <div className="relative z-10">{children}</div>
       </body>
     </html>
   );
