@@ -12,7 +12,8 @@ export default function ProductPage() {
   const [loading, setLoading] = useState(true);
   const [loadingProgress, setLoadingProgress] = useState(0);
 
-  const categories = [
+  // Categories fetched from backend
+  const [categories, setCategories] = useState<string[]>([
     "All Peptides",
     "Peptide Capsules",
     "Peptide Blends",
@@ -20,8 +21,31 @@ export default function ProductPage() {
     "Melanotan Peptides",
     "Cosmetic Peptides",
     "Bioregulators",
-  ];
-  const [activeCategory, setActiveCategory] = useState(categories[0]);
+  ]);
+  const [activeCategory, setActiveCategory] = useState("All Peptides");
+  // Fetch categories from backend on mount
+  useEffect(() => {
+    async function fetchCategories() {
+      try {
+        const apiUrl =
+          process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") || "";
+        const res = await fetch(`${apiUrl}/api/categories`);
+        if (!res.ok) throw new Error("Failed to fetch categories");
+        const json = await res.json();
+        // Strapi v4: json.data is array of { id, attributes: { name } }
+        const fetched = Array.isArray(json.data)
+          ? json.data.map((cat: any) => cat.attributes?.name).filter(Boolean)
+          : [];
+        if (fetched.length > 0) {
+          setCategories(["All Peptides", ...fetched]);
+        }
+      } catch (err) {
+        // fallback to hardcoded categories
+        // Optionally log error
+      }
+    }
+    fetchCategories();
+  }, []);
   const isImagesLoaded = true;
 
   const [dataReady, setDataReady] = useState(false);
@@ -30,10 +54,9 @@ export default function ProductPage() {
     async function fetchProducts() {
       try {
         // Remove trailing slash from API URL if present to avoid double slashes
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") || "";
-        const res = await fetch(
-          `${apiUrl}/api/products?populate=*`
-        );
+        const apiUrl =
+          process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") || "";
+        const res = await fetch(`${apiUrl}/api/products?populate=*`);
         const json = await res.json();
         setProducts(Array.isArray(json.data) ? json.data : []);
       } catch (err) {
@@ -202,10 +225,11 @@ export default function ProductPage() {
                     const newUrl = `/products${categorySlug === "all-peptides" ? "" : "/" + categorySlug}`;
                     window.history.replaceState(null, "", newUrl);
                   }}
-                  className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-md sm:rounded transition-all duration-300 text-xs sm:text-sm ${activeCategory === category
-                    ? "bg-[#8c2224] text-white"
-                    : "bg-transparent text-white hover:bg-[#8c2224] hover:text-white"
-                    }`}
+                  className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-md sm:rounded transition-all duration-300 text-xs sm:text-sm ${
+                    activeCategory === category
+                      ? "bg-[#8c2224] text-white"
+                      : "bg-transparent text-white hover:bg-[#8c2224] hover:text-white"
+                  }`}
                 >
                   {category}
                 </button>
@@ -258,26 +282,45 @@ export default function ProductPage() {
                         }
                       `}</style>
                       {(() => {
-                        const apiUrl = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") || "";
+                        const apiUrl =
+                          process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ||
+                          "";
 
                         // Helper to build full URL
-                        const buildUrl = (url: string | undefined): string | undefined => {
+                        const buildUrl = (
+                          url: string | undefined
+                        ): string | undefined => {
                           if (!url) return undefined;
-                          return url.startsWith("http") ? url : `${apiUrl}${url}`;
+                          return url.startsWith("http")
+                            ? url
+                            : `${apiUrl}${url}`;
                         };
 
                         // Get Safari .mov URL (ProRes 4444 with alpha) - only if it exists AND is a .mov file
                         const safariRaw = product.productVideoSafari?.[0]?.url;
-                        const safariUrl = safariRaw && /\.mov$/i.test(safariRaw) ? buildUrl(safariRaw) : undefined;
+                        const safariUrl =
+                          safariRaw && /\.mov$/i.test(safariRaw)
+                            ? buildUrl(safariRaw)
+                            : undefined;
 
                         // Get Chrome .webm URL (VP9 with alpha) - check productVideo for .webm files
                         const chromeRaw = product.productVideo?.[0]?.url;
-                        const chromeUrl = chromeRaw && /\.webm$/i.test(chromeRaw) ? buildUrl(chromeRaw) : undefined;
+                        const chromeUrl =
+                          chromeRaw && /\.webm$/i.test(chromeRaw)
+                            ? buildUrl(chromeRaw)
+                            : undefined;
 
                         // Get fallback PNG URL from chemicalFormulaImg OR productVideo (if it's an image)
-                        const fallbackFromFormula = product.chemicalFormulaImg?.[0]?.url;
-                        const fallbackFromVideo = chromeRaw && /\.(png|jpg|jpeg|gif|webp)$/i.test(chromeRaw) ? chromeRaw : undefined;
-                        const fallbackUrl = buildUrl(fallbackFromFormula || fallbackFromVideo);
+                        const fallbackFromFormula =
+                          product.chemicalFormulaImg?.[0]?.url;
+                        const fallbackFromVideo =
+                          chromeRaw &&
+                          /\.(png|jpg|jpeg|gif|webp)$/i.test(chromeRaw)
+                            ? chromeRaw
+                            : undefined;
+                        const fallbackUrl = buildUrl(
+                          fallbackFromFormula || fallbackFromVideo
+                        );
 
                         // Check if we have valid video sources
                         const hasVideoSources = safariUrl || chromeUrl;
@@ -302,7 +345,10 @@ export default function ProductPage() {
                             >
                               {/* Safari: ProRes 4444 .mov with alpha */}
                               {safariUrl && (
-                                <source src={safariUrl} type="video/mp4; codecs=hvc1" />
+                                <source
+                                  src={safariUrl}
+                                  type="video/mp4; codecs=hvc1"
+                                />
                               )}
                               {/* Chrome/Firefox: VP9 .webm with alpha */}
                               {chromeUrl && (
