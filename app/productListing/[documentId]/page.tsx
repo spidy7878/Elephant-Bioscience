@@ -11,7 +11,7 @@ interface Props {
 async function getProduct(documentId: string): Promise<Product | null> {
   try {
     const res = await fetch(`${getApiUrl()}/api/products/${documentId}?populate=*`, {
-      next: { revalidate: 60 }
+      next: { revalidate: 300 }
     });
     if (!res.ok) return null;
     const json = await res.json();
@@ -25,7 +25,7 @@ async function getProduct(documentId: string): Promise<Product | null> {
 async function getAllProducts(): Promise<Product[]> {
   try {
     const res = await fetch(`${getApiUrl()}/api/products?populate=*`, {
-      next: { revalidate: 60 }
+      next: { revalidate: 300 }
     });
     if (!res.ok) return [];
     const json = await res.json();

@@ -5,6 +5,7 @@ import { Product } from "app/types/product";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
+import { useProducts } from "@/context/ProductsContext";
 
 // Pre-compute API URL once at module level
 const API_URL = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") || "";
@@ -175,10 +176,8 @@ export default function ShowcaseProductDetails({
     onOpenLogin,
     showButton
 }: ShowcaseProductDetailsProps) {
-    const [products, setProducts] = useState<Product[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
-    const [showLoader, setShowLoader] = useState(false);
-    const [progress, setProgress] = useState(0);
+    // Use shared products from context instead of fetching
+    const { products, isLoading } = useProducts();
     const showcaseRef = useRef<HTMLDivElement>(null);
 
     // Categories
@@ -192,70 +191,6 @@ export default function ShowcaseProductDetails({
         "Bioregulators",
     ];
     const [activeCategory, setActiveCategory] = useState(categories[0]);
-
-    // Fetch products from API - only once
-    useEffect(() => {
-        let isMounted = true;
-        let progressInterval: NodeJS.Timeout;
-        let autoHideTimeout: NodeJS.Timeout;
-
-        async function fetchProducts() {
-            setProgress(0);
-            setIsLoading(true);
-            setShowLoader(true);
-
-            // Auto-hide loader after 5 seconds regardless of loading state
-            autoHideTimeout = setTimeout(() => {
-                if (isMounted) {
-                    setShowLoader(false);
-                }
-            }, 5000);
-
-            // Simulate progress
-            progressInterval = setInterval(() => {
-                setProgress((prev) => {
-                    if (prev < 90) {
-                        return prev + Math.random() * 30;
-                    }
-                    return prev;
-                });
-            }, 200);
-
-            try {
-                const res = await fetch(`${API_URL}/api/products?populate=*`);
-                const json = await res.json();
-                const fetchedProducts = Array.isArray(json.data) ? json.data : [];
-                if (isMounted) {
-                    setProgress(100);
-                    clearTimeout(autoHideTimeout);
-                    setTimeout(() => {
-                        setProducts(fetchedProducts);
-                        setIsLoading(false);
-                        setShowLoader(false);
-                        setProgress(0);
-                    }, 300);
-                }
-            } catch (err) {
-                console.warn("Fetch error (Strapi might be down):", err);
-                if (isMounted) {
-                    setProgress(100);
-                    clearTimeout(autoHideTimeout);
-                    setTimeout(() => {
-                        setIsLoading(false);
-                        setShowLoader(false);
-                        setProgress(0);
-                    }, 300);
-                }
-            }
-        }
-        fetchProducts();
-
-        return () => {
-            isMounted = false;
-            clearInterval(progressInterval);
-            clearTimeout(autoHideTimeout);
-        };
-    }, []);
 
     // Drag-to-scroll for category row
     const categoryRowRef = useRef<HTMLDivElement>(null);
@@ -334,9 +269,9 @@ export default function ShowcaseProductDetails({
             ref={showcaseRef}
             className={`relative w-full max-w-7xl mx-auto px-4 py-8 ${!isLoggedIn ? 'h-screen overflow-hidden' : 'min-h-screen'}`}
         >
-            {/* Loading Progress Bar - Single Line 0-100% */}
+            {/* Loading Progress Bar */}
             <AnimatePresence>
-                {showLoader && (
+                {isLoading && (
                     <motion.div
                         initial={{ scaleX: 0, originX: 0 }}
                         animate={{ scaleX: 1, originX: 0 }}
@@ -344,9 +279,8 @@ export default function ShowcaseProductDetails({
                         transition={{ duration: 0.5, ease: "easeInOut" }}
                         className="fixed top-0 left-0 right-0 z-50 h-1 bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600"
                         style={{
-                            width: `${Math.min(progress, 100)}%`,
+                            width: '100%',
                             boxShadow: `0 0 20px rgba(59, 130, 246, 0.8), 0 0 10px rgba(34, 197, 94, 0.6)`,
-                            transition: 'width 0.3s ease-out'
                         }}
                     />
                 )}
