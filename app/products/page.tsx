@@ -203,8 +203,8 @@ export default function ProductPage() {
                     window.history.replaceState(null, "", newUrl);
                   }}
                   className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-md sm:rounded transition-all duration-300 text-xs sm:text-sm ${activeCategory === category
-                      ? "bg-[#8c2224] text-white"
-                      : "bg-transparent text-white hover:bg-[#8c2224] hover:text-white"
+                    ? "bg-[#8c2224] text-white"
+                    : "bg-transparent text-white hover:bg-[#8c2224] hover:text-white"
                     }`}
                 >
                   {category}
@@ -258,59 +258,70 @@ export default function ProductPage() {
                         }
                       `}</style>
                       {(() => {
-                        // Get the media URL from productVideo field
                         const apiUrl = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") || "";
-                        const mediaUrl = product.productVideo?.[0]?.url
-                          ? product.productVideo[0].url.startsWith("http")
-                            ? product.productVideo[0].url
-                            : `${apiUrl}${product.productVideo[0].url}`
-                          : null;
 
-                        // Check if the URL is actually a video file by extension
-                        const isVideo =
-                          mediaUrl && /\.(mp4|webm|ogg|mov)$/i.test(mediaUrl);
+                        // Helper to build full URL
+                        const buildUrl = (url: string | undefined): string | undefined => {
+                          if (!url) return undefined;
+                          return url.startsWith("http") ? url : `${apiUrl}${url}`;
+                        };
 
-                        if (mediaUrl && isVideo) {
-                          // Render video
+                        // Get Safari .mov URL (ProRes 4444 with alpha) - only if it exists AND is a .mov file
+                        const safariRaw = product.productVideoSafari?.[0]?.url;
+                        const safariUrl = safariRaw && /\.mov$/i.test(safariRaw) ? buildUrl(safariRaw) : undefined;
+
+                        // Get Chrome .webm URL (VP9 with alpha) - check productVideo for .webm files
+                        const chromeRaw = product.productVideo?.[0]?.url;
+                        const chromeUrl = chromeRaw && /\.webm$/i.test(chromeRaw) ? buildUrl(chromeRaw) : undefined;
+
+                        // Get fallback PNG URL from chemicalFormulaImg OR productVideo (if it's an image)
+                        const fallbackFromFormula = product.chemicalFormulaImg?.[0]?.url;
+                        const fallbackFromVideo = chromeRaw && /\.(png|jpg|jpeg|gif|webp)$/i.test(chromeRaw) ? chromeRaw : undefined;
+                        const fallbackUrl = buildUrl(fallbackFromFormula || fallbackFromVideo);
+
+                        // Check if we have valid video sources
+                        const hasVideoSources = safariUrl || chromeUrl;
+
+                        if (hasVideoSources) {
+                          // Render video with multiple sources for cross-browser support
                           return (
                             <video
-                              src={mediaUrl}
                               autoPlay
                               loop
                               muted
                               playsInline
                               controls={false}
+                              poster={fallbackUrl}
                               style={{
                                 width: "100%",
                                 height: "100%",
                                 objectFit: "contain",
                                 display: "block",
-                                mixBlendMode: "screen",
                                 willChange: "transform",
                               }}
-                            />
+                            >
+                              {/* Safari: ProRes 4444 .mov with alpha */}
+                              {safariUrl && (
+                                <source src={safariUrl} type="video/mp4; codecs=hvc1" />
+                              )}
+                              {/* Chrome/Firefox: VP9 .webm with alpha */}
+                              {chromeUrl && (
+                                <source src={chromeUrl} type="video/webm" />
+                              )}
+                            </video>
                           );
-                        } else {
-                          // Render image - try productVideo first (in case it's an image), then chemicalFormulaImg
-                          const imageUrl =
-                            mediaUrl ||
-                            (product.chemicalFormulaImg?.[0]?.url
-                              ? product.chemicalFormulaImg[0].url.startsWith(
-                                "http"
-                              )
-                                ? product.chemicalFormulaImg[0].url
-                                : `${apiUrl}${product.chemicalFormulaImg[0].url}`
-                              : "");
-
-                          return imageUrl ? (
+                        } else if (fallbackUrl) {
+                          // No video sources - render fallback PNG
+                          return (
                             <Image
-                              src={imageUrl}
+                              src={fallbackUrl}
                               alt={product.name}
                               fill
                               className="object-contain"
                             />
-                          ) : null;
+                          );
                         }
+                        return null;
                       })()}
                     </div>
                   </div>

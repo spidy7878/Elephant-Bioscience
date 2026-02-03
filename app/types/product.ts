@@ -40,6 +40,7 @@ export interface Product {
   storage: string;
   references: RichTextBlock[];
   productVideo: Media[];
+  productVideoSafari?: Media[]; // ProRes 4444 .mov for Safari alpha transparency
   thirdpartytesting: Media[];
   category?: string;
   chemicalProperties: chemicalProperties;
