@@ -143,19 +143,36 @@ export default function ProductPage() {
         {loading && <LoadingSection loadingProgress={loadingProgress} />}
       </AnimatePresence>
 
-      <div className="min-h-[100dvh] bg-black text-white py-12 px-4 relative overflow-hidden">
-        {/* Background Video */}
+      <div className="min-h-[100dvh] text-white py-12 px-4 relative overflow-hidden">
+        {/* Background Video - Scaled to cover edges */}
         <video
-          className="fixed top-0 left-0 w-full h-full object-cover z-0"
+          className="fixed object-cover z-0"
           src="/videos/mov1.mp4"
           autoPlay
           loop
           muted
           playsInline
-          style={{ pointerEvents: "none" }}
+          style={{
+            pointerEvents: "none",
+            inset: 0,
+            width: "100%",
+            height: "100%",
+            /* Scale up to cover bounce/overscroll areas */
+            transform: "scale(1.2)",
+            transformOrigin: "center center"
+          }}
         />
-        {/* Overlay for readability */}
-        <div className="fixed top-0 left-0 w-full h-full bg-black/60 z-10 pointer-events-none" />
+        {/* Overlay for readability - matches video scale */}
+        <div
+          className="fixed bg-black/60 z-10 pointer-events-none"
+          style={{
+            inset: 0,
+            width: "100%",
+            height: "100%",
+            transform: "scale(1.2)",
+            transformOrigin: "center center"
+          }}
+        />
 
         {/* All content above the video */}
         <div className="relative z-20">
