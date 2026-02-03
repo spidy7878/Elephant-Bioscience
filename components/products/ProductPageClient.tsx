@@ -32,14 +32,24 @@ export default function ProductPageClient({
             // Mark that user has interacted (switched products)
             hasInteracted.current = true;
 
+            // Remove focus from clicked element to prevent browser scroll anchoring
+            if (document.activeElement instanceof HTMLElement) {
+                document.activeElement.blur();
+            }
+
             // Update the current product state
             setCurrentProduct(product);
 
             // Update URL without triggering Next.js routing (pure browser history update)
             window.history.replaceState(null, '', `/productListing/${product.documentId}`);
 
-            // Smooth scroll to top
-            window.scrollTo({ top: 0, behavior: "smooth" });
+            // Force scroll to top immediately and after a small delay to handle layout shifts
+            window.scrollTo({ top: 0, behavior: "instant" });
+
+            // Double ensure scroll happens after React render cycle
+            setTimeout(() => {
+                window.scrollTo({ top: 0, behavior: "smooth" });
+            }, 50);
         },
         []
     );

@@ -254,7 +254,7 @@ function ProductVideo({ product }: { product: Product }) {
               loop
               playsInline
               poster={fallbackUrl || undefined}
-              style={{ backgroundColor: "transparent", filter: "drop-shadow(0 20px 60px rgba(0,0,0,0.25))" }}
+              style={{ backgroundColor: "transparent", filter: "drop-shadow(0 20px 60px rgba(0,0,0,0.25))", pointerEvents: "none" }}
               className="w-[400px] sm:w-[480px] xl:w-[720px] object-contain"
             >
               {/* Safari: ProRes 4444 .mov with alpha */}
@@ -266,7 +266,7 @@ function ProductVideo({ product }: { product: Product }) {
             <img
               src={fallbackUrl}
               alt={product.name}
-              className="w-[400px] sm:w-[480px] xl:w-[720px] object-contain"
+              className="w-[400px] sm:w-[480px] xl:w-[720px] object-contain pointer-events-none"
               style={{ filter: "drop-shadow(0 20px 60px rgba(0,0,0,0.25))" }}
             />
           ) : null}

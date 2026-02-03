@@ -264,7 +264,7 @@ export default function ProductList({
 
                                 {/* Product Media - Hide if current product */}
                                 {!isCurrent && (
-                                    <div className="absolute inset-0 flex items-center justify-center p-4 pb-20">
+                                    <div className="absolute inset-0 flex items-center justify-center p-4 pb-20 pointer-events-none">
                                         <div className="relative w-full h-full flex items-center justify-center product-media-responsive">
                                             <style jsx>{`
                                                 .product-media-responsive {
@@ -321,6 +321,7 @@ export default function ProductList({
                                                                 objectFit: "contain",
                                                                 display: "block",
                                                                 willChange: "transform",
+                                                                pointerEvents: "none",
                                                             }}
                                                         >
                                                             {/* Safari: ProRes 4444 .mov with alpha */}
@@ -340,7 +341,7 @@ export default function ProductList({
                                                             src={fallbackUrl}
                                                             alt={product.name}
                                                             fill
-                                                            className="object-contain"
+                                                            className="object-contain pointer-events-none"
                                                         />
                                                     );
                                                 }
@@ -351,7 +352,7 @@ export default function ProductList({
                                 )}
 
                                 {/* Product Info */}
-                                <div className="absolute bottom-0 left-0 w-full text-center z-10 ">
+                                <div className="absolute bottom-0 left-0 w-full text-center z-10 pointer-events-none">
                                     <h3
                                         className="text-lg sm:text-xl font-medium text-white mb-4 truncate mx-auto px-4"
                                         style={{
