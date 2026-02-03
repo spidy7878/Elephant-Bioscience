@@ -1,6 +1,38 @@
-/* Importing poppins */
+/* Importing Space Grotesk font from public folder */
+@font-face {
+  font-family: 'Space Grotesk';
+  src: url('/space-grotesk/SpaceGrotesk-Light.otf') format('opentype');
+  font-weight: 300;
+  font-display: swap;
+}
 
-@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+@font-face {
+  font-family: 'Space Grotesk';
+  src: url('/space-grotesk/SpaceGrotesk-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Space Grotesk';
+  src: url('/space-grotesk/SpaceGrotesk-Medium.otf') format('opentype');
+  font-weight: 500;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Space Grotesk';
+  src: url('/space-grotesk/SpaceGrotesk-SemiBold.otf') format('opentype');
+  font-weight: 600;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Space Grotesk';
+  src: url('/space-grotesk/SpaceGrotesk-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-display: swap;
+}
 
 /* Hide scrollbar for Chrome, Safari and Opera */
 .scrollbar-hide::-webkit-scrollbar {
@@ -13,6 +45,17 @@
   /* IE and Edge */
   scrollbar-width: none;
   /* Firefox */
+}
+
+/* Remove spinner buttons from number input */
+.remove-spinner::-webkit-outer-spin-button,
+.remove-spinner::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.remove-spinner[type=number] {
+  -moz-appearance: textfield;
 }
 
 @tailwind base;
@@ -46,12 +89,12 @@
   h4,
   h5,
   h6 {
-    font-family: "Poppins", sans-serif;
+    font-family: "Space Grotesk", sans-serif;
   }
 
   body {
     @apply bg-black text-white antialiased overflow-x-hidden;
-    font-family: "Poppins", sans-serif;
+    font-family: "Space Grotesk", sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }

@@ -2,10 +2,10 @@
 
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import { Product } from "app/types/product";
 import Stat from "./Stat";
 import ProductVideo from "./ProductVideo";
-import { X } from "lucide-react";
 
 interface Props {
   product: Product;
@@ -25,6 +25,7 @@ const HeroProduct = ({
   const handleOpenModal = () => {
     setTempQuantity(quantity.toString());
     setShowQuantityModal(true);
+    document.body.style.overflow = "hidden";
   };
 
   const handleConfirmQuantity = () => {
@@ -32,11 +33,13 @@ const HeroProduct = ({
     if (!isNaN(newQuantity) && newQuantity > 0) {
       setQuantity(newQuantity);
       setShowQuantityModal(false);
+      document.body.style.overflow = "";
     }
   };
 
   const handleCloseModal = () => {
     setShowQuantityModal(false);
+    document.body.style.overflow = "";
   };
 
   // Track global page scroll (not a local container)
@@ -72,7 +75,7 @@ const HeroProduct = ({
       {!hideFloatingVideo && !showQuantityModal && <ProductVideo product={product} />}
 
       {/* MAIN CONTENT */}
-      <div className="w-full px-4 sm:px-8 md:px-[2vw] md:py-12 mt-4 sm:mt-0 relative">
+      <div className="w-full px-4 sm:px-8 md:px-[2vw] md:py-12 relative">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start relative">
           {/* LEFT CONTENT */}
           <motion.div
@@ -151,20 +154,36 @@ const HeroProduct = ({
               />
             </motion.div>
 
-            {/* Quantity Modal */}
-            {showQuantityModal && (
-              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xl">
+            {/* Quantity Modal - Rendered as Portal */}
+            {showQuantityModal && createPortal(
+              <motion.div
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                className="fixed inset-0 z-50 flex items-center justify-center"
+              >
+                {/* Backdrop: static blur like LoginModal */}
+                <motion.div
+                  className="absolute inset-0 bg-black/50"
+                  onClick={handleCloseModal}
+                  style={{
+                    backdropFilter: "blur(8px)",
+                    WebkitBackdropFilter: "blur(8px)",
+                  }}
+                />
+
                 <motion.div
                   initial={{ opacity: 0, scale: 0.95, y: 20 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95, y: 20 }}
                   transition={{ duration: 0.3, ease: "easeOut" }}
-                  className="relative rounded-3xl shadow-2xl p-8 sm:p-10 max-w-md w-full mx-4 border-2 border-white/30"
+                  className="relative rounded-3xl shadow-2xl p-8 sm:p-10 max-w-md w-full mx-4 flex flex-col items-center justify-center gap-6"
                   style={{
                     background: "rgba(255,255,255,0.15)",
                     backdropFilter: "blur(40px) saturate(180%)",
                     WebkitBackdropFilter: "blur(40px) saturate(180%)",
                     boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.4), inset 0 1px 0 0 rgba(255, 255, 255, 0.4)",
+                    minHeight: "250px",
                   }}
                 >
                   {/* Glass shine effect */}
@@ -177,64 +196,41 @@ const HeroProduct = ({
 
                   {/* Close Button */}
                   <button
+                    aria-label="Close modal"
                     onClick={handleCloseModal}
-                    className="absolute top-5 right-5 p-2.5 hover:bg-white/50 rounded-xl transition-all duration-200 z-10"
-                    style={{
-                      background: "rgba(255,255,255,0.25)",
-                      backdropFilter: "blur(10px)",
-                      WebkitBackdropFilter: "blur(10px)",
-                      border: "1px solid rgba(255,255,255,0.3)",
-                    }}
+                    className="absolute top-3 right-3 sm:top-5 sm:right-5 text-white/90 hover:text-white transition flex items-center justify-center w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white/6 hover:bg-white/10 text-xl sm:text-2xl z-10"
+                    type="button"
                   >
-                    <X size={20} className="text-white drop-shadow-lg" />
+                    ×
                   </button>
 
-                  <h3 className="text-2xl font-bold text-white mb-8 drop-shadow-lg relative z-10">Select Quantity</h3>
+                  {/* Quantity Input */}
+                  <input
+                    type="number"
+                    value={tempQuantity}
+                    onChange={(e) => setTempQuantity(e.target.value)}
+                    min="1"
+                    className="w-48 px-6 py-4 rounded-2xl text-white font-bold text-4xl text-center focus:outline-none focus:ring-4 focus:ring-white/30 transition-all duration-200 placeholder-white/40 relative z-10 remove-spinner"
+                    style={{
+                      background: "rgba(255,255,255,0.25)",
+                      backdropFilter: "blur(20px)",
+                      WebkitBackdropFilter: "blur(20px)",
+                      boxShadow: "inset 0 2px 8px rgba(0,0,0,0.2), 0 4px 16px rgba(255,255,255,0.1)",
+                    }}
+                    placeholder="1"
+                    autoFocus
+                  />
 
-                  <div className="space-y-5 relative z-10">
-                    <div>
-                      <label className="block text-sm font-semibold text-white/90 mb-3 drop-shadow">
-                        Number of Units
-                      </label>
-                      <input
-                        type="number"
-                        value={tempQuantity}
-                        onChange={(e) => setTempQuantity(e.target.value)}
-                        min="1"
-                        className="w-full px-5 py-4 rounded-2xl border-2 border-white/40 text-white font-semibold text-xl focus:outline-none focus:border-white/60 focus:ring-4 focus:ring-white/20 transition-all duration-200 placeholder-white/50"
-                        style={{
-                          background: "rgba(255,255,255,0.2)",
-                          backdropFilter: "blur(20px)",
-                          WebkitBackdropFilter: "blur(20px)",
-                          boxShadow: "inset 0 2px 4px rgba(0,0,0,0.1)",
-                        }}
-                        placeholder="Enter quantity"
-                        autoFocus
-                      />
-                    </div>
-
-                    <div className="flex gap-4 mt-8">
-                      <button
-                        onClick={handleCloseModal}
-                        className="flex-1 px-5 py-4 rounded-2xl border-2 border-white/40 text-white font-semibold hover:bg-white/30 transition-all duration-200 shadow-lg"
-                        style={{
-                          background: "rgba(255,255,255,0.15)",
-                          backdropFilter: "blur(15px)",
-                          WebkitBackdropFilter: "blur(15px)",
-                        }}
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        onClick={handleConfirmQuantity}
-                        className="flex-1 px-5 py-4 rounded-2xl bg-white text-black font-bold hover:bg-white/95 hover:scale-105 active:scale-95 transition-all duration-200 shadow-2xl"
-                      >
-                        Confirm
-                      </button>
-                    </div>
-                  </div>
+                  {/* Confirm Button */}
+                  <button
+                    onClick={handleConfirmQuantity}
+                    className="px-8 py-3 rounded-2xl bg-[#8C2224] text-white font-medium text-lg hover:bg-[#a62628] hover:scale-105 active:scale-95 transition-all duration-200 shadow-2xl relative z-10"
+                  >
+                    Confirm
+                  </button>
                 </motion.div>
-              </div>
+              </motion.div>,
+              document.body
             )}
             {/* Reference Panel for small screens */}
             <motion.div
