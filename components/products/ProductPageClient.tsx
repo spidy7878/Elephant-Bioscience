@@ -73,7 +73,7 @@ export default function ProductPageClient({
                 onConnectClick={() => setConnectOpen(true)}
             />
 
-            <div className="mt-2 sm:mt-8" style={{ height: "20px" }} />
+            <div className="mt-2 sm:mt-8" style={{ height: "60px" }} />
 
             {/* Background Video - Scaled to cover edges */}
             <video

@@ -54,7 +54,8 @@ function ProductVideo({ product }: { product: Product }) {
 
       // Phase 1: Beside Place Order button
       const mobileStartX = currentVw * 0.05;
-      const mobileStartY = -videoHeight * 0.1;
+      // Move down on mobile to clear text paragraph
+      const mobileStartY = vh * 0.02;
       const mobileStartScale = 1.125;
 
       // Phase 2: Slide to right
@@ -113,7 +114,8 @@ function ProductVideo({ product }: { product: Product }) {
       // Phase 1: Centered - REDUCED starting scale to 0.7
       // Added left margin (shift right) by 10% of viewport width
       const startX = -videoWidth / 2 + (vw * 0.01);
-      const startY = -videoHeight / 2 - (vh * 0.1);
+      // Move slightly down: Increased offset to 0.25 to clear text
+      const startY = -videoHeight / 2 + (vh * 0.25);
       const startScale = 0.7; // Reduced from 1 to make video smaller at start
 
       // Phase 2: Right Side
