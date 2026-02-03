@@ -25,6 +25,7 @@ const videoStyle: React.CSSProperties = {
     display: "block",
     mixBlendMode: "screen",
     willChange: "transform",
+    pointerEvents: "none",
 };
 
 // Helper function to get media URL
@@ -119,7 +120,7 @@ const ProductCard = memo(function ProductCard({ product, index }: ProductCardPro
             />
 
             {/* Product Media */}
-            <div className="absolute inset-0 flex items-center justify-center p-4 pb-20">
+            <div className="absolute inset-0 flex items-center justify-center p-4 pb-20 pointer-events-none">
                 <div className="relative w-full h-full flex items-center justify-center max-w-[70%] max-h-[70%] mt-10 sm:max-w-full sm:max-h-full sm:mt-5">
                     {isVideo && mediaUrl ? (
                         <video
@@ -138,7 +139,7 @@ const ProductCard = memo(function ProductCard({ product, index }: ProductCardPro
                             src={imageUrl}
                             alt={product.name}
                             fill
-                            className="object-contain"
+                            className="object-contain pointer-events-none"
                             loading="lazy"
                         />
                     ) : null}
@@ -146,7 +147,7 @@ const ProductCard = memo(function ProductCard({ product, index }: ProductCardPro
             </div>
 
             {/* Product Info */}
-            <div className="absolute bottom-0 left-0 w-full text-center z-10">
+            <div className="absolute bottom-0 left-0 w-full text-center z-10 pointer-events-none">
                 <h3
                     className="text-lg sm:text-xl font-medium text-white mb-4 truncate mx-auto px-4"
                     style={{
