@@ -93,27 +93,20 @@ export default function ProductList({
 
     // Sync progress bar with data loading
     useEffect(() => {
-        let progressInterval: NodeJS.Timeout;
+        let progressInterval: NodeJS.Timeout | undefined;
 
-        if (loading && showLoading) {
+        if (loading && showLoading && !dataReady) {
             progressInterval = setInterval(() => {
                 setLoadingProgress((prev) => {
                     // If data isn't ready, cap at 90%
-                    if (!dataReady) {
-                        return prev >= 0.9 ? 0.9 : prev + 0.05;
-                    }
-
-                    // Data is ready, move to 100%
-                    if (prev >= 1) {
-                        clearInterval(progressInterval);
-                        // Small delay for the 100% to be seen
-                        setTimeout(() => setLoading(false), 300);
-                        return 1;
-                    }
-
-                    return prev + 0.1;
+                    return prev >= 0.9 ? 0.9 : prev + 0.05;
                 });
             }, 100);
+        }
+
+        if (loading && showLoading && dataReady) {
+            setLoadingProgress(1);
+            requestAnimationFrame(() => setLoading(false));
         } else if (!showLoading && dataReady) {
             setLoading(false);
         }
@@ -245,7 +238,7 @@ export default function ProductList({
     return (
         <div className="w-full">
             <AnimatePresence>
-                {loading && showLoading && <LoadingSection loadingProgress={loadingProgress} />}
+                {loading && showLoading && <LoadingSection loadingProgress={loadingProgress} percentagePosition="above" />}
             </AnimatePresence>
 
             <div className="max-w-7xl mx-auto">

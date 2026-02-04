@@ -199,19 +199,11 @@ export default function ShowcaseProductDetails({
     useEffect(() => {
         let isMounted = true;
         let progressInterval: NodeJS.Timeout;
-        let autoHideTimeout: NodeJS.Timeout;
 
         async function fetchProducts() {
             setProgress(0);
             setIsLoading(true);
             setShowLoader(true);
-
-            // Auto-hide loader after 5 seconds regardless of loading state
-            autoHideTimeout = setTimeout(() => {
-                if (isMounted) {
-                    setShowLoader(false);
-                }
-            }, 5000);
 
             // Simulate progress
             progressInterval = setInterval(() => {
@@ -247,43 +239,30 @@ export default function ShowcaseProductDetails({
                 }
 
                 if (isMounted) {
-                    // 1. Update data immediately
+                    // Update data immediately
                     setProducts(fetchedProducts);
                     setProgress(100);
+                    setContentVisible(true);
 
-                    clearTimeout(autoHideTimeout);
-
-                    // 2. Reveal content BEHIND the loader (glass effect allows seeing it)
-                    // Small delay to ensure React render cycle is complete
-                    setTimeout(() => {
-                        setContentVisible(true);
-
-                        // 3. Keep loader for a moment to let user confirm content is there
-                        // Then fade out loader
-                        setTimeout(() => {
-                            setIsLoading(false);
-                            setShowLoader(false);
-                            // Reset progress after animation
-                            setTimeout(() => setProgress(0), 500);
-                        }, 1000); // 1 second delay while content is visible behind glass
-                    }, 100);
+                    // Hide loader on next frame to avoid blank state
+                    requestAnimationFrame(() => {
+                        setIsLoading(false);
+                        setShowLoader(false);
+                        setProgress(0);
+                    });
                 }
             } catch (err) {
                 console.warn("Fetch error (Strapi might be down):", err);
                 if (isMounted) {
                     setProgress(100);
-                    clearTimeout(autoHideTimeout);
+                    // Even on error, show what we have (or empty state)
+                    setContentVisible(true);
 
-                    setTimeout(() => {
-                        // Even on error, show what we have (or empty state)
-                        setContentVisible(true);
-
-                        setTimeout(() => {
-                            setIsLoading(false);
-                            setShowLoader(false);
-                            setTimeout(() => setProgress(0), 500);
-                        }, 1000);
-                    }, 100);
+                    requestAnimationFrame(() => {
+                        setIsLoading(false);
+                        setShowLoader(false);
+                        setProgress(0);
+                    });
                 }
             }
         }
@@ -292,7 +271,7 @@ export default function ShowcaseProductDetails({
         return () => {
             isMounted = false;
             clearInterval(progressInterval);
-            clearTimeout(autoHideTimeout);
+            // progress interval cleared above
         };
     }, []);
 
@@ -413,6 +392,7 @@ export default function ShowcaseProductDetails({
                         loadingProgress={progress / 100}
                         position="absolute"
                         variant="glass"
+                        percentagePosition="above"
                     />
                 )}
             </AnimatePresence>
