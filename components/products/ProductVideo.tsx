@@ -2,6 +2,7 @@
 import { Product } from "app/types/product";
 import { motion, useScroll, useMotionValue } from "framer-motion";
 import { useState, useRef, useCallback, useLayoutEffect, useEffect } from "react";
+import { createPortal } from "react-dom";
 
 function lerp(start: number, end: number, t: number) {
   return start + (end - start) * t;
@@ -20,6 +21,10 @@ function ProductVideo({ product }: { product: Product }) {
   const y = useMotionValue(0);
   const scale = useMotionValue(1);
   const opacity = useMotionValue(1);
+  const mobileLockRef = useRef({ locked: false, x: 0, y: 0, scale: 1 });
+  const lockTargetRef = useRef<HTMLElement | null>(null);
+  const [isMobileLocked, setIsMobileLocked] = useState(false);
+  const [lockTargetEl, setLockTargetEl] = useState<HTMLElement | null>(null);
 
   // Track if the target card exists in the DOM
   const [isTargetVisible, setIsTargetVisible] = useState(true);
@@ -48,14 +53,17 @@ function ProductVideo({ product }: { product: Product }) {
     let currentX: number;
     let currentY: number;
     let currentScale: number;
+    const prevX = x.get();
+    const prevY = y.get();
+    const prevScale = scale.get();
 
     if (isMobile) {
       // ========== MOBILE ANIMATION ==========
 
       // Phase 1: Beside Place Order button
       const mobileStartX = currentVw * 0.05;
-      // Move down on mobile to clear text paragraph
-      const mobileStartY = vh * 0.02;
+      // Move down on mobile to clear text paragraph - increased to push video down
+      const mobileStartY = vh * 0.08;
       const mobileStartScale = 1.125;
 
       // Phase 2: Slide to right
@@ -80,9 +88,9 @@ function ProductVideo({ product }: { product: Product }) {
 
           let q = (startTrigger - rect.top) / (startTrigger - endTrigger);
           q = Math.min(Math.max(q, 0), 1);
-          q = q * q * (3 - 2 * q);
+          const qSmooth = q * q * (3 - 2 * q);
 
-          if (q > 0) {
+          if (qSmooth > 0) {
             const cardCenterX = rect.left + rect.width / 2;
             const cardCenterY = rect.top + rect.height / 2;
 
@@ -99,13 +107,49 @@ function ProductVideo({ product }: { product: Product }) {
             targetX = Math.max(-maxX, Math.min(targetX, maxX));
 
             // Delayed scale for mobile too
-            const scaleQ = q * q * q * q;
+            const scaleQ = qSmooth * qSmooth;
 
-            currentX = lerp(currentX, targetX, q);
-            currentY = lerp(currentY, targetY, q);
-            currentScale = lerp(currentScale, targetScaleRaw, scaleQ);
+            const lock = mobileLockRef.current;
+
+            if (lock.locked) {
+              // Hard lock to card position each frame (no damping)
+              currentX = targetX;
+              currentY = targetY;
+              currentScale = targetScaleRaw;
+
+              if (lockTargetRef.current !== targetCard) {
+                lockTargetRef.current = targetCard as HTMLElement;
+                setLockTargetEl(targetCard as HTMLElement);
+              }
+
+              if (qSmooth < 0.75) {
+                lock.locked = false;
+                setIsMobileLocked(false);
+                setLockTargetEl(null);
+              }
+            } else {
+              currentX = lerp(currentX, targetX, qSmooth);
+              currentY = lerp(currentY, targetY, qSmooth);
+              currentScale = lerp(currentScale, targetScaleRaw, scaleQ);
+
+              if (qSmooth > 0.92) {
+                lock.locked = true;
+                lock.x = targetX;
+                lock.y = targetY;
+                lock.scale = targetScaleRaw;
+                setIsMobileLocked(true);
+                lockTargetRef.current = targetCard as HTMLElement;
+                setLockTargetEl(targetCard as HTMLElement);
+              }
+            }
           }
         }
+      }
+
+      if (heroProgress < 0.45) {
+        mobileLockRef.current.locked = false;
+        setIsMobileLocked(false);
+        setLockTargetEl(null);
       }
 
     } else {
@@ -269,43 +313,58 @@ function ProductVideo({ product }: { product: Product }) {
     return null;
   }
 
+  const mediaNode = (
+    <div className="relative flex flex-col items-center">
+      {hasVideoSources ? (
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          poster={fallbackUrl || undefined}
+          style={{ backgroundColor: "transparent", filter: "drop-shadow(0 20px 60px rgba(0,0,0,0.25))", pointerEvents: "none" }}
+          className="w-[400px] sm:w-[480px] xl:w-[720px] object-contain"
+        >
+          {/* Safari: ProRes 4444 .mov with alpha */}
+          {safariUrl && <source src={safariUrl} type="video/mp4; codecs=hvc1" />}
+          {/* Chrome/Firefox: VP9 .webm with alpha */}
+          {chromeUrl && <source src={chromeUrl} type="video/webm" />}
+        </video>
+      ) : fallbackUrl ? (
+        <img
+          src={fallbackUrl}
+          alt={product.name}
+          className="w-[400px] sm:w-[480px] xl:w-[720px] object-contain pointer-events-none"
+          style={{ filter: "drop-shadow(0 20px 60px rgba(0,0,0,0.25))" }}
+        />
+      ) : null}
+    </div>
+  );
+
   return (
     <>
+      {isMobileLocked && lockTargetEl
+        ? createPortal(
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div style={{ transform: "scale(0.5) translateY(-40px)" }}>
+                {mediaNode}
+              </div>
+            </div>,
+            lockTargetEl
+          )
+        : null}
+
       <motion.div
         style={{
           x,
           y,
           scale,
-          opacity,
+          opacity: isMobileLocked ? 0 : opacity,
           willChange: "transform, opacity",
         }}
         className="fixed top-1/2 left-1/2 z-[40] pointer-events-none transition-opacity duration-300"
       >
-        <div className="relative flex flex-col items-center">
-          {hasVideoSources ? (
-            <video
-              autoPlay
-              muted
-              loop
-              playsInline
-              poster={fallbackUrl || undefined}
-              style={{ backgroundColor: "transparent", filter: "drop-shadow(0 20px 60px rgba(0,0,0,0.25))", pointerEvents: "none" }}
-              className="w-[400px] sm:w-[480px] xl:w-[720px] object-contain"
-            >
-              {/* Safari: ProRes 4444 .mov with alpha */}
-              {safariUrl && <source src={safariUrl} type="video/mp4; codecs=hvc1" />}
-              {/* Chrome/Firefox: VP9 .webm with alpha */}
-              {chromeUrl && <source src={chromeUrl} type="video/webm" />}
-            </video>
-          ) : fallbackUrl ? (
-            <img
-              src={fallbackUrl}
-              alt={product.name}
-              className="w-[400px] sm:w-[480px] xl:w-[720px] object-contain pointer-events-none"
-              style={{ filter: "drop-shadow(0 20px 60px rgba(0,0,0,0.25))" }}
-            />
-          ) : null}
-        </div>
+        {mediaNode}
       </motion.div>
     </>
   );
