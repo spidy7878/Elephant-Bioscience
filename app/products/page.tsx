@@ -178,12 +178,7 @@ export default function ProductPage() {
       return normalizedProductCat === normalizedActiveCat;
     });
 
-    // DEBUG: info on mismatch
-    // if (normalizedProductCat !== normalizedActiveCat) {
-    //  console.log(`Mismatch: Prod '${normalizedProductCat}' vs Active '${normalizedActiveCat}'`);
-    // }
 
-    return normalizedProductCat === normalizedActiveCat;
   });
 
   return (
