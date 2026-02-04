@@ -13,7 +13,7 @@ const Stat = ({ label, value, big }: Props) => {
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.35, duration: 0.6 }}
-        className="inline-flex flex-col justify-center items-center gap-2 sm:gap-3 mx-auto my-auto rounded-2xl border border-white/10 shadow-lg text-center font-medium text-black backdrop-blur-lg transition-all duration-300 hover:shadow-2xl aspect-square min-w-[90px] min-h-[90px] sm:min-w-[110px] sm:min-h-[110px] md:min-w-[130px] md:min-h-[130px] p-2 sm:p-4"
+        className="inline-flex flex-col justify-center items-center gap-2 sm:gap-3 mx-auto my-auto rounded-2xl border border-white/10 shadow-lg text-center font-medium text-black backdrop-blur-lg transition-all duration-300 hover:shadow-2xl w-[110px] h-[110px] sm:w-[170px] sm:h-[170px] sm:shrink-0 p-4 sm:p-10"
         style={{
           background: "rgba(255,255,255,0.08)",
           backdropFilter: "blur(10px)",
@@ -31,7 +31,7 @@ const Stat = ({ label, value, big }: Props) => {
         <span className="text-xs sm:text-sm md:text-base font-normal text-black truncate whitespace-nowrap overflow-hidden">
           {label}
         </span>
-        <div className="text-2xl sm:text-3xl md:text-4xl font-normal text-black mt-1 sm:mt-2">
+        <div className="text-xl sm:text-2xl md:text-3xl font-bold text-black mt-1 sm:mt-2 font-mono w-full text-center">
           {value}
         </div>
       </motion.div>

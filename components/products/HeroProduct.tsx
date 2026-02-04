@@ -141,7 +141,7 @@ const HeroProduct = ({
               initial={skipAnimation ? false : { opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15, duration: 0.3 }}
-              className="flex flex-row gap-6 sm:gap-10 mt-6 w-full"
+              className="flex flex-row gap-3 sm:gap-8 mt-6 items-center justify-between"
             >
               <Stat
                 big
