@@ -49,10 +49,8 @@ const modalVariants = {
 
 /* small constant style objects to avoid inline recreation */
 const containerStyle: React.CSSProperties = {
-  background:
-    "linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03))",
-  boxShadow:
-    "0 10px 30px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.03)",
+  background: "transparent",
+  boxShadow: "none",
   willChange: "transform, opacity",
   transform: "translate3d(0, 0, 0)",
   backfaceVisibility: "hidden" as const,
@@ -246,11 +244,11 @@ function ModalInner({
           {/* Backdrop: animate only opacity; static blur for performance */}
           <motion.div
             variants={overlayVariants}
-            className="absolute inset-0 bg-black/50"
+            className="absolute inset-0 bg-black/40"
             onClick={handleClose}
             style={{
-              backdropFilter: "blur(8px)",
-              WebkitBackdropFilter: "blur(8px)",
+              backdropFilter: "blur(16px)",
+              WebkitBackdropFilter: "blur(16px)",
             }}
             transition={{
               duration: reduceMotion ? 0 : 0.15,
@@ -280,7 +278,7 @@ function ModalInner({
             }}
             role="dialog"
             aria-modal="true"
-            className="relative flex rounded-xl w-[85vw] h-[70vw] max-w-[280px] max-h-[280px] sm:w-[300px] sm:h-[300px] md:w-[320px] md:h-[320px] px-3 py-4 shadow-none border border-white/10 overflow-hidden items-center justify-center"
+            className="relative flex rounded-xl w-[85vw] h-[70vw] max-w-[280px] max-h-[280px] sm:w-[300px] sm:h-[300px] md:w-[320px] md:h-[320px] px-3 py-4 shadow-none overflow-hidden items-center justify-center"
             style={containerStyle}
           >
             {/* Top Navigation Bar: Back and Close buttons */}
