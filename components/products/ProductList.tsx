@@ -5,6 +5,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { AnimatePresence } from "framer-motion";
 import LoadingSection from "components/sections/LoadingSection";
+import Pagination from "components/ui/Pagination";
+
+const ITEMS_PER_PAGE = 25;
 
 interface ProductListProps {
     showLoading?: boolean;
@@ -24,33 +27,52 @@ export default function ProductList({
     const [loadingProgress, setLoadingProgress] = useState(0);
     const [isMobile, setIsMobile] = useState(false);
 
-    const categories = [
-        "All Peptides",
-        "Peptide Capsules",
-        "Peptide Blends",
-        "IGF-1 Proteins",
-        "Melanotan Peptides",
-        "Cosmetic Peptides",
-        "Bioregulators",
-    ];
-    const [activeCategory, setActiveCategory] = useState(categories[0]);
+    const [categories, setCategories] = useState<string[]>(["All Peptides"]);
+    const [activeCategory, setActiveCategory] = useState("All Peptides");
+    const [currentPage, setCurrentPage] = useState(1);
     const [dataReady, setDataReady] = useState(false);
 
     useEffect(() => {
-        // Skip fetch if products were provided via props
-        if (providedProducts && providedProducts.length > 0) {
-            setProducts(providedProducts);
-            setDataReady(true);
-            return;
-        }
+        // Skip fetch if products were provided via props, BUT still fetch categories if needed
+        // For simplicity, let's just fetch everything if we need to.
 
-        async function fetchProducts() {
+        async function fetchData() {
             try {
-                const res = await fetch(
-                    `${process.env.NEXT_PUBLIC_API_URL}/api/products?populate=*`
-                );
-                const json = await res.json();
-                setProducts(Array.isArray(json.data) ? json.data : []);
+                // If providedProducts exist, we might skip product fetch, but we still need categories.
+                // However, to keep it simple and robust, let's fetch categories separately if logic allows,
+                // or just do parallel fetch if we are in "fetch everything" mode.
+
+                const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
+
+                const promises: Promise<Response>[] = [
+                    fetch(`${apiUrl}/api/categories`)
+                ];
+
+                // If no provided products, fetch them too
+                const shouldFetchProducts = !providedProducts || providedProducts.length === 0;
+                if (shouldFetchProducts) {
+                    promises.push(fetch(`${apiUrl}/api/products?populate[0]=productVideo&populate[1]=productVideoSafari&populate[2]=chemicalFormulaImg&populate[3]=category&pagination[pageSize]=500`));
+                }
+
+                const results = await Promise.all(promises);
+                const catJson = await results[0].json();
+
+                // Categories
+                if (catJson.data && Array.isArray(catJson.data)) {
+                    const fetchedNames = catJson.data.map((c: any) =>
+                        c.name || c.attributes?.name || ""
+                    ).filter(Boolean);
+                    setCategories(["All Peptides", ...Array.from(new Set(fetchedNames)) as string[]]);
+                }
+
+                // Products
+                if (shouldFetchProducts && results[1]) {
+                    const prodJson = await results[1].json();
+                    setProducts(Array.isArray(prodJson.data) ? prodJson.data : []);
+                } else if (providedProducts) {
+                    setProducts(providedProducts);
+                }
+
             } catch (err) {
                 console.error("Fetch error:", err);
             } finally {
@@ -58,7 +80,7 @@ export default function ProductList({
             }
         }
 
-        fetchProducts();
+        fetchData();
     }, [providedProducts]);
 
     // Detect mobile on mount
@@ -142,7 +164,7 @@ export default function ProductList({
     let filteredProducts = products.filter((product) => {
         if (activeCategory === "All Peptides") return true;
 
-        // Enhanced category resolution
+        // Enhanced category resolution with array support
         let rawCategory = (product as any).catorgory || (product as any).category;
 
         if (!rawCategory) {
@@ -152,12 +174,19 @@ export default function ProductList({
             if (catKey) rawCategory = (product as any)[catKey];
         }
 
-        let productCategoryName = "";
+        let productCategoryNames: string[] = [];
 
-        if (typeof rawCategory === "string") {
-            productCategoryName = rawCategory;
+        if (Array.isArray(rawCategory)) {
+            // Handle array of categories (Many-to-Many)
+            productCategoryNames = rawCategory.map(cat => {
+                if (typeof cat === 'string') return cat;
+                return cat.name || cat.title || cat.attributes?.name || cat.attributes?.title || "";
+            });
+        } else if (typeof rawCategory === "string") {
+            productCategoryNames = [rawCategory];
         } else if (rawCategory && typeof rawCategory === "object") {
-            productCategoryName =
+            // Handle single object (One-to-One / One-to-Many)
+            const name =
                 rawCategory.name ||
                 rawCategory.title ||
                 rawCategory.attributes?.name ||
@@ -165,18 +194,18 @@ export default function ProductList({
                 rawCategory.data?.attributes?.name ||
                 rawCategory.data?.attributes?.title ||
                 "";
+            if (name) productCategoryNames = [name];
         }
 
-        if (!productCategoryName) return false;
+        if (productCategoryNames.length === 0) return false;
 
-        const normalizedProductCat = productCategoryName
-            .replace(/[-\s]+/g, "")
-            .toLowerCase();
-        const normalizedActiveCat = activeCategory
-            .replace(/[-\s]+/g, "")
-            .toLowerCase();
+        const normalizedActiveCat = activeCategory.replace(/[-\s]+/g, "").toLowerCase();
 
-        return normalizedProductCat === normalizedActiveCat;
+        // Check if ANY of the product's categories match the active category
+        return productCategoryNames.some(name => {
+            const normalizedProductCat = name.replace(/[-\s]+/g, "").toLowerCase();
+            return normalizedProductCat === normalizedActiveCat;
+        });
     });
 
     // Reorder: Place current product at 1st position on mobile, 4th position on desktop
@@ -201,6 +230,18 @@ export default function ProductList({
         }
     }
 
+    // Pagination Logic
+    const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
+    const paginatedProducts = filteredProducts.slice(
+        (currentPage - 1) * ITEMS_PER_PAGE,
+        currentPage * ITEMS_PER_PAGE
+    );
+
+    // Reset page when category changes
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [activeCategory]);
+
     return (
         <div className="w-full">
             <AnimatePresence>
@@ -223,6 +264,7 @@ export default function ProductList({
                             key={category}
                             onClick={() => {
                                 setActiveCategory(category);
+                                setCurrentPage(1);
                                 // Optional: Update URL? Maybe check if we are on the products page
                                 // For now, let's keep it simple and just update state
                             }}
@@ -238,7 +280,7 @@ export default function ProductList({
 
                 {/* Products Grid */}
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-                    {filteredProducts.map((product, index) => {
+                    {paginatedProducts.map((product, index) => {
                         // Check if this product is the current one
                         const isCurrent = product.documentId === currentProductId;
 
@@ -405,6 +447,18 @@ export default function ProductList({
                         );
                     })}
                 </div>
+
+                {/* Pagination Controls */}
+                <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={(page) => {
+                        setCurrentPage(page);
+                        // Scroll up slightly? Usually not needed if grid is small, 
+                        // but let's scroll to top of list for UX
+                        categoryRowRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }}
+                />
             </div>
         </div>
     );

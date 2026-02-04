@@ -28,6 +28,14 @@ export interface chemicalProperties {
   IUPACname: string;
 }
 
+export interface Category {
+  id: number;
+  documentId: string;
+  name: string;
+  slug: string;
+  description?: string;
+}
+
 export interface Product {
   id: number;
   documentId: string;
@@ -42,7 +50,7 @@ export interface Product {
   productVideo: Media[];
   productVideoSafari?: Media[]; // ProRes 4444 .mov for Safari alpha transparency
   thirdpartytesting: Media[];
-  category?: string;
+  category?: Category;
   chemicalProperties: chemicalProperties;
   coa: Media[];
   chemicalFormulaImg: Media[];
