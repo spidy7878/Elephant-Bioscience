@@ -1,5 +1,7 @@
 "use client";
 
+import LoadingSection from "components/sections/LoadingSection";
+
 import { useState, useRef, useEffect, memo, useCallback } from "react";
 import { Product } from "app/types/product";
 import { motion, AnimatePresence } from "framer-motion";
@@ -180,8 +182,9 @@ export default function ShowcaseProductDetails({
     showButton
 }: ShowcaseProductDetailsProps) {
     const [products, setProducts] = useState<Product[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
-    const [showLoader, setShowLoader] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+    const [showLoader, setShowLoader] = useState(true);
+    const [contentVisible, setContentVisible] = useState(false);
     const [progress, setProgress] = useState(0);
     const showcaseRef = useRef<HTMLDivElement>(null);
 
@@ -244,25 +247,43 @@ export default function ShowcaseProductDetails({
                 }
 
                 if (isMounted) {
+                    // 1. Update data immediately
+                    setProducts(fetchedProducts);
                     setProgress(100);
+
                     clearTimeout(autoHideTimeout);
+
+                    // 2. Reveal content BEHIND the loader (glass effect allows seeing it)
+                    // Small delay to ensure React render cycle is complete
                     setTimeout(() => {
-                        setProducts(fetchedProducts);
-                        setIsLoading(false);
-                        setShowLoader(false);
-                        setProgress(0);
-                    }, 300);
+                        setContentVisible(true);
+
+                        // 3. Keep loader for a moment to let user confirm content is there
+                        // Then fade out loader
+                        setTimeout(() => {
+                            setIsLoading(false);
+                            setShowLoader(false);
+                            // Reset progress after animation
+                            setTimeout(() => setProgress(0), 500);
+                        }, 1000); // 1 second delay while content is visible behind glass
+                    }, 100);
                 }
             } catch (err) {
                 console.warn("Fetch error (Strapi might be down):", err);
                 if (isMounted) {
                     setProgress(100);
                     clearTimeout(autoHideTimeout);
+
                     setTimeout(() => {
-                        setIsLoading(false);
-                        setShowLoader(false);
-                        setProgress(0);
-                    }, 300);
+                        // Even on error, show what we have (or empty state)
+                        setContentVisible(true);
+
+                        setTimeout(() => {
+                            setIsLoading(false);
+                            setShowLoader(false);
+                            setTimeout(() => setProgress(0), 500);
+                        }, 1000);
+                    }, 100);
                 }
             }
         }
@@ -385,20 +406,13 @@ export default function ShowcaseProductDetails({
             ref={showcaseRef}
             className={`relative w-full max-w-7xl mx-auto px-4 py-8 ${!isLoggedIn ? 'h-screen overflow-hidden' : 'min-h-screen'}`}
         >
-            {/* Loading Progress Bar - Single Line 0-100% */}
+            {/* Loading Progress Bar - Using standardized LoadingSection */}
             <AnimatePresence>
                 {showLoader && (
-                    <motion.div
-                        initial={{ scaleX: 0, originX: 0 }}
-                        animate={{ scaleX: 1, originX: 0 }}
-                        exit={{ scaleX: 0, originX: 0 }}
-                        transition={{ duration: 0.5, ease: "easeInOut" }}
-                        className="fixed top-0 left-0 right-0 z-50 h-1 bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600"
-                        style={{
-                            width: `${Math.min(progress, 100)}%`,
-                            boxShadow: `0 0 20px rgba(59, 130, 246, 0.8), 0 0 10px rgba(34, 197, 94, 0.6)`,
-                            transition: 'width 0.3s ease-out'
-                        }}
+                    <LoadingSection
+                        loadingProgress={progress / 100}
+                        position="absolute"
+                        variant="glass"
                     />
                 )}
             </AnimatePresence>
@@ -406,54 +420,61 @@ export default function ShowcaseProductDetails({
             {/* Full blur overlay when not logged in */}
             <div className={`relative z-20 ${!isLoggedIn ? "blur-[12px] select-none pointer-events-none opacity-60 grayscale-[30%]" : ""}`}>
 
-                {/* Category Filter Buttons */}
-                <div
-                    ref={categoryRowRef}
-                    className="flex flex-nowrap gap-4 mb-8 overflow-x-auto scrollbar-hide whitespace-nowrap cursor-grab"
-                    onMouseDown={handleMouseDown}
-                    onMouseLeave={handleMouseLeave}
-                    onMouseUp={handleMouseUp}
-                    onMouseMove={handleMouseMove}
-                    style={{ userSelect: "none" }}
+                {/* Content Wrapper - masked by loader */}
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: contentVisible ? 1 : 0 }}
+                    transition={{ duration: 0.5 }}
                 >
-                    {categories.map((category) => (
-                        <button
-                            key={category}
-                            onClick={() => {
-                                setActiveCategory(category);
-                                setCurrentPage(1);
-                            }}
-                            className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-md sm:rounded transition-all duration-300 text-xs sm:text-sm ${activeCategory === category
-                                ? "bg-[#8c2224] text-white"
-                                : "bg-transparent text-white hover:bg-[#8c2224] hover:text-white border border-white/20"
-                                }`}
-                        >
-                            {category}
-                        </button>
-                    ))}
-                </div>
+                    {/* Category Filter Buttons */}
+                    <div
+                        ref={categoryRowRef}
+                        className="flex flex-nowrap gap-4 mb-8 overflow-x-auto scrollbar-hide whitespace-nowrap cursor-grab"
+                        onMouseDown={handleMouseDown}
+                        onMouseLeave={handleMouseLeave}
+                        onMouseUp={handleMouseUp}
+                        onMouseMove={handleMouseMove}
+                        style={{ userSelect: "none" }}
+                    >
+                        {categories.map((category) => (
+                            <button
+                                key={category}
+                                onClick={() => {
+                                    setActiveCategory(category);
+                                    setCurrentPage(1);
+                                }}
+                                className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-md sm:rounded transition-all duration-300 text-xs sm:text-sm ${activeCategory === category
+                                    ? "bg-[#8c2224] text-white"
+                                    : "bg-transparent text-white hover:bg-[#8c2224] hover:text-white border border-white/20"
+                                    }`}
+                            >
+                                {category}
+                            </button>
+                        ))}
+                    </div>
 
-                {/* Products Grid - Now uses memoized ProductCard */}
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 pb-20">
-                    {paginatedProducts.map((product, index) => (
-                        <ProductCard
-                            key={product.documentId || index}
-                            product={product}
-                            index={index}
-                        />
-                    ))}
-                </div>
+                    {/* Products Grid - Now uses memoized ProductCard */}
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 pb-20">
+                        {paginatedProducts.map((product, index) => (
+                            <ProductCard
+                                key={product.documentId || index}
+                                product={product}
+                                index={index}
+                            />
+                        ))}
+                    </div>
 
-                {/* Pagination Controls */}
-                <Pagination
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    onPageChange={(page) => {
-                        setCurrentPage(page);
-                        // Scroll to top of grid smoothly
-                        showcaseRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }}
-                />
+                    {/* Pagination Controls */}
+                    <Pagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={(page) => {
+                            setCurrentPage(page);
+                            // Scroll to top of grid smoothly
+                            showcaseRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }}
+                    />
+                </motion.div>
             </div>
 
             {/* Centered Explore Product Button Overlay */}
