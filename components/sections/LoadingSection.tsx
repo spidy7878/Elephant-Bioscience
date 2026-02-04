@@ -2,6 +2,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 interface LoadingSectionProps {
   loadingProgress: number;
@@ -43,7 +44,38 @@ export default function LoadingSection({
         ...backgroundStyle
       }}
     >
-      <div style={{ width: "100%", maxWidth: "300px", textAlign: "center" }}>
+      <div style={{ width: "100%", maxWidth: "500px", textAlign: "center" }}>
+        {/* Logo and Brand Text Container */}
+        <div style={{ 
+          display: "flex", 
+          flexDirection: "column",
+          alignItems: "center", 
+          justifyContent: "center",
+          marginBottom: "32px",
+          gap: "8px"
+        }}>
+          {/* Elephant Logo */}
+          <Image
+            src="/Elephant biosciences logos (1).svg"
+            alt="Elephant Biosciences Logo"
+            width={70}
+            height={70}
+            priority
+          />
+          
+          {/* Brand Text */}
+          <h1 style={{
+            fontSize: "18px",
+            fontWeight: 500,
+            letterSpacing: "0.15em",
+            color: "#8c2224",
+            margin: 0,
+            fontFamily: "Space Grotesk, sans-serif"
+          }}>
+            ELEPHANT BIOSCIENCES
+          </h1>
+        </div>
+
         {/* Progress bar */}
         <div
           style={{
