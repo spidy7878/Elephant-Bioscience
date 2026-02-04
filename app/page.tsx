@@ -227,7 +227,7 @@ export default function Home() {
       {/* Loading Screen */}
       <AnimatePresence>
         {!isImagesLoaded && (
-          <LoadingSection loadingProgress={loadingProgress} />
+          <LoadingSection loadingProgress={loadingProgress} showBranding={true} />
         )}
       </AnimatePresence>
 

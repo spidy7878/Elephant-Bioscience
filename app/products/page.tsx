@@ -60,27 +60,21 @@ export default function ProductPage() {
 
   // Sync progress bar with data loading
   useEffect(() => {
-    let progressInterval: NodeJS.Timeout;
+    let progressInterval: NodeJS.Timeout | undefined;
 
-    if (loading) {
+    if (loading && !dataReady) {
       progressInterval = setInterval(() => {
         setLoadingProgress((prev) => {
           // If data isn't ready, cap at 90%
-          if (!dataReady) {
-            return prev >= 0.9 ? 0.9 : prev + 0.05;
-          }
-
-          // Data is ready, move to 100%
-          if (prev >= 1) {
-            clearInterval(progressInterval);
-            // Small delay for the 100% to be seen
-            setTimeout(() => setLoading(false), 300);
-            return 1;
-          }
-
-          return prev + 0.1;
+          return prev >= 0.9 ? 0.9 : prev + 0.05;
         });
       }, 100);
+    }
+
+    if (loading && dataReady) {
+      setLoadingProgress(1);
+      // Hide loader on the next frame to ensure content is rendered
+      requestAnimationFrame(() => setLoading(false));
     }
 
     return () => {
@@ -184,7 +178,7 @@ export default function ProductPage() {
   return (
     <>
       <AnimatePresence>
-        {loading && <LoadingSection loadingProgress={loadingProgress} />}
+        {loading && <LoadingSection loadingProgress={loadingProgress} percentagePosition="above" />}
       </AnimatePresence>
 
       <div className="min-h-[100dvh] bg-black text-white py-12 px-4 relative overflow-hidden">
