@@ -170,6 +170,10 @@ interface ShowcaseProductDetailsProps {
     showButton: boolean;
 }
 
+import Pagination from "components/ui/Pagination";
+
+const ITEMS_PER_PAGE = 25;
+
 export default function ShowcaseProductDetails({
     isLoggedIn,
     onOpenLogin,
@@ -182,16 +186,11 @@ export default function ShowcaseProductDetails({
     const showcaseRef = useRef<HTMLDivElement>(null);
 
     // Categories
-    const categories = [
-        "All Peptides",
-        "Peptide Capsules",
-        "Peptide Blends",
-        "IGF-1 Proteins",
-        "Melanotan Peptides",
-        "Cosmetic Peptides",
-        "Bioregulators",
-    ];
-    const [activeCategory, setActiveCategory] = useState(categories[0]);
+    // Categories
+    // Categories
+    const [categories, setCategories] = useState<string[]>(["All Peptides"]);
+    const [activeCategory, setActiveCategory] = useState("All Peptides");
+    const [currentPage, setCurrentPage] = useState(1);
 
     // Fetch products from API - only once
     useEffect(() => {
@@ -222,9 +221,28 @@ export default function ShowcaseProductDetails({
             }, 200);
 
             try {
-                const res = await fetch(`${API_URL}/api/products?populate=*`);
-                const json = await res.json();
-                const fetchedProducts = Array.isArray(json.data) ? json.data : [];
+                // Fetch categories and products in parallel
+                // Fetch categories and products in parallel
+                const [prodRes, catRes] = await Promise.all([
+                    fetch(`${API_URL}/api/products?populate[0]=productVideo&populate[1]=productVideoSafari&populate[2]=chemicalFormulaImg&populate[3]=category&pagination[pageSize]=500`),
+                    fetch(`${API_URL}/api/categories`)
+                ]);
+
+                const prodJson = await prodRes.json();
+                const catJson = await catRes.json();
+
+                const fetchedProducts = Array.isArray(prodJson.data) ? prodJson.data : [];
+
+                // Process Categories
+                if (catJson.data && Array.isArray(catJson.data)) {
+                    const fetchedNames = catJson.data.map((c: any) =>
+                        c.name || c.attributes?.name || ""
+                    ).filter(Boolean);
+
+                    const uniqueCategories = ["All Peptides", ...Array.from(new Set(fetchedNames)) as string[]];
+                    setCategories(uniqueCategories);
+                }
+
                 if (isMounted) {
                     setProgress(100);
                     clearTimeout(autoHideTimeout);
@@ -298,7 +316,16 @@ export default function ShowcaseProductDetails({
     const filteredProducts = products.filter((product) => {
         if (activeCategory === "All Peptides") return true;
 
+        // Enhanced category resolution with array support
         let rawCategory = (product as any).catorgory || (product as any).category;
+
+        // DEBUG: Inspect what we actually get
+        if ((product as any).id === products[0]?.id) {
+            console.log(`[Showcase] Full Product Keys:`, Object.keys(product));
+            console.log(`[Showcase] Full Product Object:`, product);
+        }
+        console.log(`[Showcase] Product: ${product.name}, rawCategory:`, rawCategory);
+
         if (!rawCategory) {
             const catKey = Object.keys(product).find((k) =>
                 k.toLowerCase().includes("categor")
@@ -306,11 +333,19 @@ export default function ShowcaseProductDetails({
             if (catKey) rawCategory = (product as any)[catKey];
         }
 
-        let productCategoryName = "";
-        if (typeof rawCategory === "string") {
-            productCategoryName = rawCategory;
+        let productCategoryNames: string[] = [];
+
+        if (Array.isArray(rawCategory)) {
+            // Handle array of categories (Many-to-Many)
+            productCategoryNames = rawCategory.map(cat => {
+                if (typeof cat === 'string') return cat;
+                return cat.name || cat.title || cat.attributes?.name || cat.attributes?.title || "";
+            });
+        } else if (typeof rawCategory === "string") {
+            productCategoryNames = [rawCategory];
         } else if (rawCategory && typeof rawCategory === "object") {
-            productCategoryName =
+            // Handle single object (One-to-One / One-to-Many)
+            const name =
                 rawCategory.name ||
                 rawCategory.title ||
                 rawCategory.attributes?.name ||
@@ -318,15 +353,31 @@ export default function ShowcaseProductDetails({
                 rawCategory.data?.attributes?.name ||
                 rawCategory.data?.attributes?.title ||
                 "";
+            if (name) productCategoryNames = [name];
         }
 
-        if (!productCategoryName) return false;
+        if (productCategoryNames.length === 0) return false;
 
-        const normalizedProductCat = productCategoryName.replace(/[-\s]+/g, "").toLowerCase();
         const normalizedActiveCat = activeCategory.replace(/[-\s]+/g, "").toLowerCase();
 
-        return normalizedProductCat === normalizedActiveCat;
+        // Check if ANY of the product's categories match the active category
+        return productCategoryNames.some(name => {
+            const normalizedProductCat = name.replace(/[-\s]+/g, "").toLowerCase();
+            return normalizedProductCat === normalizedActiveCat;
+        });
     });
+
+    // Pagination Logic
+    const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
+    const paginatedProducts = filteredProducts.slice(
+        (currentPage - 1) * ITEMS_PER_PAGE,
+        currentPage * ITEMS_PER_PAGE
+    );
+
+    // Reset page when category changes
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [activeCategory]);
 
     return (
         <div
@@ -368,7 +419,10 @@ export default function ShowcaseProductDetails({
                     {categories.map((category) => (
                         <button
                             key={category}
-                            onClick={() => setActiveCategory(category)}
+                            onClick={() => {
+                                setActiveCategory(category);
+                                setCurrentPage(1);
+                            }}
                             className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-md sm:rounded transition-all duration-300 text-xs sm:text-sm ${activeCategory === category
                                 ? "bg-[#8c2224] text-white"
                                 : "bg-transparent text-white hover:bg-[#8c2224] hover:text-white border border-white/20"
@@ -381,7 +435,7 @@ export default function ShowcaseProductDetails({
 
                 {/* Products Grid - Now uses memoized ProductCard */}
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 pb-20">
-                    {filteredProducts.map((product, index) => (
+                    {paginatedProducts.map((product, index) => (
                         <ProductCard
                             key={product.documentId || index}
                             product={product}
@@ -389,6 +443,17 @@ export default function ShowcaseProductDetails({
                         />
                     ))}
                 </div>
+
+                {/* Pagination Controls */}
+                <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={(page) => {
+                        setCurrentPage(page);
+                        // Scroll to top of grid smoothly
+                        showcaseRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }}
+                />
             </div>
 
             {/* Centered Explore Product Button Overlay */}

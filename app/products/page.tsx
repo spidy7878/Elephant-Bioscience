@@ -12,15 +12,8 @@ export default function ProductPage() {
   const [loading, setLoading] = useState(true);
   const [loadingProgress, setLoadingProgress] = useState(0);
 
-  const categories = [
-    "All Peptides",
-    "Peptide Capsules",
-    "Peptide Blends",
-    "IGF-1 Proteins",
-    "Melanotan Peptides",
-    "Cosmetic Peptides",
-    "Bioregulators",
-  ];
+  /* DYNAMIC CATEGORY FETCHING */
+  const [categories, setCategories] = useState<string[]>(["All Peptides"]);
   const [activeCategory, setActiveCategory] = useState(categories[0]);
   const isImagesLoaded = true;
 
@@ -29,13 +22,32 @@ export default function ProductPage() {
   useEffect(() => {
     async function fetchProducts() {
       try {
-        // Remove trailing slash from API URL if present to avoid double slashes
         const apiUrl = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") || "";
-        const res = await fetch(
-          `${apiUrl}/api/products?populate=*`
-        );
-        const json = await res.json();
-        setProducts(Array.isArray(json.data) ? json.data : []);
+
+        // Parallel fetch: Products + Categories
+        const [prodRes, catRes] = await Promise.all([
+          fetch(`${apiUrl}/api/products?populate[0]=productVideo&populate[1]=productVideoSafari&populate[2]=chemicalFormulaImg&populate[3]=category&pagination[pageSize]=500`),
+          fetch(`${apiUrl}/api/categories`)
+        ]);
+
+        const prodJson = await prodRes.json();
+        const catJson = await catRes.json();
+
+        setProducts(Array.isArray(prodJson.data) ? prodJson.data : []);
+
+        // Populate Categories if successful
+        if (catJson.data && Array.isArray(catJson.data)) {
+          // We extract the 'name' from each category. 
+          // Assuming response structure: { data: [ { id: 1, attributes: { name: "..." }, ... } ] } 
+          // or flattened: { data: [ { id: 1, name: "...", ... } ] }
+          const fetchedNames = catJson.data.map((c: any) =>
+            c.name || c.attributes?.name || ""
+          ).filter(Boolean);
+
+          // Ensure unique and prepend "All Peptides"
+          setCategories(["All Peptides", ...Array.from(new Set(fetchedNames)) as string[]]);
+        }
+
       } catch (err) {
         console.error("Fetch error:", err);
       } finally {
@@ -127,12 +139,23 @@ export default function ProductPage() {
       if (catKey) rawCategory = (product as any)[catKey];
     }
 
-    let productCategoryName = "";
+    // DEBUG: Log the raw category data for the first few products to see structure
+    // console.log(`Product: ${product.name}, Category:`, rawCategory);
 
-    if (typeof rawCategory === "string") {
-      productCategoryName = rawCategory;
+    let productCategoryNames: string[] = [];
+
+    if (Array.isArray(rawCategory)) {
+      // Handle array of categories (Many-to-Many)
+      productCategoryNames = rawCategory.map(cat => {
+        if (typeof cat === 'string') return cat;
+        return cat.name || cat.title || cat.attributes?.name || cat.attributes?.title || "";
+      });
+    } else if (typeof rawCategory === "string") {
+      productCategoryNames = [rawCategory];
     } else if (rawCategory && typeof rawCategory === "object") {
-      productCategoryName =
+      // Handle single object (One-to-One / One-to-Many)
+      // Handle both flattened and nested (attributes) structures
+      const name =
         rawCategory.name ||
         rawCategory.title ||
         rawCategory.attributes?.name ||
@@ -140,18 +163,22 @@ export default function ProductPage() {
         rawCategory.data?.attributes?.name ||
         rawCategory.data?.attributes?.title ||
         "";
+      if (name) productCategoryNames = [name];
     }
 
-    if (!productCategoryName) return false;
+    if (productCategoryNames.length === 0) return false;
 
-    const normalizedProductCat = productCategoryName
-      .replace(/[-\s]+/g, "")
-      .toLowerCase();
     const normalizedActiveCat = activeCategory
       .replace(/[-\s]+/g, "")
       .toLowerCase();
 
-    return normalizedProductCat === normalizedActiveCat;
+    // Check if ANY of the product's categories match the active category
+    return productCategoryNames.some(name => {
+      const normalizedProductCat = name.replace(/[-\s]+/g, "").toLowerCase();
+      return normalizedProductCat === normalizedActiveCat;
+    });
+
+
   });
 
   return (

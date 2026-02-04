@@ -7,17 +7,20 @@ import { PRODUCT_CATEGORIES } from "app/constants";
 
 interface CategoryGridProps {
     products: Product[];
+    categories: string[];
     onCategorySelect: (category: string) => void;
 }
 
-export default function CategoryGrid({ products, onCategorySelect }: CategoryGridProps) {
+export default function CategoryGrid({ products, categories = [], onCategorySelect }: CategoryGridProps) {
     // Helper to find image for category
     const getCategoryTheme = (category: string) => {
         // 1. Filter products for this category using the logic from ProductList (simplified)
         const normalizedActiveCat = category.replace(/[-\s]+/g, "").toLowerCase();
 
         const categoryProducts = products.filter((product) => {
+            // Enhanced category resolution with array support
             let rawCategory = (product as any).catorgory || (product as any).category;
+
             if (!rawCategory) {
                 const catKey = Object.keys(product).find((k) =>
                     k.toLowerCase().includes("categor")
@@ -25,11 +28,19 @@ export default function CategoryGrid({ products, onCategorySelect }: CategoryGri
                 if (catKey) rawCategory = (product as any)[catKey];
             }
 
-            let productCategoryName = "";
-            if (typeof rawCategory === "string") {
-                productCategoryName = rawCategory;
+            let productCategoryNames: string[] = [];
+
+            if (Array.isArray(rawCategory)) {
+                // Handle array of categories (Many-to-Many)
+                productCategoryNames = rawCategory.map(cat => {
+                    if (typeof cat === 'string') return cat;
+                    return cat.name || cat.title || cat.attributes?.name || cat.attributes?.title || "";
+                });
+            } else if (typeof rawCategory === "string") {
+                productCategoryNames = [rawCategory];
             } else if (rawCategory && typeof rawCategory === "object") {
-                productCategoryName =
+                // Handle single object (One-to-One / One-to-Many)
+                const name =
                     rawCategory.name ||
                     rawCategory.title ||
                     rawCategory.attributes?.name ||
@@ -37,12 +48,16 @@ export default function CategoryGrid({ products, onCategorySelect }: CategoryGri
                     rawCategory.data?.attributes?.name ||
                     rawCategory.data?.attributes?.title ||
                     "";
+                if (name) productCategoryNames = [name];
             }
 
-            if (!productCategoryName) return false;
-            const normalizedProductCat = productCategoryName.replace(/[-\s]+/g, "").toLowerCase();
+            if (productCategoryNames.length === 0) return false;
 
-            return normalizedProductCat === normalizedActiveCat;
+            // Check if ANY of the product's categories match the active category
+            return productCategoryNames.some(name => {
+                const normalizedProductCat = name.replace(/[-\s]+/g, "").toLowerCase();
+                return normalizedProductCat === normalizedActiveCat;
+            });
         });
 
         if (categoryProducts.length > 0) {
@@ -66,7 +81,7 @@ export default function CategoryGrid({ products, onCategorySelect }: CategoryGri
     };
 
     // Filter out "All Peptides" for the grid view as it's redundant
-    const displayCategories = PRODUCT_CATEGORIES.filter(c => c !== "All Peptides");
+    const displayCategories = categories.filter(c => c !== "All Peptides");
 
     return (
         <div className="w-full max-w-7xl mx-auto px-4 py-20 min-h-screen flex flex-col items-center justify-center">
