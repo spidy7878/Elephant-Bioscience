@@ -7,14 +7,30 @@ function lerp(start: number, end: number, t: number) {
     return start + (end - start) * t;
 }
 
+// Detect Safari once at module level (runs on client only)
+const getIsSafari = () => {
+    if (typeof window === "undefined") return false;
+    const ua = navigator.userAgent.toLowerCase();
+    return ua.includes("safari") && !ua.includes("chrome") && !ua.includes("android");
+};
+
 interface ShowcaseProductVideoProps {
     product: Product;
     containerRef: React.RefObject<HTMLDivElement>;
 }
 
 function ShowcaseProductVideo({ product, containerRef }: ShowcaseProductVideoProps) {
-    const [isSafari, setIsSafari] = useState(false);
+    // Use state to trigger re-render after hydration
+    const [isClient, setIsClient] = useState(false);
     const { scrollY } = useScroll();
+
+    // Set isClient after mount
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
+
+    // Detect Safari - only valid on client
+    const isSafari = isClient ? getIsSafari() : false;
 
     // Track scroll within container bounds
     const targetCardRef = useRef<HTMLElement | null>(null);
@@ -261,6 +277,11 @@ function ShowcaseProductVideo({ product, containerRef }: ShowcaseProductVideoPro
     // Check if we have valid video sources
     const hasVideoSources = safariUrl || chromeUrl;
 
+    // Wait until we're on the client
+    if (!isClient) {
+        return null;
+    }
+
     if (!hasVideoSources && !fallbackUrl) {
         console.warn("ShowcaseProductVideo: No media URL found for product:", product?.name);
         return null;
@@ -280,18 +301,35 @@ function ShowcaseProductVideo({ product, containerRef }: ShowcaseProductVideoPro
             <div className="relative flex flex-col items-center">
                 {hasVideoSources ? (
                     <video
+                        key={isSafari ? 'safari' : 'chrome'}
                         autoPlay
                         muted
                         loop
                         playsInline
-                        poster={fallbackUrl || undefined}
-                        style={{ backgroundColor: "transparent", filter: "drop-shadow(0 20px 60px rgba(0,0,0,0.25))" }}
+                        // Don't use poster on Safari - it can cause black background overlay
+                        poster={!isSafari ? (fallbackUrl || undefined) : undefined}
+                        style={{ 
+                            pointerEvents: "none",
+                            filter: "drop-shadow(0 20px 60px rgba(0,0,0,0.25))"
+                        }}
                         className="w-[400px] sm:w-[480px] xl:w-[720px] object-contain"
                     >
-                        {/* Safari: ProRes 4444 .mov with alpha */}
-                        {safariUrl && <source src={safariUrl} type="video/mp4; codecs=hvc1" />}
+                        {/* Safari: ProRes 4444 .mov with alpha - use video/quicktime for .mov files */}
+                        {isSafari && safariUrl && (
+                            <source src={safariUrl} type="video/quicktime" />
+                        )}
                         {/* Chrome/Firefox: VP9 .webm with alpha */}
-                        {chromeUrl && <source src={chromeUrl} type="video/webm" />}
+                        {!isSafari && chromeUrl && (
+                            <source src={chromeUrl} type="video/webm" />
+                        )}
+                        {/* Fallback: if Safari but no Safari video, try Chrome video */}
+                        {isSafari && !safariUrl && chromeUrl && (
+                            <source src={chromeUrl} type="video/webm" />
+                        )}
+                        {/* Fallback: if Chrome but no Chrome video, try Safari video */}
+                        {!isSafari && !chromeUrl && safariUrl && (
+                            <source src={safariUrl} type="video/quicktime" />
+                        )}
                     </video>
                 ) : fallbackUrl ? (
                     <img

@@ -11,6 +11,13 @@ import Image from "next/image";
 // Pre-compute API URL once at module level
 const API_URL = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") || "";
 
+// Detect Safari once at module level (runs on client only)
+const getIsSafari = () => {
+    if (typeof window === "undefined") return false;
+    const ua = navigator.userAgent.toLowerCase();
+    return ua.includes("safari") && !ua.includes("chrome") && !ua.includes("android");
+};
+
 // Static styles to avoid recreating on each render
 const cardStyle: React.CSSProperties = {
     background: "rgba(255, 255, 255, 0.03)",
@@ -30,8 +37,18 @@ const videoStyle: React.CSSProperties = {
     pointerEvents: "none",
 };
 
-// Helper function to get media URL
-function getMediaUrl(product: Product): { url: string | null; isVideo: boolean } {
+// Helper function to get media URL - handles Safari vs Chrome
+function getMediaUrl(product: Product, isSafari: boolean): { url: string | null; isVideo: boolean } {
+    // For Safari, prefer .mov file from productVideoSafari
+    if (isSafari) {
+        const safariUrl = product.productVideoSafari?.[0]?.url;
+        if (safariUrl && /\.mov$/i.test(safariUrl)) {
+            const fullUrl = safariUrl.startsWith("http") ? safariUrl : `${API_URL}${safariUrl}`;
+            return { url: fullUrl, isVideo: true };
+        }
+    }
+
+    // For Chrome or fallback, use .webm from productVideo
     const mediaUrl = product.productVideo?.[0]?.url
         ? product.productVideo[0].url.startsWith("http")
             ? product.productVideo[0].url
@@ -63,9 +80,18 @@ const ProductCard = memo(function ProductCard({ product, index }: ProductCardPro
     const videoRef = useRef<HTMLVideoElement>(null);
     const cardRef = useRef<HTMLAnchorElement>(null);
     const [isVisible, setIsVisible] = useState(false);
+    const [isClient, setIsClient] = useState(false);
 
-    // Pre-compute media info once per product
-    const { url: mediaUrl, isVideo } = getMediaUrl(product);
+    // Set isClient after mount to trigger Safari detection
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
+
+    // Detect Safari - only valid on client
+    const isSafari = isClient ? getIsSafari() : false;
+
+    // Pre-compute media info once per product - now with Safari detection
+    const { url: mediaUrl, isVideo } = getMediaUrl(product, isSafari);
     const imageUrl = !isVideo ? getFallbackImageUrl(product, mediaUrl) : "";
 
     // Intersection Observer for lazy video loading
@@ -124,8 +150,9 @@ const ProductCard = memo(function ProductCard({ product, index }: ProductCardPro
             {/* Product Media */}
             <div className="absolute inset-0 flex items-center justify-center p-4 pb-20 pointer-events-none">
                 <div className="relative w-full h-full flex items-center justify-center max-w-[70%] max-h-[70%] mt-10 sm:max-w-full sm:max-h-full sm:mt-5">
-                    {isVideo && mediaUrl ? (
+                    {isVideo && mediaUrl && isClient ? (
                         <video
+                            key={isSafari ? 'safari' : 'chrome'}
                             ref={videoRef}
                             src={isVisible ? mediaUrl : undefined}
                             autoPlay={false}

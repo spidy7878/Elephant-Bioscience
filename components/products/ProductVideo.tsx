@@ -8,17 +8,25 @@ function lerp(start: number, end: number, t: number) {
   return start + (end - start) * t;
 }
 
+// Detect Safari once at module level (runs on client only)
+const getIsSafari = () => {
+  if (typeof window === "undefined") return false;
+  const ua = navigator.userAgent.toLowerCase();
+  return ua.includes("safari") && !ua.includes("chrome") && !ua.includes("android");
+};
+
 function ProductVideo({ product }: { product: Product }) {
-  // Detect Safari on client side only - start with null to indicate "not yet determined"
-  const [isSafari, setIsSafari] = useState<boolean | null>(null);
+  // Use state to trigger re-render after hydration, but use module-level detection
+  const [isClient, setIsClient] = useState(false);
   const { scrollY } = useScroll();
 
-  // Detect Safari after mount to avoid hydration mismatch
+  // Set isClient after mount to ensure we're on the client
   useEffect(() => {
-    const ua = navigator.userAgent.toLowerCase();
-    const safari = ua.includes("safari") && !ua.includes("chrome") && !ua.includes("android");
-    setIsSafari(safari);
+    setIsClient(true);
   }, []);
+
+  // Detect Safari - only valid on client
+  const isSafari = isClient ? getIsSafari() : false;
 
 
 
@@ -234,10 +242,6 @@ function ProductVideo({ product }: { product: Product }) {
   }, [scrollY, handleScroll]);
 
   useLayoutEffect(() => {
-    const ua = navigator.userAgent.toLowerCase();
-    const safari = ua.includes("safari") && !ua.includes("chrome") && !ua.includes("android");
-    setIsSafari(safari);
-
     const updateViewport = () => {
       if (typeof window !== "undefined") {
         viewportRef.current = {
@@ -315,8 +319,8 @@ function ProductVideo({ product }: { product: Product }) {
   // Check if we have valid video sources
   const hasVideoSources = safariUrl || chromeUrl;
 
-  // Wait until Safari detection is complete
-  if (isSafari === null) {
+  // Wait until we're on the client
+  if (!isClient) {
     return null;
   }
   if (!hasVideoSources && !fallbackUrl) {
