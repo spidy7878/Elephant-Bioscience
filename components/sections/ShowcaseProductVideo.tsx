@@ -8,10 +8,13 @@ function lerp(start: number, end: number, t: number) {
 }
 
 // Detect Safari once at module level (runs on client only)
+// Uses feature detection + user agent to handle Chrome mobile emulation
 const getIsSafari = () => {
     if (typeof window === "undefined") return false;
+    // Chrome always has window.chrome, even in device emulation mode
+    if ((window as any).chrome) return false;
     const ua = navigator.userAgent.toLowerCase();
-    return ua.includes("safari") && !ua.includes("chrome") && !ua.includes("android");
+    return ua.includes("safari") && !ua.includes("android");
 };
 
 interface ShowcaseProductVideoProps {
