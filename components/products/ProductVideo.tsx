@@ -21,6 +21,7 @@ const getIsSafari = () => {
 function ProductVideo({ product }: { product: Product }) {
   // Use state to trigger re-render after hydration, but use module-level detection
   const [isClient, setIsClient] = useState(false);
+  const [isVideoReady, setIsVideoReady] = useState(false);
   const { scrollY } = useScroll();
 
   // Set isClient after mount to ensure we're on the client
@@ -322,6 +323,10 @@ function ProductVideo({ product }: { product: Product }) {
   // Check if we have valid video sources
   const hasVideoSources = safariUrl || chromeUrl;
 
+  useLayoutEffect(() => {
+    setIsVideoReady(false);
+  }, [isSafari, safariUrl, chromeUrl]);
+
   // Wait until we're on the client
   if (!isClient) {
     return null;
@@ -334,20 +339,35 @@ function ProductVideo({ product }: { product: Product }) {
   const mediaNode = (
     <div className="relative flex flex-col items-center">
       {hasVideoSources ? (
-        <video
-          key={isSafari ? 'safari' : 'chrome'}
-          autoPlay
-          muted
-          loop
-          playsInline
-          // Don't use poster on Safari - it can cause black background overlay
-          poster={!isSafari ? (fallbackUrl || undefined) : undefined}
-          style={{ 
-            pointerEvents: "none",
-            filter: "drop-shadow(0 20px 60px rgba(0,0,0,0.25))",
-          }}
-          className="w-[400px] sm:w-[480px] xl:w-[720px] object-contain"
-        >
+        <>
+          {!isVideoReady && fallbackUrl ? (
+            <img
+              src={fallbackUrl}
+              alt={product.name}
+              className="w-[400px] sm:w-[480px] xl:w-[720px] object-contain pointer-events-none"
+              style={{ filter: "drop-shadow(0 20px 60px rgba(0,0,0,0.25))" }}
+            />
+          ) : null}
+          <video
+            key={isSafari ? 'safari' : 'chrome'}
+            autoPlay
+            muted
+            loop
+            playsInline
+            // Don't use poster on Safari - it can cause black background overlay
+            poster={!isSafari ? (fallbackUrl || undefined) : undefined}
+            onLoadedData={() => setIsVideoReady(true)}
+            style={{ 
+              pointerEvents: "none",
+              backgroundColor: "transparent",
+              filter: "drop-shadow(0 20px 60px rgba(0,0,0,0.25))",
+              opacity: isVideoReady ? 1 : 0,
+              visibility: isVideoReady ? "visible" : "hidden",
+              display: isVideoReady ? "block" : "none",
+              transition: "opacity 200ms ease",
+            }}
+            className="w-[400px] sm:w-[480px] xl:w-[720px] object-contain"
+          >
           {/* Safari: ProRes 4444 .mov with alpha - use video/quicktime for .mov files */}
           {isSafari && safariUrl && (
             <source src={safariUrl} type="video/quicktime" />
@@ -364,7 +384,8 @@ function ProductVideo({ product }: { product: Product }) {
           {!isSafari && !chromeUrl && safariUrl && (
             <source src={safariUrl} type="video/quicktime" />
           )}
-        </video>
+          </video>
+        </>
       ) : fallbackUrl ? (
         <img
           src={fallbackUrl}
