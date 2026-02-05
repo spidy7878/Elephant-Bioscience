@@ -9,8 +9,16 @@ function lerp(start: number, end: number, t: number) {
 }
 
 function ProductVideo({ product }: { product: Product }) {
-  const [isSafari, setIsSafari] = useState(false);
+  // Detect Safari on client side only - start with null to indicate "not yet determined"
+  const [isSafari, setIsSafari] = useState<boolean | null>(null);
   const { scrollY } = useScroll();
+
+  // Detect Safari after mount to avoid hydration mismatch
+  useEffect(() => {
+    const ua = navigator.userAgent.toLowerCase();
+    const safari = ua.includes("safari") && !ua.includes("chrome") && !ua.includes("android");
+    setIsSafari(safari);
+  }, []);
 
 
 
@@ -307,7 +315,10 @@ function ProductVideo({ product }: { product: Product }) {
   // Check if we have valid video sources
   const hasVideoSources = safariUrl || chromeUrl;
 
-  // Debug: Log when media is missing
+  // Wait until Safari detection is complete
+  if (isSafari === null) {
+    return null;
+  }
   if (!hasVideoSources && !fallbackUrl) {
     console.warn("ProductVideo: No media URL found for product:", product?.name);
     return null;
@@ -317,18 +328,35 @@ function ProductVideo({ product }: { product: Product }) {
     <div className="relative flex flex-col items-center">
       {hasVideoSources ? (
         <video
+          key={isSafari ? 'safari' : 'chrome'}
           autoPlay
           muted
           loop
           playsInline
-          poster={fallbackUrl || undefined}
-          style={{ backgroundColor: "transparent", filter: "drop-shadow(0 20px 60px rgba(0,0,0,0.25))", pointerEvents: "none" }}
+          // Don't use poster on Safari - it can cause black background overlay
+          poster={!isSafari ? (fallbackUrl || undefined) : undefined}
+          style={{ 
+            pointerEvents: "none",
+            filter: "drop-shadow(0 20px 60px rgba(0,0,0,0.25))",
+          }}
           className="w-[400px] sm:w-[480px] xl:w-[720px] object-contain"
         >
-          {/* Safari: ProRes 4444 .mov with alpha */}
-          {safariUrl && <source src={safariUrl} type="video/mp4; codecs=hvc1" />}
+          {/* Safari: ProRes 4444 .mov with alpha - use video/quicktime for .mov files */}
+          {isSafari && safariUrl && (
+            <source src={safariUrl} type="video/quicktime" />
+          )}
           {/* Chrome/Firefox: VP9 .webm with alpha */}
-          {chromeUrl && <source src={chromeUrl} type="video/webm" />}
+          {!isSafari && chromeUrl && (
+            <source src={chromeUrl} type="video/webm" />
+          )}
+          {/* Fallback: if Safari but no Safari video, try Chrome video */}
+          {isSafari && !safariUrl && chromeUrl && (
+            <source src={chromeUrl} type="video/webm" />
+          )}
+          {/* Fallback: if Chrome but no Chrome video, try Safari video */}
+          {!isSafari && !chromeUrl && safariUrl && (
+            <source src={safariUrl} type="video/quicktime" />
+          )}
         </video>
       ) : fallbackUrl ? (
         <img
