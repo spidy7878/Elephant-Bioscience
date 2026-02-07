@@ -28,7 +28,7 @@ const Stat = ({ label, value, big }: Props) => {
             "rgba(255,255,255,0.08)";
         }}
       >
-        <span className="text-xs sm:text-sm md:text-base font-normal text-black truncate whitespace-nowrap overflow-hidden">
+        <span className="text-xs sm:text-sm md:text-base font-normal text-black whitespace-normal sm:whitespace-nowrap sm:truncate sm:overflow-hidden text-center leading-tight">
           {label}
         </span>
         <div className="text-xl sm:text-2xl md:text-3xl font-bold text-black mt-1 sm:mt-2 font-mono w-full text-center">
