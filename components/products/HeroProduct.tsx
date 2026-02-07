@@ -40,13 +40,14 @@ const HeroProduct = ({
   );
   const scale = useTransform(scrollYProgress, [0, 1], [1, 0.78]);
 
-  const videoUrl =
-    product?.productVideo?.length && product.productVideo[0]?.url
-      ? `${process.env.NEXT_PUBLIC_API_URL}${product.productVideo[0].url}`
-      : null;
+  const videoUrlRelative = product?.productVideo?.[0]?.url;
+  const videoUrl = videoUrlRelative
+    ? (videoUrlRelative.startsWith("http") ? videoUrlRelative : `${process.env.NEXT_PUBLIC_API_URL}${videoUrlRelative}`)
+    : null;
 
-  const structureImg = product?.chemicalFormulaImg?.[0]?.url
-    ? `${process.env.NEXT_PUBLIC_API_URL}${product.chemicalFormulaImg[0].url}`
+  const structureImgRelative = product?.chemicalFormulaImg?.[0]?.url;
+  const structureImg = structureImgRelative
+    ? (structureImgRelative.startsWith("http") ? structureImgRelative : `${process.env.NEXT_PUBLIC_API_URL}${structureImgRelative}`)
     : "/163360068.webp";
   //console.log(structureImg)
 
