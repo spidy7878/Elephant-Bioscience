@@ -203,15 +203,7 @@ export default function ProductPage() {
 
           <div className="max-w-7xl mx-auto">
             {/* Category Filter Buttons */}
-            <div
-              ref={categoryRowRef}
-              className="flex flex-nowrap gap-4 mb-12 overflow-x-auto scrollbar-hide whitespace-nowrap cursor-grab"
-              onMouseDown={handleMouseDown}
-              onMouseLeave={handleMouseLeave}
-              onMouseUp={handleMouseUp}
-              onMouseMove={handleMouseMove}
-              style={{ userSelect: "none" }}
-            >
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-12">
               {categories.map((category) => (
                 <button
                   key={category}
@@ -223,9 +215,9 @@ export default function ProductPage() {
                     const newUrl = `/products${categorySlug === "all-peptides" ? "" : "/" + categorySlug}`;
                     window.history.replaceState(null, "", newUrl);
                   }}
-                  className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-md sm:rounded transition-all duration-300 text-xs sm:text-sm ${activeCategory === category
-                    ? "bg-[#8c2224] text-white"
-                    : "bg-transparent text-white hover:bg-[#8c2224] hover:text-white"
+                  className={`w-full px-2 py-2.5 rounded-md transition-all duration-300 text-xs sm:text-sm font-medium border border-white/10 ${activeCategory === category
+                    ? "bg-[#8c2224] text-white border-[#8c2224]"
+                    : "bg-transparent text-white/70 hover:bg-[#8c2224] hover:text-white hover:border-[#8c2224]"
                     }`}
                 >
                   {category}

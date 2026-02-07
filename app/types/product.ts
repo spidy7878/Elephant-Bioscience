@@ -50,7 +50,7 @@ export interface Product {
   productVideo: Media[];
   productVideoSafari?: Media[]; // ProRes 4444 .mov for Safari alpha transparency
   thirdpartytesting: Media[];
-  category?: Category;
+  category?: Category | Category[];
   chemicalProperties: chemicalProperties;
   coa: Media[];
   chemicalFormulaImg: Media[];
