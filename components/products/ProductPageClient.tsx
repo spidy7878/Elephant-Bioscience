@@ -110,7 +110,7 @@ export default function ProductPageClient({
             {/* Background Video - Scaled to cover edges */}
             <video
                 ref={videoRef}
-                className="fixed object-cover z-0"
+                className="movement-video fixed object-cover z-0"
                 src="/videos/movement.mp4"
                 autoPlay
                 loop

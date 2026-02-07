@@ -389,6 +389,19 @@ video::-webkit-media-controls-wireless-playback-picker-button {
   }
 }
 
+/* Hide iOS play overlay for background movement video */
+.movement-video::-webkit-media-controls {
+  display: none !important;
+}
+
+.movement-video::-webkit-media-controls-start-playback-button {
+  display: none !important;
+}
+
+.movement-video::-webkit-media-controls-overlay-play-button {
+  display: none !important;
+}
+
 .poppins-regular {
   font-family: "Poppins", sans-serif;
   font-weight: 400;

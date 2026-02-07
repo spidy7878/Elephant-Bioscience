@@ -59,7 +59,7 @@ export default function HomePage() {
             muted
             playsInline
             controls={false}
-            className="w-full h-full object-cover"
+            className="movement-video w-full h-full object-cover"
           >
             <source src="/videos/movement.mp4" type="video/mp4" />
           </video>

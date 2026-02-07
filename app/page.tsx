@@ -423,7 +423,7 @@ function BackgroundVideo({ progress }: { progress: MotionValue<number> }) {
         playsInline
         controls={false}
         onPlaying={() => setVideoCanPlay(true)} // Backup: If native autoplay works, show it!
-        className="absolute top-0 left-0 w-full h-full object-cover"
+        className="movement-video absolute top-0 left-0 w-full h-full object-cover"
         style={{
           // Combine scroll opacity with our 'can play' flag
           // If videoCanPlay is false, opacity is 0 (invisible)

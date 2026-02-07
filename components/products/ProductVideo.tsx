@@ -82,8 +82,8 @@ function ProductVideo({ product }: { product: Product }) {
 
       // Phase 1: Beside Place Order button
       const mobileStartX = currentVw * 0.05;
-      // Move down on mobile to clear text paragraph - increased to push video down
-      const mobileStartY = vh * 0.02;
+      // Shifted upward on mobile for better visual alignment
+      const mobileStartY = -(vh * 0.04);
       const mobileStartScale = 1.125;
 
       // Phase 2: Slide to right
@@ -338,63 +338,67 @@ function ProductVideo({ product }: { product: Product }) {
 
   const mediaNode = (
     <div className="relative flex flex-col items-center">
-      {hasVideoSources ? (
-        <>
-          {!isVideoReady && fallbackUrl ? (
-            <img
-              src={fallbackUrl}
-              alt={product.name}
-              className="w-[400px] sm:w-[480px] xl:w-[720px] object-contain pointer-events-none"
-              style={{ filter: "drop-shadow(0 20px 60px rgba(0,0,0,0.25))" }}
-            />
-          ) : null}
+      {/* Fallback image — always rendered, hidden only once video is confirmed playing */}
+      {fallbackUrl && (
+        <img
+          src={fallbackUrl}
+          alt={product.name}
+          className="w-[400px] sm:w-[480px] xl:w-[720px] object-contain pointer-events-none"
+          style={{
+            filter: "drop-shadow(0 20px 60px rgba(0,0,0,0.25))",
+            opacity: isVideoReady ? 0 : 1,
+            transition: "opacity 300ms ease",
+          }}
+        />
+      )}
+
+      {/* Video — sits in a 0×0 clipped box until first frame renders, then
+          absolutely positioned on top of the fallback image. This guarantees
+          the browser never paints a black rectangle visible to the user. */}
+      {hasVideoSources && (
+        <div
+          style={
+            isVideoReady
+              ? { position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }
+              : { position: "absolute", width: 1, height: 1, overflow: "hidden", opacity: 0, pointerEvents: "none" as const }
+          }
+          aria-hidden={!isVideoReady}
+        >
           <video
-            key={isSafari ? 'safari' : 'chrome'}
+            key={isSafari ? "safari" : "chrome"}
             autoPlay
             muted
             loop
             playsInline
             controls={false}
-            // Don't use poster on Safari - it can cause black background overlay
-            poster={!isSafari ? (fallbackUrl || undefined) : undefined}
-            onLoadedData={() => setIsVideoReady(true)}
+            onTimeUpdate={(e) => {
+              if (!isVideoReady && e.currentTarget.currentTime > 0.05) {
+                setIsVideoReady(true);
+              }
+            }}
+            onError={() => setIsVideoReady(false)}
             style={{
               pointerEvents: "none",
               backgroundColor: "transparent",
               filter: "drop-shadow(0 20px 60px rgba(0,0,0,0.25))",
-              opacity: isVideoReady ? 1 : 0,
-              visibility: isVideoReady ? "visible" : "hidden",
-              display: isVideoReady ? "block" : "none",
-              transition: "opacity 200ms ease",
             }}
             className="w-[400px] sm:w-[480px] xl:w-[720px] object-contain"
           >
-            {/* Safari: ProRes 4444 .mov with alpha - use video/quicktime for .mov files */}
             {isSafari && safariUrl && (
               <source src={safariUrl} type="video/quicktime" />
             )}
-            {/* Chrome/Firefox: VP9 .webm with alpha */}
             {!isSafari && chromeUrl && (
               <source src={chromeUrl} type="video/webm" />
             )}
-            {/* Fallback: if Safari but no Safari video, try Chrome video */}
             {isSafari && !safariUrl && chromeUrl && (
               <source src={chromeUrl} type="video/webm" />
             )}
-            {/* Fallback: if Chrome but no Chrome video, try Safari video */}
             {!isSafari && !chromeUrl && safariUrl && (
               <source src={safariUrl} type="video/quicktime" />
             )}
           </video>
-        </>
-      ) : fallbackUrl ? (
-        <img
-          src={fallbackUrl}
-          alt={product.name}
-          className="w-[400px] sm:w-[480px] xl:w-[720px] object-contain pointer-events-none"
-          style={{ filter: "drop-shadow(0 20px 60px rgba(0,0,0,0.25))" }}
-        />
-      ) : null}
+        </div>
+      )}
     </div>
   );
 
