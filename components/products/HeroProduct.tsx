@@ -108,9 +108,29 @@ const HeroProduct = ({
                   >
                     −
                   </button>
-                  <div className="w-12 h-full flex items-center justify-center border-x border-white/10 text-black font-semibold text-lg">
-                    {quantity}
-                  </div>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    value={quantity}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (val === "") {
+                        // Allow empty temporarily while typing
+                        setQuantity(val as any);
+                        return;
+                      }
+                      const num = parseInt(val, 10);
+                      if (!isNaN(num) && num >= 0) {
+                        setQuantity(num);
+                      }
+                    }}
+                    onBlur={() => {
+                      if (!quantity || quantity < 1) {
+                        setQuantity(1);
+                      }
+                    }}
+                    className="w-12 h-full bg-transparent text-center border-x border-white/10 text-black font-semibold text-lg focus:outline-none appearance-none m-0 p-0"
+                  />
                   <button
                     onClick={incrementQuantity}
                     className="w-12 h-full flex items-center justify-center text-black/70 hover:text-black hover:bg-white/10 transition-colors text-xl font-medium"
