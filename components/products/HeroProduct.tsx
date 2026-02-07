@@ -45,10 +45,9 @@ const HeroProduct = ({
       ? `${process.env.NEXT_PUBLIC_API_URL}${product.productVideo[0].url}`
       : null;
 
-  // const structureImg = product?.chemicalFormulaImg?.[0]?.url
-  //   ? `${process.env.NEXT_PUBLIC_API_URL}${product.chemicalFormulaImg[0].url}`
-  //   : "";
-  const structureImg = "/163360068.webp";
+  const structureImg = product?.chemicalFormulaImg?.[0]?.url
+    ? `${process.env.NEXT_PUBLIC_API_URL}${product.chemicalFormulaImg[0].url}`
+    : "/163360068.webp";
   //console.log(structureImg)
 
   return (
