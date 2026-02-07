@@ -83,7 +83,7 @@ function ProductVideo({ product }: { product: Product }) {
       // Phase 1: Beside Place Order button
       const mobileStartX = currentVw * 0.05;
       // Move down on mobile to clear text paragraph - increased to push video down
-      const mobileStartY = vh * 0.08;
+      const mobileStartY = vh * 0.02;
       const mobileStartScale = 1.125;
 
       // Phase 2: Slide to right
@@ -353,11 +353,15 @@ function ProductVideo({ product }: { product: Product }) {
             autoPlay
             muted
             loop
+            autoPlay
+            muted
+            loop
             playsInline
+            controls={false}
             // Don't use poster on Safari - it can cause black background overlay
             poster={!isSafari ? (fallbackUrl || undefined) : undefined}
             onLoadedData={() => setIsVideoReady(true)}
-            style={{ 
+            style={{
               pointerEvents: "none",
               backgroundColor: "transparent",
               filter: "drop-shadow(0 20px 60px rgba(0,0,0,0.25))",
@@ -368,22 +372,22 @@ function ProductVideo({ product }: { product: Product }) {
             }}
             className="w-[400px] sm:w-[480px] xl:w-[720px] object-contain"
           >
-          {/* Safari: ProRes 4444 .mov with alpha - use video/quicktime for .mov files */}
-          {isSafari && safariUrl && (
-            <source src={safariUrl} type="video/quicktime" />
-          )}
-          {/* Chrome/Firefox: VP9 .webm with alpha */}
-          {!isSafari && chromeUrl && (
-            <source src={chromeUrl} type="video/webm" />
-          )}
-          {/* Fallback: if Safari but no Safari video, try Chrome video */}
-          {isSafari && !safariUrl && chromeUrl && (
-            <source src={chromeUrl} type="video/webm" />
-          )}
-          {/* Fallback: if Chrome but no Chrome video, try Safari video */}
-          {!isSafari && !chromeUrl && safariUrl && (
-            <source src={safariUrl} type="video/quicktime" />
-          )}
+            {/* Safari: ProRes 4444 .mov with alpha - use video/quicktime for .mov files */}
+            {isSafari && safariUrl && (
+              <source src={safariUrl} type="video/quicktime" />
+            )}
+            {/* Chrome/Firefox: VP9 .webm with alpha */}
+            {!isSafari && chromeUrl && (
+              <source src={chromeUrl} type="video/webm" />
+            )}
+            {/* Fallback: if Safari but no Safari video, try Chrome video */}
+            {isSafari && !safariUrl && chromeUrl && (
+              <source src={chromeUrl} type="video/webm" />
+            )}
+            {/* Fallback: if Chrome but no Chrome video, try Safari video */}
+            {!isSafari && !chromeUrl && safariUrl && (
+              <source src={safariUrl} type="video/quicktime" />
+            )}
           </video>
         </>
       ) : fallbackUrl ? (
@@ -401,13 +405,13 @@ function ProductVideo({ product }: { product: Product }) {
     <>
       {isMobileLocked && lockTargetEl
         ? createPortal(
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div style={{ transform: "scale(0.5) translateY(-40px)" }}>
-                {mediaNode}
-              </div>
-            </div>,
-            lockTargetEl
-          )
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div style={{ transform: "scale(0.5) translateY(-40px)" }}>
+              {mediaNode}
+            </div>
+          </div>,
+          lockTargetEl
+        )
         : null}
 
       <motion.div

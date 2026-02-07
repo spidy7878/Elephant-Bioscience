@@ -82,7 +82,9 @@ export default function ProductPageClient({
                 autoPlay
                 loop
                 muted
+                muted
                 playsInline
+                controls={false}
                 preload="none"
                 style={{
                     pointerEvents: "none",

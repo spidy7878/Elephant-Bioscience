@@ -21,7 +21,9 @@ export default function HomePage() {
             autoPlay
             loop
             muted
+            muted
             playsInline
+            controls={false}
             className="w-full h-full object-cover"
           >
             <source src="/videos/movement.mp4" type="video/mp4" />
@@ -34,7 +36,7 @@ export default function HomePage() {
         <Hero opacity={titleOpacity} />
       </div>
 
-     
+
       {showSections && (
         <motion.div style={{ opacity: sectionsOpacity }}>
           <AboutSection />

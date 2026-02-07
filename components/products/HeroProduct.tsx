@@ -89,7 +89,7 @@ const HeroProduct = ({
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-8 mt-2 pb-6 w-full">
 
 
-              <div className="flex w-full items-center gap-4 mt-4 sm:mt-0">
+              <div className="flex flex-col sm:flex-row w-full items-start sm:items-center gap-4 mt-4 sm:mt-0">
                 {/* Quantity Selector */}
                 <motion.div
                   initial={skipAnimation ? false : { opacity: 0, y: 15 }}
