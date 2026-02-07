@@ -353,9 +353,6 @@ function ProductVideo({ product }: { product: Product }) {
             autoPlay
             muted
             loop
-            autoPlay
-            muted
-            loop
             playsInline
             controls={false}
             // Don't use poster on Safari - it can cause black background overlay

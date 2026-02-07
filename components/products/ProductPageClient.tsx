@@ -31,6 +31,38 @@ export default function ProductPageClient({
         return () => window.cancelAnimationFrame(id);
     }, []);
 
+    const videoRef = useRef<HTMLVideoElement>(null);
+
+    useEffect(() => {
+        const video = videoRef.current;
+        if (!video) return;
+
+        const attemptPlay = () => {
+            const playPromise = video.play();
+            if (playPromise !== undefined) {
+                playPromise.catch((error) => {
+                    console.log("Autoplay failed:", error);
+                });
+            }
+        };
+
+        attemptPlay();
+
+        const handleInteraction = () => {
+            if (video.paused) {
+                attemptPlay();
+            }
+        };
+
+        window.addEventListener('touchstart', handleInteraction, { passive: true });
+        window.addEventListener('click', handleInteraction);
+
+        return () => {
+            window.removeEventListener('touchstart', handleInteraction);
+            window.removeEventListener('click', handleInteraction);
+        };
+    }, []);
+
     const handleProductSelect = useCallback((product: Product) => {
         // Mark that user has interacted (switched products)
         hasInteracted.current = true;
@@ -77,11 +109,11 @@ export default function ProductPageClient({
 
             {/* Background Video - Scaled to cover edges */}
             <video
+                ref={videoRef}
                 className="fixed object-cover z-0"
                 src="/videos/movement.mp4"
                 autoPlay
                 loop
-                muted
                 muted
                 playsInline
                 controls={false}

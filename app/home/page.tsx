@@ -5,6 +5,7 @@ import Hero from "components/sections/Hero";
 import AboutSection from "components/sections/AboutSection";
 import AboutBrandGrid from "components/sections/AboutBrandGrid";
 import { motion } from "framer-motion";
+import { useEffect, useRef } from "react";
 
 export default function HomePage() {
   // Set default values here
@@ -12,15 +13,49 @@ export default function HomePage() {
   const sectionsOpacity = 1;
   const showVideo = true;
   const showSections = true;
+
+  // Ref to video for manual play trigger
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const attemptPlay = () => {
+      const playPromise = video.play();
+      if (playPromise !== undefined) {
+        playPromise.catch((error) => {
+          console.log("Autoplay failed:", error);
+        });
+      }
+    };
+
+    attemptPlay();
+
+    const handleInteraction = () => {
+      if (video.paused) {
+        attemptPlay();
+      }
+    };
+
+    window.addEventListener('touchstart', handleInteraction, { passive: true });
+    window.addEventListener('click', handleInteraction);
+
+    return () => {
+      window.removeEventListener('touchstart', handleInteraction);
+      window.removeEventListener('click', handleInteraction);
+    };
+  }, []);
+
   return (
     <div className="relative w-full bg-transparent">
       {/* Background Video - positioned to cover all content */}
       {showVideo && (
         <div className="fixed inset-0 z-0">
           <video
+            ref={videoRef}
             autoPlay
             loop
-            muted
             muted
             playsInline
             controls={false}
