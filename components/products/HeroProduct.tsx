@@ -105,15 +105,6 @@ const HeroProduct = ({
             </motion.p>
 
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-8 mt-2 pb-6 w-full">
-              <motion.div
-                initial={skipAnimation ? false : { opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1, duration: 0.3 }}
-                className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-black"
-              >
-                ${product.price}
-              </motion.div>
-
               <motion.button
                 initial={skipAnimation ? false : { opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
