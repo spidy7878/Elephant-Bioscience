@@ -19,28 +19,10 @@ const HeroProduct = ({
   hideFloatingVideo = false,
 }: Props) => {
   const [quantity, setQuantity] = useState(1);
-  const [showQuantityModal, setShowQuantityModal] = useState(false);
-  const [tempQuantity, setTempQuantity] = useState(quantity.toString());
 
-  const handleOpenModal = () => {
-    setTempQuantity(quantity.toString());
-    setShowQuantityModal(true);
-    document.body.style.overflow = "hidden";
-  };
 
-  const handleConfirmQuantity = () => {
-    const newQuantity = parseInt(tempQuantity, 10);
-    if (!isNaN(newQuantity) && newQuantity > 0) {
-      setQuantity(newQuantity);
-      setShowQuantityModal(false);
-      document.body.style.overflow = "";
-    }
-  };
-
-  const handleCloseModal = () => {
-    setShowQuantityModal(false);
-    document.body.style.overflow = "";
-  };
+  const incrementQuantity = () => setQuantity((q) => q + 1);
+  const decrementQuantity = () => setQuantity((q) => Math.max(1, q - 1));
 
   // Track global page scroll (not a local container)
   const { scrollYProgress } = useScroll({ layoutEffect: false });
@@ -71,8 +53,8 @@ const HeroProduct = ({
 
   return (
     <section className="relative w-full min-h-[100dvh] overflow-hidden">
-      {/* FLOATING VIDEO - Only render if not hidden and modal is closed */}
-      {!hideFloatingVideo && !showQuantityModal && (
+      {/* FLOATING VIDEO - Only render if not hidden */}
+      {!hideFloatingVideo && (
         <ProductVideo product={product} />
       )}
 
@@ -114,26 +96,56 @@ const HeroProduct = ({
                 ${product.price}
               </motion.div>
 
-              <motion.button
-                initial={skipAnimation ? false : { opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.12, duration: 0.3 }}
-                onClick={() => handleOpenModal()}
-                className="inline-flex items-center gap-2 px-6 sm:px-8 py-3 rounded-2xl border border-white/10 shadow-lg font-medium text-black backdrop-blur-lg transition-all duration-300 hover:shadow-2xl text-base sm:text-lg mt-2 sm:mt-0"
-                style={{
-                  background: "rgba(255,255,255,0.08)",
-                  backdropFilter: "blur(10px)",
-                  WebkitBackdropFilter: "blur(10px)",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "rgba(255,255,255,0.18)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "rgba(255,255,255,0.08)";
-                }}
-              >
-                Place Order →
-              </motion.button>
+              <div className="flex w-full items-center gap-4 mt-4 sm:mt-0">
+                {/* Quantity Selector */}
+                <motion.div
+                  initial={skipAnimation ? false : { opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.11, duration: 0.3 }}
+                  className="flex items-center rounded-2xl border border-white/10 shadow-lg backdrop-blur-lg overflow-hidden h-[54px]" // Height matches button roughly
+                  style={{
+                    background: "rgba(255,255,255,0.08)",
+                    backdropFilter: "blur(10px)",
+                    WebkitBackdropFilter: "blur(10px)",
+                  }}
+                >
+                  <button
+                    onClick={decrementQuantity}
+                    className="w-12 h-full flex items-center justify-center text-black/70 hover:text-black hover:bg-white/10 transition-colors text-xl font-medium"
+                  >
+                    −
+                  </button>
+                  <div className="w-12 h-full flex items-center justify-center border-x border-white/10 text-black font-semibold text-lg">
+                    {quantity}
+                  </div>
+                  <button
+                    onClick={incrementQuantity}
+                    className="w-12 h-full flex items-center justify-center text-black/70 hover:text-black hover:bg-white/10 transition-colors text-xl font-medium"
+                  >
+                    +
+                  </button>
+                </motion.div>
+
+                <motion.button
+                  initial={skipAnimation ? false : { opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.12, duration: 0.3 }}
+                  className="inline-flex items-center gap-2 px-6 sm:px-8 py-3 rounded-2xl border border-white/10 shadow-lg font-medium text-black backdrop-blur-lg transition-all duration-300 hover:shadow-2xl text-base sm:text-lg h-[54px] whitespace-nowrap"
+                  style={{
+                    background: "rgba(255,255,255,0.08)",
+                    backdropFilter: "blur(10px)",
+                    WebkitBackdropFilter: "blur(10px)",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = "rgba(255,255,255,0.18)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = "rgba(255,255,255,0.08)";
+                  }}
+                >
+                  Order →
+                </motion.button>
+              </div>
             </div>
 
             {/* STATS ROW BELOW BUTTON */}
@@ -148,7 +160,7 @@ const HeroProduct = ({
                 label="Purity (HPLC)"
                 value={product.purity == null ? "-" : product.purity}
               />
-              <Stat big label="Quantity" value={product.quantity} />
+              <Stat big label="Package Quantity" value={product.quantity} />
               <Stat
                 big
                 label="APLC"
@@ -156,83 +168,7 @@ const HeroProduct = ({
               />
             </motion.div>
 
-            {/* Quantity Modal - Rendered as Portal */}
-            {showQuantityModal &&
-              createPortal(
-                <motion.div
-                  initial="hidden"
-                  animate="visible"
-                  exit="exit"
-                  className="fixed inset-0 z-50 flex items-center justify-center"
-                >
-                  {/* Backdrop: static blur like LoginModal */}
-                  <motion.div
-                    className="absolute inset-0 bg-black/40"
-                    onClick={handleCloseModal}
-                    style={{
-                      backdropFilter: "blur(16px)",
-                      WebkitBackdropFilter: "blur(16px)",
-                    }}
-                  />
 
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                    transition={{ duration: 0.3, ease: "easeOut" }}
-                    role="dialog"
-                    aria-modal="true"
-                    className="relative flex rounded-xl w-[85vw] h-[70vw] max-w-[280px] max-h-[280px] sm:w-[300px] sm:h-[300px] md:w-[320px] md:h-[320px] px-3 py-4 shadow-none overflow-hidden items-center justify-center"
-                    style={{
-                      background: "transparent",
-                      boxShadow: "none",
-                      willChange: "transform, opacity",
-                      transform: "translate3d(0, 0, 0)",
-                      backfaceVisibility: "hidden",
-                    }}
-                  >
-                    {/* Close Button - Top Right */}
-                    <div className="absolute top-2 right-2 z-[100] pointer-events-auto">
-                      <button
-                        aria-label="Close modal"
-                        onClick={handleCloseModal}
-                        className="text-white/90 hover:text-white transition flex items-center justify-center w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white/6 hover:bg-white/10 text-2xl sm:text-3xl"
-                        type="button"
-                      >
-                        ×
-                      </button>
-                    </div>
-
-                    {/* Content */}
-                    <div className="relative z-10 w-full flex flex-col items-center gap-4">
-                      {/* Quantity Input */}
-                      <input
-                        type="number"
-                        value={tempQuantity}
-                        onChange={(e) => setTempQuantity(e.target.value)}
-                        min="1"
-                        className="w-36 sm:w-44 px-4 py-3 rounded-lg text-[#8C2224] font-bold text-3xl sm:text-4xl text-center focus:outline-none placeholder-[#8C2224]/60 remove-spinner"
-                        style={{
-                          background: "rgba(255,255,255,0.95)",
-                          boxShadow: "inset 0 1px 0 rgba(0,0,0,0.06)",
-                        }}
-                        placeholder="1"
-                        autoFocus
-                      />
-
-                      {/* Confirm Button */}
-                      <button
-                        onClick={handleConfirmQuantity}
-                        className="w-36 sm:w-44 py-2.5 rounded-xl bg-[#8C2224] text-white font-semibold text-lg shadow-md"
-                        style={{ boxShadow: "0 8px 30px rgba(140,34,36,0.18)" }}
-                      >
-                        Confirm
-                      </button>
-                    </div>
-                  </motion.div>
-                </motion.div>,
-                document.body
-              )}
             {/* Reference Panel for small screens */}
             <motion.div
               initial={{ opacity: 0, y: 40 }}
@@ -301,7 +237,7 @@ const HeroProduct = ({
                 "rgba(255,255,255,0.08)";
             }}
           >
-            <div className="rounded-2xl overflow-hidden bg-white flex items-center justify-center">
+            <div className="rounded-2xl overflow-hidden bg-white/50 flex items-center justify-center">
               <img
                 src={structureImg}
                 alt="Structure"

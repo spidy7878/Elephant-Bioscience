@@ -361,7 +361,7 @@ export default function ProductList({
                                                         >
                                                             {/* Safari: ProRes 4444 .mov with alpha */}
                                                             {safariUrl && (
-                                                                <source src={safariUrl} type="video/mp4; codecs=hvc1" />
+                                                                <source src={safariUrl} type="video/quicktime" />
                                                             )}
                                                             {/* Chrome/Firefox: VP9 .webm with alpha */}
                                                             {chromeUrl && (

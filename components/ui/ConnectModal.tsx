@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { countryCodes } from "./countryCodes";
 
 type RequestHandlerResult =
     | boolean
@@ -45,6 +46,7 @@ function ConnectModalInner({ isOpen, onClose, onRequest }: ConnectModalProps) {
     // Request Entry fields
     const [email, setEmail] = useState("");
     const [phone, setPhone] = useState("");
+    const [countryCode, setCountryCode] = useState("+91");
     const [emailError, setEmailError] = useState<string | null>(null);
     const [phoneError, setPhoneError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
@@ -104,7 +106,7 @@ function ConnectModalInner({ isOpen, onClose, onRequest }: ConnectModalProps) {
                 try {
                     setLoading(true);
                     const result = await Promise.resolve(
-                        onRequest({ email: email.trim(), phone: phone.trim() })
+                        onRequest({ email: email.trim(), phone: `${countryCode}${phone.trim()}` })
                     );
                     setLoading(false);
 
@@ -236,25 +238,50 @@ function ConnectModalInner({ isOpen, onClose, onRequest }: ConnectModalProps) {
                                 </div>
 
                                 <div className="w-full flex flex-col items-center">
-                                    <input
-                                        value={phone}
-                                        onChange={(e) => {
-                                            setPhone(e.target.value);
-                                            if (phoneError) setPhoneError(null);
-                                        }}
-                                        placeholder={phoneError ?? "Phone No."}
-                                        className={`w-full py-2.5 px-4 rounded-lg font-medium outline-none ${phoneError
-                                            ? "placeholder-red-500"
-                                            : "placeholder-[#8C2224]/60"
-                                            } ${phoneError
-                                                ? "border-2 border-red-400"
-                                                : "border-2 border-black/40"
-                                            }`}
+                                    <div
+                                        className={`flex w-full items-center rounded-lg ${phoneError ? "border-2 border-red-400" : ""}`}
                                         style={{
-                                            background: "rgba(255,255,255,0.9)",
-                                            color: "#8C2224",
+                                            background: "rgba(255,255,255,0.95)",
+                                            boxShadow: "inset 0 1px 0 rgba(0,0,0,0.06)",
                                         }}
-                                    />
+                                    >
+                                        <div className="relative h-full flex items-center shrink-0">
+                                            <select
+                                                value={countryCode}
+                                                onChange={(e) => setCountryCode(e.target.value)}
+                                                className="bg-transparent font-medium outline-none text-[#8C2224] appearance-none cursor-pointer py-2.5 pl-2 pr-3 text-sm w-[58px] sm:w-[64px]"
+                                                style={{ border: "none" }}
+                                            >
+                                                {countryCodes.map((country) => (
+                                                    <option key={country.country} value={country.code}>
+                                                        {country.code}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                            {/* Custom dropdown arrow */}
+                                            <div className="absolute right-1 top-1/2 -translate-y-1/2 pointer-events-none text-[#8C2224]/80">
+                                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M6 9L12 15L18 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                                </svg>
+                                            </div>
+                                            {/* Vertical Divider */}
+                                            <div className="h-4 w-[1px] bg-[#8C2224]/20 mx-2"></div>
+                                        </div>
+
+                                        <input
+                                            value={phone}
+                                            onChange={(e) => {
+                                                setPhone(e.target.value);
+                                                if (phoneError) setPhoneError(null);
+                                            }}
+                                            placeholder={phoneError ?? "Phone No."}
+                                            className={`flex-1 py-2.5 px-3 bg-transparent font-medium outline-none ${phoneError
+                                                ? "placeholder-red-500"
+                                                : "placeholder-[#8C2224]/60"
+                                                } text-[#8C2224]`}
+                                            style={{ border: "none" }}
+                                        />
+                                    </div>
                                     {phoneError && (
                                         <p className="mt-1 text-red-400 text-sm">{phoneError}</p>
                                     )}
